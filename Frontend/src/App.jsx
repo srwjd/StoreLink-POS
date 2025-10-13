@@ -1,6 +1,6 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 
-import Welcome from './pages/Welcome'
+import Landing from './pages/Landing.jsx'
 
 function App() {
 
@@ -8,7 +8,7 @@ function App() {
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route path="/" element={<Landing />} />
         </Routes>
       </Router>
     </div>
