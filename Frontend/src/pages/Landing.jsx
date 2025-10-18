@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "../components/HeaderLanding";
 import Footer from "../components/shared/Footer";
 import Register from "../components/Register";
+import Login from "../components/Login";
 
 import {
     Users, Money, Package, ChartLine
@@ -17,11 +18,12 @@ const IconChart = () => (<ChartLine size={32} weight="fill" color="#3674B5" />);
 export default function Landing() {
 
     const [showRegister, setShowRegister] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
 
     return (
         <div className="relative flex flex-col min-h-screen bg-white">
             <div>
-                <Header onSignup={() => setShowRegister(true)} onLogin={() => console.log("go login")} />
+                <Header onSignup={() => setShowRegister(true)} onLogin={() => setShowLogin(true)} />
                 <div className="h-[60vh] bg-[#DFEEFF]"></div>
 
                 <section className="absolute bottom-[50vh] left-1/2 -translate-x-1/2 mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 text-center">
@@ -67,7 +69,8 @@ export default function Landing() {
 
             <Footer />
 
-            {showRegister && <Register onClose={() => setShowRegister(false)} onLogin={() => console.log("go login")} />}
+            {showRegister && <Register onClose={() => setShowRegister(false)} onLogin={() => { setShowLogin(true), setShowRegister(false) }} />}
+            {showLogin && <Login onClose={() => setShowLogin(false)} onRegister={() => { setShowRegister(true), setShowLogin(false) }} />}
         </div>
     );
 }

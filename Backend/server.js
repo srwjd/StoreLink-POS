@@ -4,15 +4,18 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import http from "http";
+import dotenv from "dotenv";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
-// import storeRoutes from "./routes/storeRoutes.js";
+import storeRoutes from "./routes/storeRoutes.js";
 // import productRoutes from "./routes/productRoutes.js";
 // import saleRoutes from "./routes/saleRoutes.js";
 
 import "./config/env.js";
 import connectDB from "./config/db.js";
+
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 
@@ -42,7 +45,7 @@ const PORT = process.env.PORT || 3000;
   app.use(morgan("dev"));
 
   app.use("/auth", authRoutes);
-  // app.use("/stores", storeRoutes);
+  app.use("/stores", storeRoutes);
   // app.use("/products", productRoutes);
   // app.use("/sales", saleRoutes);
 
