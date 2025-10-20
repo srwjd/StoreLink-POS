@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 
-import Header from "../components/HeaderLanding";
+import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
 import Register from "../components/Register";
 import Login from "../components/Login";
@@ -23,7 +23,7 @@ export default function Landing() {
     return (
         <div className="relative flex flex-col min-h-screen bg-white">
             <div>
-                <Header onSignup={() => setShowRegister(true)} onLogin={() => setShowLogin(true)} />
+                <Header mode="landing" onSignup={() => setShowRegister(true)} onLogin={() => setShowLogin(true)} />
                 <div className="h-[60vh] bg-[#DFEEFF]"></div>
 
                 <section className="absolute bottom-[50vh] left-1/2 -translate-x-1/2 mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 text-center">

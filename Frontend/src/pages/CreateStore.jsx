@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState,  } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check, Money } from "phosphor-react";
 
-import Header from "../components/HeaderLanding";
+import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
 
 
 export default function CreateStore() {
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [form, setForm] = useState({
         name: "",
@@ -90,6 +92,7 @@ export default function CreateStore() {
             if (res.ok) {
                 alert("สร้างร้านค้าสำเร็จ!");
                 console.log("✅ Store created:", data.store);
+                navigate("/select-store");
             } else {
                 alert(data.message || "ไม่สามารถสร้างร้านได้");
             }
@@ -100,7 +103,7 @@ export default function CreateStore() {
 
     return (
         <div className="relative flex flex-col min-h-screen bg-[#DFEEFF]">
-            <Header />
+            <Header mode="none" />
             <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center z-50">
                 <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl border border-[#3674B5]/30">
                     {/* Step Indicator */}
@@ -139,7 +142,7 @@ export default function CreateStore() {
                     {/* Buttons */}
                     <div className="mt-3 flex flex-col items-center">
                         {error && (
-                            <div className="mb-2 text-[#E50046] px-4 py-2 text-sm text-center animate-[fadeIn_0.3s_ease-in-out]">
+                            <div className="mb-2 text-[#E50046] text-sm text-center animate-[fadeIn_0.3s_ease-in-out]">
                                 {error}
                             </div>
                         )}
@@ -205,7 +208,7 @@ function Step1({ form, onChange }) {
                         className={`cursor-pointer rounded-xl border-2 p-3 flex flex-col items-center transition
                             ${form.type === type.id ? "border-[#3674B5] bg-[#DFEEFF]" : "border-gray-200 hover:border-[#3674B5]/50"}`}
                     >
-                        <img src={type.image} alt={type.name} className="w-20 h-20 object-contain" />
+                        <img src={type.image} alt={type.name} className="w-full rounded-lg" />
                         <p className={`${form.type === type.id ? "text-[#3674B5]" : "text-gray-700"} mt-2`}>
                             {type.name}
                         </p>

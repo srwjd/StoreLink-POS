@@ -41,7 +41,7 @@ export default function LoginPopup({ onClose, onRegister }) {
                 localStorage.setItem("token", data.token);
                 alert("เข้าสู่ระบบสำเร็จ!");
                 onClose();
-                navigate("/dashboard"); // ✅ เปลี่ยนไปหน้าหลักหลังล็อกอิน
+                navigate("/select-store"); // เปลี่ยนไปหน้าหลักหลังล็อกอิน
             } else {
                 setError(data.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
             }
