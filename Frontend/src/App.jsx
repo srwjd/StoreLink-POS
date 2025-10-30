@@ -6,7 +6,7 @@ import SelectStore from './pages/SelectStore.jsx'
 import MainMenuRetail from './pages/Retail/MainMenuRetail.jsx'
 import MainMenuRestaurant from './pages/Restaurant/MainMenuRestaurant.jsx'
 import MainMenuService from './pages/ServiceShop/MainMenuService.jsx'
-
+import StockPage from './pages/Retail/Stockpage.jsx'
 function App() {
 
   return (
@@ -19,6 +19,7 @@ function App() {
           <Route path="/main-menu/retail/:storeId" element={<MainMenuRetail />} />
           <Route path="/main-menu/restaurant/:storeId" element={<MainMenuRestaurant />} />
           <Route path="/main-menu/service/:storeId" element={<MainMenuService />} />
+          <Route path="/main-menu/retail/:storeId/stock" element={<StockPage />} />
         </Routes>
       </Router>
     </div>
