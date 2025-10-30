@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Header from "./shared/Header";
 import axios from "axios";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 

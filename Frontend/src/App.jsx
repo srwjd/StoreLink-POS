@@ -6,7 +6,7 @@ import CreateStore from './pages/CreateStore.jsx'
 import SelectStore from './pages/SelectStore.jsx'
 import MainMenu from './pages/MainMenuTemplate.jsx'
 import ManageEmployees from './pages/ManageEmployees.jsx'
-import StockPage from './pages/SelectStore.jsx'
+import StockPage from './pages/StockPage.jsx'
 
 function App() {
 
@@ -53,7 +53,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/main-menu/retail/:storeId/stock" element={<StockPage />} />
+          <Route path="/main-menu/general/:storeId/stock" element={<StockPage />} />
         </Routes>
       </Router>
     </div>
