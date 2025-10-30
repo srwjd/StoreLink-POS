@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
 
-function Header({ logoSrc = "", StoreName = "", onSignup, onLogin, mode = "auth" }) {
+function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth" }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/"); // กลับไปหน้าแรก
+        navigate("/");
     };
 
     return (
@@ -16,7 +16,6 @@ function Header({ logoSrc = "", StoreName = "", onSignup, onLogin, mode = "auth"
                     {/* โลโก้ด้านซ้าย */}
                     <div
                         className="flex items-center gap-2 group cursor-pointer"
-                        onClick={() => navigate("/")}
                     >
                         {logoSrc ? (
                             <img
@@ -29,9 +28,9 @@ function Header({ logoSrc = "", StoreName = "", onSignup, onLogin, mode = "auth"
                                 S
                             </div>
                         )}
-                        {StoreName ? (
+                        {storeName ? (
                             <span className="text-white font-semibold tracking-wide">
-                                {StoreName}
+                                {storeName}
                             </span>
                         ) : (
                             <span className="text-white font-semibold tracking-wide">

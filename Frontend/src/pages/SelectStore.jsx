@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ export default function SelectStore() {
     const { setStore } = useStore();
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [userRole, setUserRole] = useState();
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
@@ -26,7 +28,9 @@ export default function SelectStore() {
             const response = await axios.get("http://localhost:3000/stores/my-stores", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setStores(response.data.stores || []);
+
+            setStores(response.data.stores);
+            setUserRole(response.data.role);
         } catch (err) {
             console.error("Error fetching stores:", err);
             setError("ไม่สามารถโหลดข้อมูลร้านค้าได้");
@@ -39,15 +43,14 @@ export default function SelectStore() {
         fetchStores();
     }, []);
 
-    const handleSelect = ({storeId, store}) => {
+    const handleSelect = ({ storeId, store }) => {
         setStore(store);
-        console.log("เลือก:", storeId , store.type);
-        navigate(`/main-menu/${store.type}/${storeId}`);
+        navigate(`/main-menu/${store.storeType}/${storeId}`);
     };
 
     return (
         <div className="min-h-screen flex flex-col bg-[#fff]">
-            <Header mode="auth" />
+            <Header mode="auth"/>
 
             <main className="flex flex-col items-center justify-center flex-grow text-center px-4">
                 <h1 className="text-3xl font-bold text-[#3674B5] mb-8">
@@ -69,19 +72,21 @@ export default function SelectStore() {
                                            transition-all duration-200 focus:outline-none"
                             >
                                 <Storefront size={60} color="#fefbfb" weight="duotone" />
-                                <p className="mt-2 text-md font-semibold">{store.name}</p>
+                                <p className="mt-2 text-md font-semibold">{store.storeName }</p>
                             </button>
                         ))}
 
                         {/* ปุ่มเพิ่มร้าน */}
-                        <button
-                            onClick={() => navigate("/create-store")}
-                            className="flex flex-col items-center justify-center bg-gradient-to-b from-[#4A90E2] to-[#3674B5]
+                        {userRole === "Owner" && (
+                            <button
+                                onClick={() => navigate("/create-store")}
+                                className="flex flex-col items-center justify-center bg-gradient-to-b from-[#4A90E2] to-[#3674B5]
                                        text-white w-40 h-40 rounded-xl shadow-md hover:shadow-xl hover:translate-y-[-3px]
                                        transition-all duration-200 focus:outline-none"
-                        >
-                            <Plus size={60} weight="bold" />
-                        </button>
+                            >
+                                <Plus size={60} weight="bold" />
+                            </button>
+                        )}
                     </div>
                 )}
             </main>

@@ -3,8 +3,8 @@ import { useState } from "react";
 
 import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
-import Register from "../components/Register";
-import Login from "../components/Login";
+import Register from "../components/shared/Register";
+import Login from "../components/shared/Login";
 
 import {
     Users, Money, Package, ChartLine

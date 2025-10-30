@@ -1,44 +1,47 @@
-import Store from "../models/store.js";
-import User from "../models/user.js";
-import jwt from "jsonwebtoken";
+import Store from "../models/storeModel.js";
+import User from "../models/userModel.js";
+import Position from "../models/positionModel.js";
 
 export const createStore = async (req, res) => {
     try {
-        // ตรวจ token
-        const authHeader = req.headers.authorization;
-        if (!authHeader)
-            return res.status(401).json({ message: "ไม่มี token" });
-
-        const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
         const { name, type, address, phone, taxRate, paymentSettings } = req.body;
 
         if (!name || !type)
             return res.status(400).json({ message: "กรุณากรอกชื่อร้านและประเภทร้าน" });
 
-        // ตรวจสอบค่า paymentSettings ที่ส่งมา
         const validPayment = {
             cash: paymentSettings?.cash ?? true,
-            qrPromptPay: paymentSettings?.qrPromptPay ?? false,
-            promptPayNumber: paymentSettings?.promptPayNumber ?? "",
+            qrPromptPay: paymentSettings?.promptpay ?? false,
+            promptPayNumber: paymentSettings?.promptpayNumber ?? "",
         };
 
-        // สร้างร้านใหม่
         const newStore = await Store.create({
-            ownerId: decoded.id,
-            name,
-            type,
+            ownerId: req.user.id,
+            storeName: name,
+            storeType: type,
             address,
             phone,
             taxRate: taxRate || 0,
             paymentSettings: validPayment,
         });
 
-        // เพิ่ม storeId ลงใน user (เจ้าของ)
-        await User.findByIdAndUpdate(decoded.id, {
+        await User.findByIdAndUpdate(req.user.id, {
             $push: { storeIds: newStore._id },
         });
+
+        const basePositions = [
+            {
+                storeId: newStore._id,
+                positionName: "Manager",
+                permissions: ["sell", "manage_employees", "report", "settings"],
+            },
+            {
+                storeId: newStore._id,
+                positionName: "Cashier",
+                permissions: ["sell"],
+            },
+        ];
+        await Position.insertMany(basePositions);
 
         res.status(201).json({
             message: "สร้างร้านค้าสำเร็จ",
@@ -52,31 +55,46 @@ export const createStore = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        if (err.name === "JsonWebTokenError")
-            return res.status(401).json({ message: "token ไม่ถูกต้อง" });
-
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+        res.status(500).json({
+            message: "เกิดข้อผิดพลาด",
+            error: err.message,
+        });
     }
 };
+
 
 export const getMyStores = async (req, res) => {
     try {
-        // ตรวจ token
-        const authHeader = req.headers.authorization;
-        if (!authHeader)
-            return res.status(401).json({ message: "ไม่มี token" });
+        const user = req.user;
+        let stores = [];
 
-        const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const foundUser = await User.findById(user.id);
+        if (!foundUser)
+            return res.status(404).json({ message: "ไม่พบผู้ใช้" });
 
-        const stores = await Store.find({ ownerId: decoded.id });
+        if (foundUser.role === "Owner") {
+            stores = await Store.find({ ownerId: foundUser._id });
+        }
 
-        res.status(200).json({ stores });
+        else if (["Employee"].includes(foundUser.role)) {
+            stores = await Store.find({ _id: { $in: foundUser.storeIds } });
+        }
+
+        else {
+            return res.status(403).json({ message: "ไม่มีสิทธิ์เข้าถึงข้อมูลร้านค้า" });
+        }
+
+        res.status(200).json({
+            role: foundUser.role,
+            stores,
+        });
+
     } catch (err) {
         console.error(err);
-        if (err.name === "JsonWebTokenError")
-            return res.status(401).json({ message: "token ไม่ถูกต้อง" });
-
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+        res.status(500).json({
+            message: "เกิดข้อผิดพลาด",
+            error: err.message,
+        });
     }
 };
+
