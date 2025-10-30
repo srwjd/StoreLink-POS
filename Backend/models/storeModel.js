@@ -11,7 +11,7 @@ const paymentSettingsSchema = new mongoose.Schema(
 
 const storeSchema = new mongoose.Schema(
   {
-    storeId: { type: String, unique: true }, // ❗ไม่ต้อง required
+    storeId: { type: String, unique: true }, // ST000001
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     storeName: { type: String, required: true },
     storeType: {
@@ -27,22 +27,23 @@ const storeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ เพิ่มการสร้างรหัสร้านอัตโนมัติ
+// ✅ สร้างรหัสร้านอัตโนมัติ (ปลอดภัยต่อการ insert พร้อมกันหลายคน)
 storeSchema.pre("save", async function (next) {
-  if (this.storeId) return next(); // ถ้ามีอยู่แล้วไม่ต้องสร้างซ้ำ
+  if (this.storeId) return next();
 
   try {
-    const lastStore = await this.constructor.findOne().sort({ createdAt: -1 }).lean();
+    const lastStore = await this.constructor.findOne({}, { storeId: 1 }).sort({ createdAt: -1 }).lean();
     let nextNumber = 1;
 
     if (lastStore && lastStore.storeId) {
       const lastNumber = parseInt(lastStore.storeId.replace("ST", ""), 10);
-      nextNumber = lastNumber + 1;
+      if (!isNaN(lastNumber)) nextNumber = lastNumber + 1;
     }
 
-    this.storeId = "ST" + String(nextNumber).padStart(6, "0"); // เช่น ST000001, ST000002
+    this.storeId = "ST" + String(nextNumber).padStart(6, "0");
     next();
   } catch (err) {
+    console.error("❌ Error generating storeId:", err);
     next(err);
   }
 });
