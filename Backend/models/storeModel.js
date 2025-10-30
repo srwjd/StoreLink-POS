@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Counter from "./counterModel.js";
 
 const paymentSettingsSchema = new mongoose.Schema(
   {
@@ -11,7 +12,7 @@ const paymentSettingsSchema = new mongoose.Schema(
 
 const storeSchema = new mongoose.Schema(
   {
-    storeId: { type: String, unique: true }, // ST000001
+    storeCode: { type: String, unique: true },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     storeName: { type: String, required: true },
     storeType: {
@@ -27,23 +28,22 @@ const storeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ สร้างรหัสร้านอัตโนมัติ (ปลอดภัยต่อการ insert พร้อมกันหลายคน)
-storeSchema.pre("save", async function (next) {
-  if (this.storeId) return next();
+// ✅ ใช้ Counter เพื่อให้เลขรหัสร้านไม่ซ้ำ
+storeSchema.pre("validate", async function (next) {
+  if (this.storeCode) return next();
 
   try {
-    const lastStore = await this.constructor.findOne({}, { storeId: 1 }).sort({ createdAt: -1 }).lean();
-    let nextNumber = 1;
+    const counter = await Counter.findOneAndUpdate(
+      { name: "storeCode" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
 
-    if (lastStore && lastStore.storeId) {
-      const lastNumber = parseInt(lastStore.storeId.replace("ST", ""), 10);
-      if (!isNaN(lastNumber)) nextNumber = lastNumber + 1;
-    }
-
-    this.storeId = "ST" + String(nextNumber).padStart(6, "0");
+    const nextNumber = counter.seq;
+    this.storeCode = "ST" + String(nextNumber).padStart(6, "0");
     next();
   } catch (err) {
-    console.error("❌ Error generating storeId:", err);
+    console.error("❌ Error generating storeCode:", err);
     next(err);
   }
 });

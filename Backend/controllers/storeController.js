@@ -6,16 +6,18 @@ export const createStore = async (req, res) => {
     try {
         const { name, type, address, phone, taxRate, paymentSettings } = req.body;
 
+        // ตรวจสอบข้อมูลหลัก
         if (!name || !type)
             return res.status(400).json({ message: "กรุณากรอกชื่อร้านและประเภทร้าน" });
 
         const validPayment = {
             cash: paymentSettings?.cash ?? true,
-            qrPromptPay: paymentSettings?.promptpay ?? false,
-            promptPayNumber: paymentSettings?.promptpayNumber ?? "",
+            qrPromptPay: paymentSettings?.qrPromptPay ?? false,
+            promptPayNumber: paymentSettings?.promptPayNumber ?? "",
         };
 
-        const newStore = await Store.create({
+        // ✅ ใช้ new + save แทน create เพื่อให้ pre("save") ทำงานแน่
+        const store = new Store({
             ownerId: req.user.id,
             storeName: name,
             storeType: type,
@@ -25,40 +27,40 @@ export const createStore = async (req, res) => {
             paymentSettings: validPayment,
         });
 
-        await User.findByIdAndUpdate(req.user.id, {
-            $push: { storeIds: newStore._id },
-        });
+        await store.save(); // ✅ จะ generate storeCode ให้อัตโนมัติที่นี่
 
+        // ✅ เพิ่ม store ลงใน user
+        await User.findByIdAndUpdate(req.user.id, { $push: { storeIds: store._id } });
+
+        // ✅ สร้างตำแหน่งเริ่มต้น
         const basePositions = [
             {
-                storeId: newStore._id,
+                storeId: store._id,
                 positionName: "Manager",
                 permissions: ["sell", "manage_employees", "report", "settings"],
             },
             {
-                storeId: newStore._id,
+                storeId: store._id,
                 positionName: "Cashier",
                 permissions: ["sell"],
             },
         ];
         await Position.insertMany(basePositions);
 
+        // ✅ ส่งผลลัพธ์กลับ
         res.status(201).json({
             message: "สร้างร้านค้าสำเร็จ",
             store: {
-                id: newStore._id,
-                storeId: newStore.storeId,
-                name: newStore.name,
-                type: newStore.type,
-                paymentSettings: newStore.paymentSettings,
+                id: store._id,
+                storeCode: store.storeCode,
+                name: store.storeName,
+                type: store.storeType,
+                paymentSettings: store.paymentSettings,
             },
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            message: "เกิดข้อผิดพลาด",
-            error: err.message,
-        });
+        console.error("❌ Create Store Error:", err);
+        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
     }
 };
 
