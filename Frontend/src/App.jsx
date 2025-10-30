@@ -1,24 +1,57 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Landing from './pages/Landing.jsx'
 import CreateStore from './pages/CreateStore.jsx'
 import SelectStore from './pages/SelectStore.jsx'
-import MainMenuRetail from './pages/Retail/MainMenuRetail.jsx'
-import MainMenuRestaurant from './pages/Restaurant/MainMenuRestaurant.jsx'
-import MainMenuService from './pages/ServiceShop/MainMenuService.jsx'
-import StockPage from './pages/Retail/Stockpage.jsx'
+import MainMenu from './pages/MainMenuTemplate.jsx'
+import ManageEmployees from './pages/ManageEmployees.jsx'
+
 function App() {
 
   return (
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/create-store" element={<CreateStore />} />
-          <Route path="/select-store" element={<SelectStore />} />
-          <Route path="/main-menu/retail/:storeId" element={<MainMenuRetail />} />
-          <Route path="/main-menu/restaurant/:storeId" element={<MainMenuRestaurant />} />
-          <Route path="/main-menu/service/:storeId" element={<MainMenuService />} />
+          {/* Landing Page ไม่ต้อง login */}
+          <Route
+            path="/"
+            element={
+              <Landing />
+            }
+          />
+          <Route
+            path="/create-store"
+            element={
+              <ProtectedRoute>
+                <CreateStore />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/select-store"
+            element={
+              <ProtectedRoute>
+                <SelectStore />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/main-menu/:storeType/:storeId"
+            element={
+              <ProtectedRoute>
+                <MainMenu />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage-employees/:storeId"
+            element={
+              <ProtectedRoute>
+                <ManageEmployees />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/main-menu/retail/:storeId/stock" element={<StockPage />} />
         </Routes>
       </Router>

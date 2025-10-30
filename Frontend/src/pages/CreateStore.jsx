@@ -80,7 +80,7 @@ export default function CreateStore() {
     const handleSubmit = async () => {
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch("http://localhost:3000/stores/create", {
+            const res = await fetch("http://localhost:3000/stores/create-store", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -185,7 +185,7 @@ export default function CreateStore() {
 
 function Step1({ form, onChange }) {
     const storeTypes = [
-        { id: "retail", name: "ร้านขายปลีก", image: "/supermarket.png" },
+        { id: "general", name: "ร้านทั่วไป", image: "/supermarket.png" },
         { id: "restaurant", name: "ร้านอาหาร", image: "/restaurant.png" },
         { id: "service", name: "ร้านให้บริการ", image: "/barbershop.png" },
     ];

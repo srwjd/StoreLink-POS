@@ -9,7 +9,9 @@ import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler.js";
 import authRoutes from "./routes/authRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
-// import productRoutes from "./routes/productRoutes.js";
+import positionRoutes from "./routes/positionRoutes.js";
+import employeeRoutes from "./routes/employeeRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 // import saleRoutes from "./routes/saleRoutes.js";
 
 import "./config/env.js";
@@ -46,7 +48,9 @@ const PORT = process.env.PORT || 3000;
 
   app.use("/auth", authRoutes);
   app.use("/stores", storeRoutes);
-  // app.use("/products", productRoutes);
+  app.use("/positions", positionRoutes);
+  app.use("/employees", employeeRoutes);
+  app.use("/products", productRoutes);
   // app.use("/sales", saleRoutes);
 
   app.get("/health", (_, res) => res.json({ ok: true }));

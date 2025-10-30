@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import User from "../models/userModel.js";
 
 export const registerUser = async (req, res) => {
     try {
@@ -21,10 +21,16 @@ export const registerUser = async (req, res) => {
             email,
             password: hashed,
             role: "Owner",
+            positionId: null,
         });
 
         const token = jwt.sign(
-            { id: newUser._id, email: newUser.email, role: newUser.role },
+            {
+                id: newUser._id,
+                email: newUser.email,
+                role: newUser.role,
+                storeIds: newUser.storeIds,
+            },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
@@ -60,7 +66,12 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
 
         const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role },
+            {
+                id: user._id,
+                email: user.email,
+                role: user.role,
+                storeIds: user.storeIds
+            },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
@@ -68,6 +79,20 @@ export const login = async (req, res) => {
         res.status(200).json({ message: "เข้าสู่ระบบสำเร็จ", token });
     } catch (err) {
         console.error(err);
+        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+    }
+};
+
+export const getProfile = async (req, res) => {
+    try {
+        const user = req.user; // มาจาก middleware requireAuth
+        if (!user) return res.status(401).json({ message: "ไม่พบผู้ใช้" });
+
+        res.status(200).json({
+            message: "ข้อมูลโปรไฟล์",
+            user,
+        });
+    } catch (err) {
         res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
     }
 };
