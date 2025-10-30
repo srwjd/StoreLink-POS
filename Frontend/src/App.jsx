@@ -6,6 +6,7 @@ import CreateStore from './pages/CreateStore.jsx'
 import SelectStore from './pages/SelectStore.jsx'
 import MainMenu from './pages/MainMenuTemplate.jsx'
 import ManageEmployees from './pages/ManageEmployees.jsx'
+import StockPage from './pages/SelectStore.jsx'
 
 function App() {
 
