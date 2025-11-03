@@ -5,7 +5,8 @@ import MainMenuService from "../components/mainmenu/MainMenuService";
 
 export default function MainMenuTemplate() {
     const { store } = useStore();
-    const type = store?.type || "retail";
+    const type = store?.type || "general";
+
 
     if (type === "restaurant") return <MainMenuRestaurant />;
     if (type === "service") return <MainMenuService />;

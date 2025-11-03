@@ -37,12 +37,12 @@ export const createStore = async (req, res) => {
             {
                 storeId: store._id,
                 positionName: "Manager",
-                permissions: ["sell", "manage_employees", "report", "settings"],
+                permissions: ["sale", "manage_employees", "report", "settings"],
             },
             {
                 storeId: store._id,
                 positionName: "Cashier",
-                permissions: ["sell"],
+                permissions: ["sale"],
             },
         ];
         await Position.insertMany(basePositions);

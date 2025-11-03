@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
 
-function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth" }) {
+function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth", logoClick }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("currentStore");
         navigate("/");
     };
 
@@ -15,6 +16,7 @@ function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth"
                 <div className="flex h-14 items-center justify-between">
                     {/* โลโก้ด้านซ้าย */}
                     <div
+                        onClick={logoClick}
                         className="flex items-center gap-2 group cursor-pointer"
                     >
                         {logoSrc ? (

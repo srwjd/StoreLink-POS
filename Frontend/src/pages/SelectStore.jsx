@@ -9,7 +9,7 @@ import Footer from "../components/shared/Footer";
 import { useStore } from "../context/StoreContext";
 
 export default function SelectStore() {
-    const { setStore } = useStore();
+    const { selectStore } = useStore();
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userRole, setUserRole] = useState();
@@ -44,13 +44,13 @@ export default function SelectStore() {
     }, []);
 
     const handleSelect = ({ storeId, store }) => {
-        setStore(store);
+        selectStore(store);
         navigate(`/main-menu/${store.storeType}/${storeId}`);
     };
 
     return (
         <div className="min-h-screen flex flex-col bg-[#fff]">
-            <Header mode="auth"/>
+            <Header mode="auth" />
 
             <main className="flex flex-col items-center justify-center flex-grow text-center px-4">
                 <h1 className="text-3xl font-bold text-[#3674B5] mb-8">
@@ -72,7 +72,7 @@ export default function SelectStore() {
                                            transition-all duration-200 focus:outline-none"
                             >
                                 <Storefront size={60} color="#fefbfb" weight="duotone" />
-                                <p className="mt-2 text-md font-semibold">{store.storeName }</p>
+                                <p className="mt-2 text-md font-semibold">{store.storeName}</p>
                             </button>
                         ))}
 

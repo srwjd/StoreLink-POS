@@ -7,19 +7,33 @@ import { useNavigate } from "react-router-dom";
 
 export default function MainMenuRestaurant() {
     const navigate = useNavigate();
-    const { store } = useStore();
+    const { store, loading } = useStore();
+
+
+
+    if (loading || !store) {
+        return (
+            <div className="flex items-center justify-center h-screen text-slate-600">
+                กำลังโหลดข้อมูลร้านค้า...
+            </div>
+        );
+    }
+
+
+
+    const storeId = store._id;
 
     const menuItems = [
-        { icon: <ShoppingCart size={48} />, label: "ขาย", },
+        { icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeId}` },
         { icon: <ForkKnife size={48} />, label: "เมนูอาหาร" },
         { icon: <ChartBar size={48} />, label: "รายงาน" },
-        { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${store._id}` },
+        { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },
         { icon: <Gear size={48} />, label: "ตั้งค่า" },
     ];
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#E9F3FF] to-[#C8DCFF]">
-            <Header storeName={store?.storeName} />
+            <Header storeName={store.storeName} />
             <main className="flex flex-1 justify-center items-center px-6">
                 <div className="grid grid-cols-3 gap-8">
                     {menuItems.map((item, i) => (

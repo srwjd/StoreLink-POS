@@ -327,7 +327,7 @@ function Step4({ form }) {
     const { name, type, address, phone, taxRate, paymentSettings } = form;
 
     const nameType = () => {
-        if (type === "retail") return "ร้านขายปลีก";
+        if (type === "general") return "ร้านขายปลีก";
         if (type === "restaurant") return "ร้านอาหาร";
         if (type === "service") return "ร้านให้บริการ";
     };

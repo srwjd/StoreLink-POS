@@ -6,8 +6,8 @@ import { getPositions, createPosition, updatePosition, deletePosition } from "..
 const router = express.Router();
 
 router.get("/:storeId", requireAuth, getPositions);
-router.post("/", requireAuth, createPosition);
-router.put("/:id", requireAuth, updatePosition);
-router.delete("/:id", requireAuth, deletePosition);
+router.post("/create/:storeId", requireAuth, createPosition);
+router.put("/update/:id", requireAuth, updatePosition);
+router.delete("/delete/:id", requireAuth, deletePosition);
 
 export default router;

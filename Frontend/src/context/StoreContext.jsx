@@ -1,21 +1,72 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
-// src/context/StoreContext.jsx
-import { createContext, useContext, useState } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
-// ① สร้าง context ว่าง ๆ
 const StoreContext = createContext();
 
-// ② สร้าง Provider (หุ้มส่วนของแอปที่อยากให้เข้าถึงได้)
 export const StoreProvider = ({ children }) => {
-    const [store, setStore] = useState(null); // ข้อมูลร้านที่เลือกไว้
+    const [store, setStore] = useState(null);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    // ✅ โหลด token และ store จาก localStorage
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const storeId = localStorage.getItem("currentStore");
+
+        if (!token) {
+            setLoading(false);
+            return;
+        }
+
+        axios
+            .get("http://localhost:3000/auth/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((res) => {
+                setUser(res.data.user);
+
+                // ✅ ถ้ามีร้านใน localStorage ให้ลองโหลด
+                if (storeId) {
+                    axios
+                        .get(`http://localhost:3000/stores/${storeId}`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        })
+                        .then((sRes) => setStore(sRes.data.store))
+                        .catch((err) => {
+                            console.warn("⚠️ โหลดร้านไม่สำเร็จ (อาจถูกลบ)", err.response?.status);
+                            localStorage.removeItem("currentStore");
+                            setStore(null);
+                        });
+                }
+            })
+            .catch(() => {
+                localStorage.removeItem("token");
+                setUser(null);
+            })
+            .finally(() => setLoading(false));
+    }, []);
+
+
+    // ✅ เมื่อเลือก store → บันทึกลง localStorage
+    const selectStore = (storeData) => {
+        setStore(storeData);
+        localStorage.setItem("currentStore", storeData._id);
+    };
+
+    const logout = () => {
+        setStore(null);
+        setUser(null);
+        localStorage.removeItem("token");
+        localStorage.removeItem("currentStore");
+    };
 
     return (
-        <StoreContext.Provider value={{ store, setStore }}>
+        <StoreContext.Provider value={{ user, store, selectStore, logout, loading }}>
             {children}
         </StoreContext.Provider>
     );
 };
 
-// ③ สร้าง hook สำหรับเรียกใช้ได้สะดวก
 export const useStore = () => useContext(StoreContext);

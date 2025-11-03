@@ -56,13 +56,39 @@ export const createEmployee = async (req, res) => {
   }
 };
 
-// 🔹 ลบพนักงาน
+// 🧩 อัปเดตข้อมูลพนักงาน
+export const updateEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, positionId } = req.body;
+
+    const updated = await User.findByIdAndUpdate(
+      id,
+      { firstName, lastName, email, positionId },
+      { new: true }
+    );
+
+    if (!updated)
+      return res.status(404).json({ message: "ไม่พบพนักงานที่ต้องการแก้ไข" });
+
+    res.status(200).json({ message: "อัปเดตพนักงานสำเร็จ", employee: updated });
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
+};
+
+// 🗑️ ลบพนักงาน
 export const deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    await User.findByIdAndDelete(id);
+    const deleted = await User.findByIdAndDelete(id);
+
+    if (!deleted)
+      return res.status(404).json({ message: "ไม่พบพนักงานที่ต้องการลบ" });
+
     res.status(200).json({ message: "ลบพนักงานสำเร็จ" });
   } catch (err) {
     res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
   }
 };
+
