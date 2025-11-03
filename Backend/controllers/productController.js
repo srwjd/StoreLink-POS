@@ -5,42 +5,30 @@ import mongoose from "mongoose";
    ✅ 1. สร้างสินค้าใหม่
 ------------------------------------------- */
 export const createProduct = async (req, res) => {
-    try {
-        const { storeId, name, category, type, price, unit, stockQty, serialList, description } = req.body;
+  try {
+    const { storeId, name, category, type, price, unit, stockQty, serialList, description } = req.body;
 
-        if (!storeId || !name || !price)
-            return res.status(400).json({ message: "กรุณากรอกข้อมูลสินค้าหลักให้ครบ" });
+    if (!storeId || !name || !price)
+      return res.status(400).json({ message: "กรุณากรอกข้อมูลสินค้าหลักให้ครบ" });
 
-        // ถ้าเป็นสินค้าแบบมี Serial
-        let serials = [];
-        if (type === "serialized" && Array.isArray(serialList)) {
-            serials = serialList.map((s) => ({
-                serialNumber: s.serialNumber,
-                status: s.status || "available",
-            }));
-        }
+    const newProduct = await Product.create({
+      storeId,
+      name,
+      category,
+      type: type || "standard",
+      price,
+      unit,
+      stockQty,
+      serialList: type === "serialized" ? serialList || [] : [],
+      description,
+    });
 
-        const newProduct = await Product.create({
-            storeId,
-            name,
-            category,
-            type: type || "standard",
-            price,
-            unit,
-            stockQty: type === "standard" ? stockQty || 0 : serials.length,
-            serialList: serials,
-            description,
-            status: "available",
-        });
-
-        res.status(201).json({
-            message: "สร้างสินค้าสำเร็จ",
-            product: newProduct,
-        });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
-};
+    res.status(201).json(newProduct);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการสร้างสินค้า" });
+  }
+}
 
 /* -------------------------------------------
    ✅ 2. ดึงสินค้าทั้งหมดของร้าน

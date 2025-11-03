@@ -1,4 +1,4 @@
-import Stock from "../../components/Stock";
+import Stock from "../components/Stock";
 
 export default function StockPage() {
     return (
