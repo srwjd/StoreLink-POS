@@ -7,6 +7,7 @@ export default function StockPage() {
   const { storeId } = useParams();
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null); // สินค้าที่กำลังแก้ไข
 
   const [form, setForm] = useState({
     name: "",
@@ -25,11 +26,11 @@ export default function StockPage() {
 
   const API_BASE = "http://localhost:3000/products";
 
-// 🔹 ดึง token จาก localStorage
-const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+  // 🔹 ดึง token จาก localStorage
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
 
   // 🔹 โหลดข้อมูลสินค้า
@@ -38,19 +39,19 @@ const getAuthHeader = () => {
   }, [storeId, keyword, sort, order, page]);
 
 
-// 🔹 โหลดข้อมูลสินค้า
-const fetchProducts = async () => {
-  try {
-    const res = await axios.get(`${API_BASE}/all/${storeId}`, {
-      params: { keyword, sort, order, page, limit: 10 },
-      headers: getAuthHeader(), // ใส่ token
-    });
-    setProducts(res.data.products || []);
-    setTotalPages(res.data.totalPages || 1);
-  } catch (err) {
-    console.error("Error fetching products:", err);
-  }
-};
+  // 🔹 โหลดข้อมูลสินค้า
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/all/${storeId}`, {
+        params: { keyword, sort, order, page, limit: 10 },
+        headers: getAuthHeader(), // ใส่ token
+      });
+      setProducts(res.data.products || []);
+      setTotalPages(res.data.totalPages || 1);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
 
   // 🔹 เปลี่ยนค่าฟอร์ม
   const handleChange = (e) => {
@@ -76,37 +77,85 @@ const fetchProducts = async () => {
     setForm({ ...form, serialList: newList });
   };
 
-// 🔹 เพิ่มสินค้าใหม่
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const payload = {
-      ...form,
-      storeId,
-      price: Number(form.price),
-      stockQty: Number(form.stockQty),
-    };
+  // 🔹 เพิ่มสินค้าใหม่
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...form,
+        storeId,
+        price: Number(form.price),
+        stockQty: Number(form.stockQty),
+      };
 
-    if (form.type === "standard") delete payload.serialList;
+      if (form.type === "standard") delete payload.serialList;
 
-    await axios.post(`${API_BASE}/create/${storeId}`, payload, {
-      headers: getAuthHeader(), // ใส่ token
-    });
+      await axios.post(`${API_BASE}/create/${storeId}`, payload, {
+        headers: getAuthHeader(), // ใส่ token
+      });
 
-    setIsModalOpen(false);
-    setForm({
-      name: "",
-      category: "",
-      type: "standard",
-      price: "",
-      stockQty: "",
-      serialList: [""],
-    });
-    fetchProducts();
-  } catch (err) {
-    console.error("❌ Error adding product:", err);
-  }
-};
+      setIsModalOpen(false);
+      setForm({
+        name: "",
+        category: "",
+        type: "standard",
+        price: "",
+        stockQty: "",
+        serialList: [""],
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("❌ Error adding product:", err);
+    }
+  };
+
+  // ฟังก์ชันเปิด modal สำหรับแก้ไข
+  const openEditModal = async (productId) => {
+    try {
+      const res = await axios.get(`${API_BASE}/${productId}`, {
+        headers: getAuthHeader(),
+      });
+      const prod = res.data.product;
+
+      setEditingProduct({
+        ...prod,
+        price: prod.price,
+        stockQty: prod.stockQty,
+      });
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Error fetching product details:", err);
+    }
+  };
+
+  // ฟังก์ชันบันทึกการแก้ไข
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const { _id, ...payload } = editingProduct;
+      await axios.put(`${API_BASE}/${_id}`, payload, {
+        headers: getAuthHeader(),
+      });
+      setIsModalOpen(false);
+      setEditingProduct(null);
+      fetchProducts();
+    } catch (err) {
+      console.error("Error updating product:", err);
+    }
+  };
+
+  // ฟังก์ชันลบสินค้า
+  const handleDelete = async (productId) => {
+    if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
+    try {
+      await axios.delete(`${API_BASE}/${productId}`, {
+        headers: getAuthHeader(),
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Error deleting product:", err);
+    }
+  };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -178,21 +227,34 @@ const handleSubmit = async (e) => {
                 <tr key={p._id} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-2">{p.name}</td>
                   <td className="px-4 py-2">{p.category || "-"}</td>
-                  <td className="px-4 py-2">
-                    {p.type === "serialized" ? "มี Serial" : "ทั่วไป"}
-                  </td>
+                  <td className="px-4 py-2">{p.type === "serialized" ? "มี Serial" : "ทั่วไป"}</td>
                   <td className="px-4 py-2">{p.price} บาท</td>
                   <td className="px-4 py-2">{p.stockQty ?? "-"}</td>
+                  <td className="px-4 py-2 flex gap-2">
+                    <button
+                      onClick={() => openEditModal(p._id)}
+                      className="px-2 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded"
+                    >
+                      แก้ไข
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p._id)}
+                      className="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
+                    >
+                      ลบ
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center py-4 text-gray-500">
+                <td colSpan="6" className="text-center py-4 text-gray-500">
                   ไม่พบสินค้า
                 </td>
               </tr>
             )}
           </tbody>
+
         </table>
       </div>
 
@@ -204,116 +266,101 @@ const handleSubmit = async (e) => {
               เพิ่มสินค้าใหม่
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label className="block text-sm text-gray-700">ชื่อสินค้า</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-              </div>
+            <form onSubmit={editingProduct ? handleUpdate : handleSubmit} className="space-y-3">
+  <div>
+    <label className="block text-sm text-gray-700">ชื่อสินค้า</label>
+    <input
+      type="text"
+      name="name"
+      value={editingProduct ? editingProduct.name : form.name}
+      onChange={(e) => {
+        if (editingProduct) setEditingProduct({ ...editingProduct, name: e.target.value });
+        else handleChange(e);
+      }}
+      required
+      className="w-full border border-gray-300 rounded-md px-3 py-2"
+    />
+  </div>
 
-              <div>
-                <label className="block text-sm text-gray-700">หมวดหมู่</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={form.category}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-              </div>
+  {/* หมวดหมู่ */}
+  <div>
+    <label className="block text-sm text-gray-700">หมวดหมู่</label>
+    <input
+      type="text"
+      name="category"
+      value={editingProduct ? editingProduct.category : form.category}
+      onChange={(e) => {
+        if (editingProduct) setEditingProduct({ ...editingProduct, category: e.target.value });
+        else handleChange(e);
+      }}
+      className="w-full border border-gray-300 rounded-md px-3 py-2"
+    />
+  </div>
 
-              <div>
-                <label className="block text-sm text-gray-700">ประเภทสินค้า</label>
-                <select
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="standard">สินค้าทั่วไป</option>
-                  <option value="serialized">สินค้ามี Serial Number</option>
-                </select>
-              </div>
+  {/* ประเภทสินค้า */}
+  <div>
+    <label className="block text-sm text-gray-700">ประเภทสินค้า</label>
+    <select
+      name="type"
+      value={editingProduct ? editingProduct.type : form.type}
+      onChange={(e) => {
+        if (editingProduct) setEditingProduct({ ...editingProduct, type: e.target.value });
+        else handleChange(e);
+      }}
+      className="w-full border border-gray-300 rounded-md px-3 py-2"
+    >
+      <option value="standard">สินค้าทั่วไป</option>
+      <option value="serialized">สินค้ามี Serial Number</option>
+    </select>
+  </div>
 
-              {form.type === "serialized" && (
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">
-                    Serial Numbers
-                  </label>
-                  {form.serialList.map((serial, i) => (
-                    <div key={i} className="flex items-center gap-2 mb-2">
-                      <input
-                        type="text"
-                        value={serial}
-                        onChange={(e) =>
-                          handleSerialChange(i, e.target.value)
-                        }
-                        className="flex-1 border border-gray-300 rounded-md px-3 py-2"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeSerialField(i)}
-                        className="p-1 text-red-500 hover:text-red-700"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addSerialField}
-                    className="flex items-center text-blue-600 hover:text-blue-800 text-sm mt-1"
-                  >
-                    <Plus size={14} className="mr-1" /> เพิ่ม Serial
-                  </button>
-                </div>
-              )}
+  {/* ราคา */}
+  <div>
+    <label className="block text-sm text-gray-700">ราคา</label>
+    <input
+      type="number"
+      name="price"
+      value={editingProduct ? editingProduct.price : form.price}
+      onChange={(e) => {
+        if (editingProduct) setEditingProduct({ ...editingProduct, price: Number(e.target.value) });
+        else handleChange(e);
+      }}
+      required
+      className="w-full border border-gray-300 rounded-md px-3 py-2"
+    />
+  </div>
 
-              <div>
-                <label className="block text-sm text-gray-700">ราคา</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={form.price}
-                  onChange={handleChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-              </div>
+  {/* คงเหลือ */}
+  <div>
+    <label className="block text-sm text-gray-700">คงเหลือ</label>
+    <input
+      type="number"
+      name="stockQty"
+      value={editingProduct ? editingProduct.stockQty : form.stockQty}
+      onChange={(e) => {
+        if (editingProduct) setEditingProduct({ ...editingProduct, stockQty: Number(e.target.value) });
+        else handleChange(e);
+      }}
+      className="w-full border border-gray-300 rounded-md px-3 py-2"
+    />
+  </div>
 
-              <div>
-                <label className="block text-sm text-gray-700">คงเหลือ</label>
-                <input
-                  type="number"
-                  name="stockQty"
-                  value={form.stockQty}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
-                >
-                  ยกเลิก
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  บันทึก
-                </button>
-              </div>
-            </form>
+  <div className="flex justify-end gap-2 mt-4">
+    <button
+      type="button"
+      onClick={() => { setIsModalOpen(false); setEditingProduct(null); }}
+      className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
+    >
+      ยกเลิก
+    </button>
+    <button
+      type="submit"
+      className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white"
+    >
+      {editingProduct ? "บันทึกการแก้ไข" : "บันทึก"}
+    </button>
+  </div>
+</form>
           </div>
         </div>
       )}
