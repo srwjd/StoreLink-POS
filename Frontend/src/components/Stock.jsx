@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Search, ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import Header from "./shared/Header";
+import Footer from "./shared/Footer";
 
 export default function StockPage() {
   const { storeId } = useParams();
@@ -17,12 +19,14 @@ export default function StockPage() {
     stockQty: "",
     serialList: [""],
   });
-
-  const [keyword, setKeyword] = useState("");
-  const [sort, setSort] = useState("createdAt");
-  const [order, setOrder] = useState("desc");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+    
+  
+    const searchTimeout = useRef(null);
+    const [keyword, setKeyword] = useState("");
+    const [sort, setSort] = useState("createdAt");
+    const [order, setOrder] = useState("desc");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
   const API_BASE = "http://localhost:3000/products";
 
@@ -33,10 +37,15 @@ export default function StockPage() {
   };
 
 
-  // 🔹 โหลดข้อมูลสินค้า
-  useEffect(() => {
+useEffect(() => {
+  clearTimeout(searchTimeout.current);
+  searchTimeout.current = setTimeout(() => {
     fetchProducts();
-  }, [storeId, keyword, sort, order, page]);
+  }, 300);
+  return () => clearTimeout(searchTimeout.current);
+}, [keyword, sort, order, page]);
+
+
 
 
   // 🔹 โหลดข้อมูลสินค้า

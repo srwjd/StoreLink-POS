@@ -34,19 +34,36 @@ export const createProduct = async (req, res) => {
    ✅ 2. ดึงสินค้าทั้งหมดของร้าน
 ------------------------------------------- */
 export const getProductsByStore = async (req, res) => {
-    try {
-        const { storeId } = req.params;
+  try {
+    const { storeId } = req.params;
+    const { keyword = "", sort = "createdAt", order = "desc", page = 1, limit = 10 } = req.query;
 
-        if (!mongoose.Types.ObjectId.isValid(storeId))
-            return res.status(400).json({ message: "storeId ไม่ถูกต้อง" });
+    if (!mongoose.Types.ObjectId.isValid(storeId))
+      return res.status(400).json({ message: "storeId ไม่ถูกต้อง" });
 
-        const products = await Product.find({ storeId });
+    const query = {
+      storeId,
+      ...(keyword ? { name: { $regex: keyword, $options: "i" } } : {}) // ✅ ค้นหาชื่อสินค้าแบบไม่สนตัวพิมพ์
+    };
 
-        res.status(200).json({ count: products.length, products });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
+    const total = await Product.countDocuments(query);
+
+    const products = await Product.find(query)
+      .sort({ [sort]: order === "asc" ? 1 : -1 }) // ✅ จัดเรียง
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    res.status(200).json({
+      products,
+      totalPages: Math.ceil(total / limit),
+      currentPage: Number(page),
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
 };
+
 
 /* -------------------------------------------
    ✅ 3. ดึงสินค้ารายตัว
