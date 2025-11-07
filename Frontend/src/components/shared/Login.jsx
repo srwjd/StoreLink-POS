@@ -8,7 +8,7 @@ export default function LoginPopup({ onClose, onRegister }) {
     const navigate = useNavigate();
     const [showPass, setShowPass] = useState(false);
     const [form, setForm] = useState({
-        email: "",
+        loginIdentifier: "", // ใช้สำหรับ email หรือ username
         password: "",
     });
     const [loading, setLoading] = useState(false);
@@ -22,28 +22,34 @@ export default function LoginPopup({ onClose, onRegister }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!form.email || !form.password) {
-            setError("กรุณากรอกอีเมลและรหัสผ่านให้ครบ");
+        if (!form.loginIdentifier || !form.password) {
+            setError("กรุณากรอกอีเมล/ชื่อผู้ใช้และรหัสผ่านให้ครบ");
             return;
         }
 
         try {
             setLoading(true);
+            // ตรวจสอบว่าเป็น email หรือ username (ถ้ามี @ ถือว่าเป็น email)
+            const isEmail = form.loginIdentifier.includes("@");
+            const loginData = {
+                password: form.password,
+                [isEmail ? "email" : "username"]: form.loginIdentifier
+            };
+
             const res = await fetch("http://localhost:3000/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+                body: JSON.stringify(loginData),
             });
 
             const data = await res.json();
 
             if (res.ok) {
                 localStorage.setItem("token", data.token);
-                alert("เข้าสู่ระบบสำเร็จ!");
                 onClose();
                 navigate("/select-store"); // เปลี่ยนไปหน้าหลักหลังล็อกอิน
             } else {
-                setError(data.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+                setError(data.message || "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
             }
         } catch (err) {
             setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
@@ -70,14 +76,14 @@ export default function LoginPopup({ onClose, onRegister }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Email */}
+                    {/* Email or Username */}
                     <div className="flex items-center border border-[#3674B5]/40 rounded-md px-3 py-2">
                         <EnvelopeSimple size={20} color="#3674B5" />
                         <input
-                            name="email"
-                            type="email"
-                            placeholder="อีเมล"
-                            value={form.email}
+                            name="loginIdentifier"
+                            type="text"
+                            placeholder="อีเมล หรือ ชื่อผู้ใช้"
+                            value={form.loginIdentifier}
                             onChange={handleChange}
                             required
                             className="w-full ml-2 outline-none text-sm"

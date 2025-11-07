@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   MagnifyingGlass,
   ForkKnife,
@@ -8,109 +10,108 @@ import {
   CreditCard,
   MinusCircle,
   PlusCircle,
-  Sliders,
 } from "phosphor-react";
 
 export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
-  const categories = ["อาหารจานหลัก", "เครื่องดื่ม", "ของหวาน", "อื่นๆ"];
-  const [activeCategory, setActiveCategory] = useState("อาหารจานหลัก");
-
-  const [menu] = useState([
-    {
-      id: 1,
-      name: "ผัดไทย",
-      price: 60,
-      image: "/images/default-menu.png",
-      category: "อาหารจานหลัก",
-      options: [
-        {
-          name: "ระดับความเผ็ด",
-          type: "radio",
-          choices: ["ไม่เผ็ด", "เผ็ดน้อย", "ปกติ", "เผ็ดมาก"],
-        },
-        {
-          name: "ชนิดเนื้อ",
-          type: "radio",
-          choices: ["หมู", "ไก่", "กุ้ง (+10฿)"],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "ชาเย็น",
-      price: 35,
-      image: "/images/default-menu.png",
-      category: "เครื่องดื่ม",
-      options: [
-        {
-          name: "ระดับความหวาน",
-          type: "radio",
-          choices: ["ไม่หวาน", "หวานน้อย", "ปกติ", "หวานมาก"],
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "ไอศกรีมวานิลลา",
-      price: 30,
-      image: "/images/default-menu.png",
-      category: "ของหวาน"
-    },
-    {
-      id: 4,
-      name: "ไอศกรีมช็อค",
-      price: 35,
-      image: "/images/default-menu.png",
-      category: "ของหวาน"
-    },
-  ]);
-
+  const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
+  const [categories, setCategories] = useState([]);
+  const [menu, setMenu] = useState([]);
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [optionsForm, setOptionsForm] = useState({});
+  const API_BASE = "http://localhost:3000/products";
+  const token = localStorage.getItem("token");
+  const storeId = localStorage.getItem("currentStore");
 
-  const filteredMenu = menu.filter(
-    (m) =>
-      m.category === activeCategory &&
-      m.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const fetchMenu = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/all/${storeId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMenu(res.data.products);
+      const uniqueCats = [...new Set(res.data.products.map((p) => p.category).filter(Boolean))];
+      setCategories(["ทั้งหมด", ...uniqueCats]);
+    } catch (err) {
+      console.error("Error fetching menu:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenu();
+  }, [storeId]);
+
+  const filteredMenu = menu.filter((m) => {
+    const matchCategory = activeCategory === "ทั้งหมด" || m.category === activeCategory;
+    const matchSearch = m.name.toLowerCase().includes(search.toLowerCase());
+    return matchCategory && matchSearch;
+  });
 
   const handleSelectMenu = (item) => {
-    if (item.options) {
+    const hasOptionGroups = Array.isArray(item.optionGroups) && item.optionGroups.length > 0;
+    if (hasOptionGroups) {
       setSelectedItem(item);
-      const defaultOpts = {};
-      item.options.forEach((opt) => {
-        defaultOpts[opt.name] = opt.type === "radio" ? "" : [];
+      const defaults = {};
+      item.optionGroups.forEach((group) => {
+        if (group.selectionType === "single") {
+          const def = group.choices.find((c) => c.isDefault);
+          defaults[group.name] = def ? def.label : "";
+        } else {
+          const defList = group.choices.filter((c) => c.isDefault).map((c) => c.label);
+          defaults[group.name] = defList;
+        }
       });
-      setOptionsForm(defaultOpts);
+      setOptionsForm(defaults);
     } else {
       addToCart(item);
     }
   };
 
-  const handleOptionChange = (optName, value) => {
-    setOptionsForm({ ...optionsForm, [optName]: value });
+  const handleOptionChange = (group, next) => {
+    // group: { name, selectionType }
+    if (group.selectionType === "single") {
+      setOptionsForm({ ...optionsForm, [group.name]: next });
+    } else {
+      const current = Array.isArray(optionsForm[group.name]) ? optionsForm[group.name] : [];
+      let updated;
+      if (current.includes(next)) {
+        updated = current.filter((v) => v !== next);
+      } else {
+        if (Number.isFinite(group.maxSelections) && group.maxSelections > 0 && current.length >= group.maxSelections) {
+          return; // block over-select
+        }
+        updated = [...current, next];
+      }
+      setOptionsForm({ ...optionsForm, [group.name]: updated });
+    }
   };
 
   const handleConfirmAdd = () => {
     let extra = 0;
-    const formatted = Object.entries(optionsForm).reduce((acc, [key, val]) => {
-      acc[key] = val;
-      if (typeof val === "string" && val.includes("(+")) {
-        const match = val.match(/\(\+(\d+)/);
-        if (match) extra += parseInt(match[1]);
+    const optionsOut = {};
+    selectedItem.optionGroups.forEach((group) => {
+      const selected = optionsForm[group.name];
+      if (group.selectionType === "single") {
+        optionsOut[group.name] = selected || "";
+        const choice = group.choices.find((c) => c.label === selected);
+        if (choice) extra += Number(choice.priceDelta || 0);
+      } else {
+        const selectedList = Array.isArray(selected) ? selected : [];
+        optionsOut[group.name] = selectedList;
+        selectedList.forEach((label) => {
+          const choice = group.choices.find((c) => c.label === label);
+          if (choice) extra += Number(choice.priceDelta || 0);
+        });
       }
-      return acc;
-    }, {});
-    addToCart({ ...selectedItem, options: formatted, extra });
+    });
+    addToCart({ ...selectedItem, options: optionsOut, extra });
     setSelectedItem(null);
   };
 
   const addToCart = (item) => {
     const exists = cart.find(
       (c) =>
-        c.id === item.id &&
+        c._id === item._id &&
         JSON.stringify(c.options || {}) === JSON.stringify(item.options || {})
     );
     if (exists) {
@@ -125,7 +126,9 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
   };
 
   const isSameItem = (a, b) => {
-    if (a.id !== b.id) return false;
+    const aId = a?._id ?? a?.id;
+    const bId = b?._id ?? b?.id;
+    if (aId !== bId) return false;
     if (!a.options && !b.options) return true;
     return JSON.stringify(a.options || {}) === JSON.stringify(b.options || {});
   };
@@ -201,7 +204,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
           ) : (
             filteredMenu.map((item) => (
               <button
-                key={item.id}
+                key={item._id}
                 onClick={() => handleSelectMenu(item)}
                 className="flex items-center gap-2 min-w-[180px] border-[1.5px] border-[#C4D9FA] rounded-2xl p-2 text-[#3674B5] 
                    hover:border-[#3674B5] hover:text-[#3674B5] shadow-sm hover:shadow-md
@@ -226,7 +229,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
                   </div>
 
                   {/* แท็ก “มีตัวเลือก” */}
-                  {item.options && (
+                  {Array.isArray(item.optionGroups) && item.optionGroups.length > 0 && (
                     <div className="flex items-center justify-center mt-2">
                       <span className="bg-[#EAF2FF] text-xs text-[#3674B5] px-2 py-0.5 rounded-full border border-[#C4D9FA]">
                         มีตัวเลือก
@@ -268,7 +271,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
                     <p className="text-xs text-slate-500 mt-1">
                       {Object.entries(item.options)
                         .filter(([_, v]) => v)
-                        .map(([k, v]) => `• ${k}: ${v}`)
+                        .map(([k, v]) => Array.isArray(v) ? `• ${k}: ${v.join("/")}` : `• ${k}: ${v}`)
                         .join(", ")}
                     </p>
                   )}
@@ -278,7 +281,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    onClick={() => decreaseQty(item.id, item.options)}
+                    onClick={() => decreaseQty(item._id, item.options)}
                     className="text-slate-500 hover:text-[#3674B5]"
                   >
                     <MinusCircle size={18} />
@@ -291,7 +294,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
                     <PlusCircle size={18} />
                   </button>
                   <button
-                    onClick={() => removeFromCart(item.id, item.options)}
+                    onClick={() => removeFromCart(item._id, item.options)}
                     className="text-red-500 hover:text-red-700 ml-2"
                   >
                     <Trash size={16} />
@@ -320,7 +323,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
         </div>
       </div>
 
-      {/* 🟦 Modal เลือกตัวเลือกอาหาร */}
+      {/* 🟦 Modal เลือกตัวเลือกอาหาร จาก optionGroups */}
       {selectedItem && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
           <div className="bg-gradient-to-b from-white to-[#F3F7FF] rounded-2xl shadow-2xl w-full max-w-md p-6 border border-[#D4E1F7] relative">
@@ -328,36 +331,62 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
               {selectedItem.name}
             </h2>
 
-            {selectedItem.options.map((opt, i) => (
+            {selectedItem.optionGroups?.map((group, i) => (
               <div key={i} className="mb-5">
-                <p className="font-medium text-slate-700 mb-3 text-base">
-                  {opt.name}
+                <p className="font-medium text-slate-700 mb-2 text-base">
+                  {group.name}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {opt.choices.map((choice) => (
-                    <label
-                      key={choice}
-                      className={`flex items-center justify-center gap-2 text-sm px-4 py-2 rounded-xl border transition-all cursor-pointer shadow-sm
-                  ${optionsForm[opt.name] === choice
-                          ? "bg-[#3674B5] text-white border-[#3674B5] shadow-md"
-                          : "bg-white hover:bg-[#EAF2FF] border-slate-300 text-slate-700"
-                        }`}
-                    >
-                      <input
-                        type="radio"
-                        name={opt.name}
-                        value={choice}
-                        checked={optionsForm[opt.name] === choice}
-                        onChange={(e) =>
-                          handleOptionChange(opt.name, e.target.value)
-                        }
-                        className="hidden"
-                      />
-                      {choice}
-                    </label>
-                  ))}
-                </div>
+                {group.selectionType === "single" ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {group.choices.map((c, idx) => {
+                      const label = c.priceDelta ? `${c.label} (+${c.priceDelta})` : c.label;
+                      const checked = optionsForm[group.name] === c.label;
+                      return (
+                        <label
+                          key={idx}
+                          className={`flex items-center justify-center gap-2 text-sm px-4 py-2 rounded-xl border transition-all cursor-pointer shadow-sm ${checked ? "bg-[#3674B5] text-white border-[#3674B5] shadow-md" : "bg-white hover:bg-[#EAF2FF] border-slate-300 text-slate-700"}`}
+                        >
+                          <input
+                            type="radio"
+                            name={group.name}
+                            value={c.label}
+                            checked={checked}
+                            onChange={() => handleOptionChange(group, c.label)}
+                            className="hidden"
+                          />
+                          {label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {group.choices.map((c, idx) => {
+                      const label = c.priceDelta ? `${c.label} (+${c.priceDelta})` : c.label;
+                      const list = Array.isArray(optionsForm[group.name]) ? optionsForm[group.name] : [];
+                      const checked = list.includes(c.label);
+                      return (
+                        <label
+                          key={idx}
+                          className={`flex items-center justify-center gap-2 text-sm px-4 py-2 rounded-xl border transition-all cursor-pointer shadow-sm ${checked ? "bg-[#3674B5] text-white border-[#3674B5] shadow-md" : "bg-white hover:bg-[#EAF2FF] border-slate-300 text-slate-700"}`}
+                        >
+                          <input
+                            type="checkbox"
+                            name={`${group.name}-${c.label}`}
+                            checked={checked}
+                            onChange={() => handleOptionChange(group, c.label)}
+                            className="hidden"
+                          />
+                          {label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+                {group.selectionType === "multiple" && Number.isFinite(group.maxSelections) && group.maxSelections > 0 && (
+                  <p className="text-xs text-slate-500 mt-2">เลือกได้สูงสุด {group.maxSelections} รายการ</p>
+                )}
               </div>
             ))}
 

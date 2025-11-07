@@ -7,12 +7,13 @@ import http from "http";
 import dotenv from "dotenv";
 
 import { errorHandler } from "./middleware/errorHandler.js";
+import uploadRoutes from "./routes/upload.js";
 import authRoutes from "./routes/authRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
 import positionRoutes from "./routes/positionRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-// import saleRoutes from "./routes/saleRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 import "./config/env.js";
 import connectDB from "./config/db.js";
@@ -46,12 +47,16 @@ const PORT = process.env.PORT || 3000;
   app.use(cookieParser());
   app.use(morgan("dev"));
 
+  // Serve static files from uploads directory
+  app.use("/uploads", express.static("uploads"));
+
+  app.use("/upload", uploadRoutes);
   app.use("/auth", authRoutes);
   app.use("/stores", storeRoutes);
   app.use("/positions", positionRoutes);
   app.use("/employees", employeeRoutes);
   app.use("/products", productRoutes);
-  // app.use("/sales", saleRoutes);
+  app.use("/orders", orderRoutes);
 
   app.get("/health", (_, res) => res.json({ ok: true }));
 

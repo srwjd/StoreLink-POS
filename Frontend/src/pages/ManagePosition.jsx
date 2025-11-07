@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { CheckSquare, TimeIcon, XSquare } from "../../public/icons/icons.jsx";
 import {
     MagnifyingGlass,
     Plus,
     PencilSimple,
     Trash,
-    CheckSquare,
-    XSquare,
     UserCircle,
 } from "phosphor-react";
 import { useStore } from "../context/StoreContext";
@@ -31,6 +30,7 @@ export default function ManagePosition() {
             report: false,
             manage_employees: false,
             settings: false,
+            product: false,
         },
     });
 
@@ -139,6 +139,7 @@ export default function ManagePosition() {
                 manage_employees: pos.permissions.includes("manage_employees"),
                 report: pos.permissions.includes("report"),
                 settings: pos.permissions.includes("settings"),
+                product: pos.permissions.includes("product"),
             },
         });
 
@@ -154,6 +155,7 @@ export default function ManagePosition() {
                 report: false,
                 manage_employees: false,
                 settings: false,
+                product: false,
             },
         });
         setShowModal(true);
@@ -191,7 +193,7 @@ export default function ManagePosition() {
                 <div className="bg-white rounded-xl shadow-md border border-slate-200 p-5 overflow-x-auto">
                     {loading ? (
                         <p className="text-center text-slate-500 py-6 animate-pulse">
-                            ⏳ กำลังโหลดข้อมูล...
+                            <TimeIcon size={20} className="inline mr-1 text-[#3674B5]" /> กำลังโหลดข้อมูล...
                         </p>
                     ) : error ? (
                         <p className="text-center text-red-500">{error}</p>
@@ -204,6 +206,7 @@ export default function ManagePosition() {
                                     <th className="py-3 px-4">รายงาน</th>
                                     <th className="py-3 px-4">พนักงาน</th>
                                     <th className="py-3 px-4">ตั้งค่า</th>
+                                    <th className="py-3 px-4">สินค้า</th>
                                     <th className="py-3 px-4 rounded-tr-lg">การจัดการ</th>
                                 </tr>
                             </thead>
@@ -216,18 +219,18 @@ export default function ManagePosition() {
                                         <td className="py-3 px-4 font-medium text-slate-700">
                                             {pos.positionName}
                                         </td>
-                                        {["sale", "report", "manage_employees", "settings"].map((perm) => (
+                                        {["sale", "report", "manage_employees", "settings", "product"].map((perm) => (
                                             <td key={perm} className="py-3 px-4 align-middle">
                                                 <div className="flex items-center justify-center">
                                                     {pos.permissions?.includes(perm) ? (
                                                         <CheckSquare
                                                             size={20}
-                                                            color="#3BAE5E"
+                                                            color="#3674B5"
                                                             weight="fill"
                                                             className="text-center w-full"
                                                         />
                                                     ) : (
-                                                        <XSquare size={20} color="#D14343" weight="fill" />
+                                                        <XSquare size={20} color="#3674B5" weight="fill" />
                                                     )}
                                                 </div>
                                             </td>
@@ -313,7 +316,9 @@ export default function ManagePosition() {
                                                             ? "พนักงาน"
                                                             : perm === "settings"
                                                                 ? "ตั้งค่า"
-                                                                : "ไม่ระบุ"}
+                                                                : perm === "product"
+                                                                    ? "สินค้า"
+                                                                    : "ไม่ระบุ"}
                                             </span>
                                         </label>
                                     ))}

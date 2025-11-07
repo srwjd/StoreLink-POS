@@ -52,23 +52,30 @@ export const registerUser = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, username, password } = req.body;
 
-        if (!email || !password)
-            return res.status(400).json({ message: "กรุณากรอกอีเมลและรหัสผ่านให้ครบ" });
+        // ต้องมี email หรือ username อย่างน้อยหนึ่งอย่าง
+        const loginIdentifier = email || username;
+        if (!loginIdentifier || !password)
+            return res.status(400).json({ message: "กรุณากรอกอีเมล/ชื่อผู้ใช้และรหัสผ่านให้ครบ" });
 
-        const user = await User.findOne({ email });
+        // ค้นหาผู้ใช้ด้วย email หรือ username
+        const user = await User.findOne(
+            email ? { email } : { username }
+        );
+        
         if (!user)
-            return res.status(401).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
+            return res.status(401).json({ message: "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch)
-            return res.status(401).json({ message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" });
+            return res.status(401).json({ message: "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
 
         const token = jwt.sign(
             {
                 id: user._id,
                 email: user.email,
+                username: user.username,
                 role: user.role,
                 storeIds: user.storeIds
             },

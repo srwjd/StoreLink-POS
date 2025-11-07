@@ -4,9 +4,9 @@ import {
     ShoppingBag,
     // ArrowLeft,
 } from "phosphor-react";
-import Header from "../components/shared/Header";
-import RestaurantTableView from "../components/restaurant/RestaurantTableView";
-import RestaurantOrderPanel from "../components/restaurant/RestaurantOrderPanel";
+import Header from "../../components/shared/Header";
+import RestaurantTableView from "../../components/restaurant/RestaurantTableView";
+import RestaurantOrderPanel from "../../components/restaurant/RestaurantOrderPanel";
 
 
 export default function SalesRestaurant() {
@@ -17,18 +17,6 @@ export default function SalesRestaurant() {
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#EAF2FF] to-[#C6D8FF]">
             {/* Header */}
             <Header />
-
-            {/* {(mode || selectedTable) && (
-                <button
-                    onClick={() => {
-                        setMode(null);
-                        setSelectedTable(null);
-                    }}
-                    className="flex items-center gap-1 text-[#3674B5]"
-                >
-                    <ArrowLeft size={18} /> กลับ
-                </button>
-            )} */}
 
             <main className="flex-1 p-6">
                 {/* 🔹 หน้าหลัก เลือกรูปแบบการขาย */}

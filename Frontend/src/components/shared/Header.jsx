@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ExitIcon } from "../../../public/icons/icons";
 
-function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth", logoClick }) {
+function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "back", logoClick }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -47,13 +48,13 @@ function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth"
                             <>
                                 <button
                                     onClick={onSignup}
-                                    className="hidden sm:inline-flex h-9 items-center rounded-lg border border-white px-3 text-sm font-medium text-white hover:bg-white hover:text-[#3674B5] transition"
+                                    className="hidden sm:inline-flex h-9 items-center rounded-3xl border border-white px-3 text-sm font-medium text-white shadow-md hover:translate-y-[-1px] hover:bg-white hover:text-[#3674B5] transition"
                                 >
                                     สมัครสมาชิก
                                 </button>
                                 <button
                                     onClick={onLogin}
-                                    className="inline-flex h-9 items-center rounded-lg bg-white px-3 text-sm font-medium text-[#3674B5] hover:bg-slate-100 active:bg-slate-200 transition"
+                                    className="inline-flex gap-2 h-9 items-center rounded-3xl bg-white px-3 text-sm font-medium text-[#3674B5] shadow-md hover:translate-y-[-1px] hover:bg-slate-100 active:bg-slate-200 transition"
                                 >
                                     เข้าสู่ระบบ
                                 </button>
@@ -63,9 +64,20 @@ function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "auth"
                         {mode === "auth" && (
                             <button
                                 onClick={handleLogout}
-                                className="inline-flex h-9 items-center rounded-lg bg-white px-3 text-sm font-medium text-[#3674B5] hover:bg-slate-100 active:bg-slate-200 transition"
+                                className="inline-flex gap-2 h-9 items-center rounded-3xl bg-white px-3 text-sm font-medium text-[#3674B5] shadow-md hover:translate-y-[-1px] hover:bg-slate-100 active:bg-slate-200 transition"
                             >
+                                <ExitIcon size={18} className="text-[#3674B5]" />
                                 ออกจากระบบ
+                            </button>
+                        )}
+
+                        {mode === "back" && (
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="inline-flex gap-2 h-9 items-center rounded-3xl bg-white px-3 text-sm font-medium text-[#3674B5] shadow-md hover:translate-y-[-1px] hover:bg-slate-100 active:bg-slate-200 transition"
+                            >
+                                <ArrowLeft size={18} className="text-[#3674B5]" />
+                                ย้อนกลับ
                             </button>
                         )}
 

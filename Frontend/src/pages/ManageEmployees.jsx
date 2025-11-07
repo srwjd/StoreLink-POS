@@ -2,18 +2,25 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Avatar from "@mui/material/Avatar";
 import {
+    AddIcon,
     MagnifyingGlass,
     FunnelSimple,
-    Plus,
     UserCircle,
     Users,
     CaretDown,
-} from "phosphor-react";
+    MailIcon,
+    PhoneIcon,
+    TimeIcon,
+} from "../../public/icons/icons";
 import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
 import ManagePosition from "./ManagePosition";
 import AddEmployeeModal from "../components/employees/AddEmployeeModal";
+import DropdownKebab from "../components/employees/dropdownKebab";
 import { useStore } from "../context/StoreContext";
 
 export default function ManageEmployees() {
@@ -23,7 +30,7 @@ export default function ManageEmployees() {
     const [employees, setEmployees] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [search, setSearch] = useState("");
-    const [positions, setPositions] = useState([]); // ✅ เพิ่มตำแหน่ง
+    const [positions, setPositions] = useState([]);
     const [filterPosition, setFilterPosition] = useState("all");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
@@ -47,8 +54,8 @@ export default function ManageEmployees() {
             ]);
 
             setEmployees(empRes.data.employees || []);
-            setFilteredEmployees(empRes.data.employees || []);
             setPositions(posRes.data.positions || []);
+            setFilteredEmployees(empRes.data.employees || []);
         } catch (err) {
             console.error("Error fetching employees:", err);
             setError("ไม่สามารถโหลดข้อมูลพนักงานได้");
@@ -58,12 +65,9 @@ export default function ManageEmployees() {
     };
 
     useEffect(() => {
-        if (store?._id) {
-            fetchEmployees();
-        }
+        if (store?._id) fetchEmployees();
     }, [store]);
 
-    // 🔍 Search + Filter Position รวมกัน
     useEffect(() => {
         const lower = search.toLowerCase();
         const filtered = employees.filter((e) => {
@@ -78,7 +82,6 @@ export default function ManageEmployees() {
 
             return matchSearch && matchPosition;
         });
-
         setFilteredEmployees(filtered);
     }, [search, filterPosition, employees]);
 
@@ -101,14 +104,20 @@ export default function ManageEmployees() {
         }
     };
 
+
     return (
         <>
             <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#E9F3FF] to-[#C8DCFF]">
-                <Header storeName={store?.storeName} logoClick={() => navigate(`/main-menu/${store.storeType}/${storeId}`)}/>
+                <Header
+                    storeName={store?.storeName}
+                    logoClick={() =>
+                        navigate(`/main-menu/${store.storeType}/${storeId}`)
+                    }
+                />
 
-                <main className="flex-1 px-6 sm:px-10 py-6">
+                <main className="flex-1 px-6 pb-0 sm:px-10 py-6">
                     {/* 🔹 Tabs */}
-                    <div className="flex flex-wrap gap-3 mb-6">
+                    <div className="flex flex-wrap gap-3 mb-4">
                         {[
                             { key: "all", label: "พนักงานทั้งหมด", icon: <Users size={18} /> },
                             { key: "permission", label: "จัดการสิทธิ์", icon: <FunnelSimple size={18} /> },
@@ -130,7 +139,7 @@ export default function ManageEmployees() {
                     {activeTab === "all" ? (
                         <>
                             {/* 🔍 Search Bar + Filter + Add */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white/90 border border-slate-200 shadow-md rounded-xl p-4 mb-6 backdrop-blur-sm">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white/90 border border-slate-200 shadow-md rounded-xl p-4 mb-4  backdrop-blur-sm">
                                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto items-center">
                                     {/* Search */}
                                     <div className="relative flex-1 sm:w-72">
@@ -175,62 +184,89 @@ export default function ManageEmployees() {
                                     }}
                                     className="flex items-center justify-center gap-2 bg-[#3674B5] hover:bg-[#2f5fa0] text-white px-5 py-2.5 rounded-lg shadow-md transition mt-3 sm:mt-0"
                                 >
-                                    <Plus size={18} weight="bold" /> เพิ่มพนักงาน
+                                    <AddIcon size={16} className="inline mr-1" /> เพิ่มพนักงาน
                                 </button>
                             </div>
 
-                            {/* 📋 Employee Table */}
-                            <div className="bg-white/90 rounded-xl shadow-lg border border-slate-200 p-5 overflow-x-auto backdrop-blur-sm">
+                            {/* 📋 Employee Card List */}
+                            <div className="bg-white/90 rounded-xl shadow-lg border border-slate-200 p-3 backdrop-blur-sm">
                                 {loading ? (
                                     <p className="text-center text-slate-500 py-6 animate-pulse">
-                                        ⏳ กำลังโหลดข้อมูล...
+                                        <TimeIcon size={20} className="inline mr-1 text-[#3674B5]" /> กำลังโหลดข้อมูล...
                                     </p>
                                 ) : error ? (
                                     <p className="text-center text-red-500">{error}</p>
                                 ) : filteredEmployees.length > 0 ? (
-                                    <table className="w-full text-sm border-separate border-spacing-y-2">
-                                        <thead>
-                                            <tr className="bg-[#3674B5] text-white text-center">
-                                                <th className="py-2 px-3 rounded-tl-lg">ชื่อพนักงาน</th>
-                                                <th className="py-2 px-3">ตำแหน่ง</th>
-                                                <th className="py-2 px-3">อีเมล</th>
-                                                <th className="py-2 px-3 rounded-tr-lg">การจัดการ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {filteredEmployees.map((emp) => (
-                                                <tr
-                                                    key={emp._id}
-                                                    className="hover:bg-[#E9F3FF] text-center transition-all"
-                                                >
-                                                    <td className="py-3 px-3 font-medium text-slate-700">
-                                                        {emp.firstName} {emp.lastName}
-                                                    </td>
-                                                    <td className="py-3 px-3 text-slate-600">
-                                                        {emp.positionId?.positionName || "-"}
-                                                    </td>
-                                                    <td className="py-3 px-3 text-slate-600">{emp.email}</td>
-                                                    <td className="py-3 px-3">
-                                                        <button
-                                                            className="text-blue-600 hover:text-blue-800 font-medium mr-3"
-                                                            onClick={() => handleEdit(emp)}
-                                                        >
-                                                            แก้ไข
-                                                        </button>
-                                                        <button
-                                                            className="text-red-500 hover:text-red-700 font-medium"
-                                                            onClick={() => handleDelete(emp._id)}
-                                                        >
-                                                            ลบ
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                    <div className="h-[calc(100vh-335px)] overflow-y-auto p-2 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-5">
+                                        {filteredEmployees.map((emp) => (
+                                            <Card
+                                                key={emp._id}
+                                                sx={{
+                                                    boxShadow: "0 4px 7px rgba(0, 0, 0, 0.15)",
+                                                    borderRadius: "12px",
+                                                    height: "200px",
+                                                }}
+                                            >
+                                                <CardContent>
+                                                    {/* Header */}
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <Avatar
+                                                                alt={emp.firstName}
+                                                                src={emp.profileImage || "/default-avatar.png"}
+                                                                sx={{ width: 40, height: 40, backgroundColor: "#3674B5" }}
+                                                            />
+                                                            <div>
+                                                                <h3 className="font-semibold text-slate-800">
+                                                                    {emp.firstName} {emp.lastName}
+                                                                </h3>
+                                                                <p className="text-sm text-slate-500">
+                                                                    {emp.positionId?.positionName || "-"}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <DropdownKebab
+                                                            emp={emp}
+                                                            onEdit={handleEdit}
+                                                            onDelete={handleDelete}
+                                                        />
+                                                    </div>
+
+                                                    {/* Info */}
+                                                    <div className="text-sm border-t border-slate-100 pt-3 space-y-1">
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-500">Position</span>
+                                                            <span className="font-medium text-slate-700">
+                                                                {emp.positionId?.positionName || "-"}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-500">Hired Date</span>
+                                                            <span className="font-medium text-slate-700">
+                                                                {emp.createdAt
+                                                                    ? new Date(emp.createdAt).toLocaleDateString()
+                                                                    : "-"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Contact */}
+                                                    <div className="text-xs text-slate-600 border-t border-slate-100 pt-2 mt-2">
+                                                        <p className="truncate">
+                                                            <MailIcon size={16} className="inline mr-1 text-slate-500" /> {emp.email || "-"}
+                                                        </p>
+                                                        <p><PhoneIcon size={16} className="inline mr-1 text-slate-500" /> {emp.phone || "-"}</p>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
                                 ) : (
                                     <div className="text-center py-10 text-slate-500">
-                                        <UserCircle size={60} className="mx-auto text-slate-400 mb-3" />
+                                        <UserCircle
+                                            size={60}
+                                            className="mx-auto text-slate-400 mb-3"
+                                        />
                                         <p className="text-lg font-medium mb-2">
                                             ไม่พบพนักงานที่ตรงกับการค้นหา
                                         </p>

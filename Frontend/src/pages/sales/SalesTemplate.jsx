@@ -1,4 +1,4 @@
-import { useStore } from "../context/StoreContext";
+import { useStore } from "../../context/StoreContext";
 
 
 import SalesGeneral from "./salesGeneral";

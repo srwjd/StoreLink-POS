@@ -6,8 +6,10 @@ import CreateStore from './pages/CreateStore.jsx'
 import SelectStore from './pages/SelectStore.jsx'
 import MainMenu from './pages/MainMenuTemplate.jsx'
 import ManageEmployees from './pages/ManageEmployees.jsx'
-import StockPage from './pages/StockPage.jsx'
-import SalesTemplate from './pages/SalesTemplate.jsx';
+// import StockPage from './pages/StockPage.jsx'
+import ManageProduct from './pages/products/templates/BaseProductTemplate.jsx'
+import SalesTemplate from './pages/sales/SalesTemplate.jsx';
+import PaymentPage from './pages/sales/PaymentPage.jsx';
 
 function App() {
 
@@ -60,14 +62,34 @@ function App() {
           />
           {/* หน้าขาย */}
           <Route
-            path="/sales/:storeId"
+            path="/sales/:storeType/:storeId"
             element={
               <ProtectedRoute>
                 <SalesTemplate />
               </ProtectedRoute>
             }
           />
-          <Route path="/main-menu/general/:storeId/stock" element={<StockPage />} />
+          {/* หน้าชำระเงิน */}
+          <Route
+            path="/sales/payment/:storeId"
+            element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* หน้าคลัง */}
+          <Route
+            path="/products/:productType/:storeId"
+            element={
+              <ProtectedRoute>
+                <ManageProduct />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Landing />} />
         </Routes>
       </Router>
     </div>
