@@ -12,7 +12,7 @@ import storeRoutes from "./routes/storeRoutes.js";
 import positionRoutes from "./routes/positionRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-// import saleRoutes from "./routes/saleRoutes.js";
+import saleRoutes from "./routes/saleRoutes.js";
 
 import "./config/env.js";
 import connectDB from "./config/db.js";
@@ -51,7 +51,7 @@ const PORT = process.env.PORT || 3000;
   app.use("/positions", positionRoutes);
   app.use("/employees", employeeRoutes);
   app.use("/products", productRoutes);
-  // app.use("/sales", saleRoutes);
+  app.use("/sales", saleRoutes);
 
   app.get("/health", (_, res) => res.json({ ok: true }));
 

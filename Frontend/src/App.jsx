@@ -7,6 +7,7 @@ import SelectStore from './pages/SelectStore.jsx'
 import MainMenu from './pages/MainMenuTemplate.jsx'
 import ManageEmployees from './pages/ManageEmployees.jsx'
 import StockPage from './pages/StockPage.jsx'
+import DashboardPage from './pages/DashboardPage.jsx'
 
 function App() {
 
@@ -54,6 +55,7 @@ function App() {
             }
           />
           <Route path="/main-menu/general/:storeId/stock" element={<StockPage />} />
+          <Route path="/main-menu/general/:storeId/dashboard" element={<DashboardPage />} />
         </Routes>
       </Router>
     </div>
