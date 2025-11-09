@@ -88,10 +88,10 @@ export const createProduct = async (req, res) => {
       category,
       type: type || "standard",
       price,
-      unit : unit || "",
-      stockQty : type === "serialized" ? (normalizedSerialList.length) : (stockQty || ""),
+      unit: unit || "",
+      stockQty: type === "serialized" ? (normalizedSerialList.length) : (stockQty || ""),
       serialList: type === "serialized" ? normalizedSerialList : [],
-      description : description || "",
+      description: description || "",
       optionGroups: sanitizedOptionGroups,
     });
 
@@ -106,42 +106,37 @@ export const createProduct = async (req, res) => {
    ✅ 2. ดึงสินค้าทั้งหมดของร้าน
 ------------------------------------------- */
 export const getProductsByStore = async (req, res) => {
-    try {
-        const { storeId } = req.params;
-
-        if (!mongoose.Types.ObjectId.isValid(storeId))
-            return res.status(400).json({ message: "storeId ไม่ถูกต้อง" });
-
-        const products = await Product.find({ storeId });
-
-        res.status(200).json({ count: products.length, products });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
+  try {
+    const { storeId } = req.params;
+    const products = await Product.find({ storeId });
+    res.status(200).json({ products });
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
 };
 
 /* -------------------------------------------
    ✅ 3. ดึงสินค้ารายตัว
 ------------------------------------------- */
 export const getProductById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const product = await Product.findById(id);
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
 
-        if (!product) return res.status(404).json({ message: "ไม่พบสินค้า" });
+    if (!product) return res.status(404).json({ message: "ไม่พบสินค้า" });
 
-        res.status(200).json({ product });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
+    res.status(200).json({ product });
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
 };
 
 /* -------------------------------------------
    ✅ 4. อัปเดตสินค้า
 ------------------------------------------- */
 export const updateProduct = async (req, res) => {
-    try {
-        const { id } = req.params;
+  try {
+    const { id } = req.params;
     const updateData = { ...req.body };
 
     if (Object.prototype.hasOwnProperty.call(updateData, "optionGroups")) {
@@ -181,53 +176,53 @@ export const updateProduct = async (req, res) => {
 
     const updated = await Product.findByIdAndUpdate(id, updateData, { new: true });
 
-        if (!updated) return res.status(404).json({ message: "ไม่พบสินค้า" });
+    if (!updated) return res.status(404).json({ message: "ไม่พบสินค้า" });
 
-        res.status(200).json({ message: "อัปเดตสำเร็จ", product: updated });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
+    res.status(200).json({ message: "อัปเดตสำเร็จ", product: updated });
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
 };
 
 /* -------------------------------------------
    ✅ 5. ลบสินค้า
 ------------------------------------------- */
 export const deleteProduct = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deleted = await Product.findByIdAndDelete(id);
+  try {
+    const { id } = req.params;
+    const deleted = await Product.findByIdAndDelete(id);
 
-        if (!deleted) return res.status(404).json({ message: "ไม่พบสินค้า" });
+    if (!deleted) return res.status(404).json({ message: "ไม่พบสินค้า" });
 
-        res.status(200).json({ message: "ลบสินค้าสำเร็จ" });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
+    res.status(200).json({ message: "ลบสินค้าสำเร็จ" });
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
 };
 
 /* -------------------------------------------
    ✅ 6. เพิ่ม Serial Number ให้สินค้าชนิด serialized
 ------------------------------------------- */
 export const addSerialNumbers = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { serialNumbers } = req.body; // ["A1001", "A1002", "A1003"]
+  try {
+    const { id } = req.params;
+    const { serialNumbers } = req.body; // ["A1001", "A1002", "A1003"]
 
-        const product = await Product.findById(id);
-        if (!product) return res.status(404).json({ message: "ไม่พบสินค้า" });
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ message: "ไม่พบสินค้า" });
 
-        if (product.type !== "serialized")
-            return res.status(400).json({ message: "สินค้านี้ไม่รองรับ serial number" });
+    if (product.type !== "serialized")
+      return res.status(400).json({ message: "สินค้านี้ไม่รองรับ serial number" });
 
-        const newSerials = serialNumbers.map((sn) => ({ serialNumber: sn, status: "available" }));
+    const newSerials = serialNumbers.map((sn) => ({ serialNumber: sn, status: "available" }));
 
-        product.serialList.push(...newSerials);
-        product.stockQty = product.serialList.length;
+    product.serialList.push(...newSerials);
+    product.stockQty = product.serialList.length;
 
-        await product.save();
+    await product.save();
 
-        res.status(200).json({ message: "เพิ่ม serial number สำเร็จ", product });
-    } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
-    }
+    res.status(200).json({ message: "เพิ่ม serial number สำเร็จ", product });
+  } catch (err) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+  }
 };
