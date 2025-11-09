@@ -27,30 +27,34 @@ const PORT = process.env.PORT || 3000;
 
   const app = express();
 
+  // ✅ แก้ allowedDomains: ไม่ควรมี "/" ท้าย URL
   const allowedDomains = [
-    'http://localhost:5173',
-    'https://store-link-weld.vercel.app/',
+    "http://localhost:5173",
+    "https://store-link-weld.vercel.app",
   ];
+
   const corsOptions = {
     origin: function (origin, callback) {
-      console.log('[CORS] origin:', origin);
+      console.log("[CORS] origin:", origin);
       if (!origin) return callback(null, true); // allow curl/postman
       if (allowedDomains.includes(origin)) return callback(null, true);
-      callback(new Error('Not allowed by CORS'), false);
+      callback(new Error("Not allowed by CORS"), false);
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ["Content-Type", "Authorization"],
   };
+
   app.use(cors(corsOptions));
   app.use(helmet());
   app.use(express.json());
   app.use(cookieParser());
   app.use(morgan("dev"));
 
-  // Serve static files from uploads directory
+  // ✅ Serve static files (uploads)
   app.use("/uploads", express.static("uploads"));
 
+  // ✅ Routes
   app.use("/upload", uploadRoutes);
   app.use("/auth", authRoutes);
   app.use("/stores", storeRoutes);
@@ -59,12 +63,14 @@ const PORT = process.env.PORT || 3000;
   app.use("/products", productRoutes);
   app.use("/orders", orderRoutes);
 
+  // ✅ Health check route (Render จะ ping อันนี้)
   app.get("/health", (_, res) => res.json({ ok: true }));
 
   app.use(errorHandler);
 
+  // ✅ Run server
   const server = http.createServer(app);
   server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 })();
