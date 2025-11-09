@@ -28,7 +28,8 @@ const PORT = process.env.PORT || 3000;
   const app = express();
 
   const allowedDomains = [
-    'http://localhost:5173'
+    'http://localhost:5173',
+    'https://store-link-weld.vercel.app/',
   ];
   const corsOptions = {
     origin: function (origin, callback) {
