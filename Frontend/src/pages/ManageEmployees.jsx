@@ -20,6 +20,7 @@ import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
 import ManagePosition from "./ManagePosition";
 import AddEmployeeModal from "../components/employees/AddEmployeeModal";
+import EmployeeDetailModal from "../components/employees/EmployeeDetailModal";
 import DropdownKebab from "../components/employees/dropdownKebab";
 import { useStore } from "../context/StoreContext";
 
@@ -37,6 +38,8 @@ export default function ManageEmployees() {
     const [editData, setEditData] = useState(null);
     const { store } = useStore();
     const storeId = store?._id;
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [showDetail, setShowDetail] = useState(false);
 
     const fetchEmployees = async () => {
         try {
@@ -204,7 +207,7 @@ export default function ManageEmployees() {
                                                 sx={{
                                                     boxShadow: "0 4px 7px rgba(0, 0, 0, 0.15)",
                                                     borderRadius: "12px",
-                                                    height: "200px",
+                                                    height: 'max-content',
                                                 }}
                                             >
                                                 <CardContent>
@@ -257,6 +260,20 @@ export default function ManageEmployees() {
                                                         </p>
                                                         <p><PhoneIcon size={16} className="inline mr-1 text-slate-500" /> {emp.phone || "-"}</p>
                                                     </div>
+
+                                                    {/* more */}
+                                                    <div className="text-xs text-slate-600 border-t border-slate-100 pt-2 mt-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedEmployee(emp);
+                                                                setShowDetail(true);
+                                                            }}
+                                                            className="text-[#3674B5] hover:text-[#2f5fa0] font-medium"
+                                                        >
+                                                            เพิ่มเติม
+                                                        </button>
+                                                    </div>
+
                                                 </CardContent>
                                             </Card>
                                         ))}
@@ -302,6 +319,15 @@ export default function ManageEmployees() {
                     editData={editData}
                 />
             )}
+
+            {showDetail && (
+                <EmployeeDetailModal
+                    open={showDetail}
+                    onClose={() => setShowDetail(false)}
+                    employee={selectedEmployee}
+                />
+            )}
+
         </>
     );
 }

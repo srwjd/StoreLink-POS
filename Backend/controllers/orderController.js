@@ -1,4 +1,4 @@
-import OrderHistory from "../models/orderHistory.js";
+import OrderHistory from "../models/OrderHistory.js";
 
 // สร้างประวัติการขายใหม่
 export const createOrder = async (req, res) => {

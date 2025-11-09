@@ -1,8 +1,12 @@
 import {
-    RiDeleteBinLine
+    RiDeleteBinLine,
+    RiGalleryView2,
+    RiListView,
 } from "react-icons/ri";
 export {
-    RiDeleteBinLine as DeleteIcon // ถังขยะ
+    RiDeleteBinLine as DeleteIcon, // ถังขยะ
+    RiGalleryView2 as GalleryViewIcon, // กรอง
+    RiListView as ListViewIcon, // กรอง
 };
 
 
@@ -30,13 +34,17 @@ export {
 };
 
 
-import { RxExit } from "react-icons/rx";
+import {
+    RxExit
+} from "react-icons/rx";
 export {
     RxExit as ExitIcon // ไอคอนออกจากระบบ
 };
 
 
-import { IoHourglassOutline } from "react-icons/io5";
+import {
+    IoHourglassOutline
+} from "react-icons/io5";
 export {
     IoHourglassOutline as TimeIcon // ไอคอนเวลา
 };
@@ -61,6 +69,12 @@ export {
     HiOutlineDotsVertical as KebabMenuIcon, // ไอคอนเมนูเคบับ
     HiOutlineMail as MailIcon, // ไอคอนอีเมล
     HiOutlinePhone as PhoneIcon // ไอคอนโทรศัพท์
+};
+
+
+import { AiFillPicture } from "react-icons/ai";
+export {
+    AiFillPicture as ImageIcon, // ไอคอนรูปภาพ
 };
 
 

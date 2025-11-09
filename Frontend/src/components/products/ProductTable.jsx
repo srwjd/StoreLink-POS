@@ -1,9 +1,12 @@
 /* eslint-disable react/prop-types */
 import { PencilSimple, Trash } from "phosphor-react";
 import axios from "axios";
+import Switch from '@mui/material/Switch';
+import { ImageIcon } from "../../../public/icons/icons";
 
 export default function ProductTable({ products, refresh }) {
     const API_BASE = "http://localhost:3000/products";
+
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
         return token ? { Authorization: `Bearer ${token}` } : {};
@@ -20,59 +23,95 @@ export default function ProductTable({ products, refresh }) {
     };
 
     return (
-        <div className="overflow-x-auto bg-white rounded-xl shadow-md border border-slate-200">
+        <div className="overflow-x-auto bg-white rounded-md shadow-md border border-slate-200">
             <table className="w-full text-sm text-slate-700">
-                <thead className="bg-[#3674B5] text-white">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 text-left">
                     <tr>
-                        <th className="px-4 py-3 text-left">ชื่อสินค้า</th>
-                        <th className="px-4 py-3">หมวดหมู่</th>
-                        <th className="px-4 py-3">หน่วย</th>
-                        <th className="px-4 py-3">ราคา</th>
-                        <th className="px-4 py-3">คงเหลือ</th>
-                        <th className="px-4 py-3">ประเภท</th>
-                        <th className="px-4 py-3">การจัดการ</th>
+                        <th className="px-4 py-3 font-semibold text-center">#</th>
+                        <th className="px-4 py-3 font-semibold">ชื่อสินค้า</th>
+                        <th className="px-4 py-3 font-semibold">หมวดหมู่</th>
+                        <th className="px-4 py-3 font-semibold text-center">ราคา</th>
+                        <th className="px-4 py-3 font-semibold text-center">คงเหลือ</th>
+                        <th className="px-4 py-3 font-semibold text-center">สถานะ</th>
+                        <th className="px-4 py-3 font-semibold text-center">การจัดการ</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {products.length ? (
-                        products.map((p) => (
+                        products.map((p, index) => (
                             <tr
                                 key={p._id}
-                                className="border-t hover:bg-[#EAF1FF] transition"
+                                className="border-b border-slate-100 hover:bg-slate-50 transition-all"
                             >
-                                <td className="px-4 py-2 font-medium">{p.name}</td>
-                                <td className="px-4 py-2">{p.category || "-"}</td>
-                                <td className="px-4 py-2">{p.unit || "-"}</td>
-                                <td className="px-4 py-2">{p.price} ฿</td>
-                                <td className="px-4 py-2 text-center">{p.type === "serialized"
-                                    ? ((p.serialList || []).filter((s) => s.status === "available").length)
-                                    : (p.stockQty ?? "-")}
+                                <td className="px-4 py-3 text-slate-500 text-center">{index + 1}</td>
+
+                                {/* ชื่อ + รูปสินค้า */}
+                                <td className="px-4 py-3 flex items-center gap-3">
+                                    {p.image ? (
+                                        <img
+                                            src={p.image}
+                                            alt={p.name}
+                                            className="w-10 h-10 object-cover rounded-sm"
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center text-[#808080] w-10 h-10 object-cover rounded-sm bg-slate-200">
+                                            <ImageIcon size={20} />
+                                        </div>
+                                    )}
+                                    <div>
+                                        <p className="font-medium text-slate-800">{p.name}</p>
+                                        <p className="text-xs text-slate-400">
+                                            Barcode: {p.barcode || "-"}
+                                        </p>
+                                    </div>
                                 </td>
-                                <td className="px-4 py-2 text-center">
-                                    {p.type === "serialized" ? "มี SN" : "ทั่วไป"}
+
+                                <td className="px-4 py-3">{p.category || "-"}</td>
+
+                                <td className="px-4 py-3 text-center font-medium text-slate-800">
+                                    {p.price?.toFixed(2)} ฿
                                 </td>
-                                <td className="px-4 py-2 flex gap-2 justify-center">
-                                    <button className="text-blue-600 hover:underline flex items-center gap-1">
-                                        <PencilSimple size={16} /> แก้ไข
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(p._id)}
-                                        className="text-red-500 hover:underline flex items-center gap-1"
-                                    >
-                                        <Trash size={16} /> ลบ
-                                    </button>
+
+                                <td className="px-4 py-3 text-center">
+                                    {p.type === "serialized"
+                                        ? (p.serialList || []).filter(
+                                            (s) => s.status === "available"
+                                        ).length
+                                        : p.stockQty ?? "-"}
+                                </td>
+
+                                <td className="px-4 py-3 text-center">
+                                    <Switch defaultChecked />
+                                </td>
+
+                                <td className="px-4 py-3 text-center">
+                                    <div className="flex justify-center gap-3">
+                                        <button className="text-[#3674B5] hover:text-[#2f5fa0] flex items-center gap-1 text-sm">
+                                            <PencilSimple size={16} /> แก้ไข
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(p._id)}
+                                            className="text-red-500 hover:text-red-700 flex items-center gap-1 text-sm"
+                                        >
+                                            <Trash size={16} /> ลบ
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="7" className="text-center py-5 text-slate-500">
+                            <td
+                                colSpan="7"
+                                className="text-center py-6 text-slate-400 bg-slate-50"
+                            >
                                 ยังไม่มีสินค้าในระบบ
                             </td>
                         </tr>
                     )}
                 </tbody>
             </table>
-        </div>
+        </div >
     );
 }
