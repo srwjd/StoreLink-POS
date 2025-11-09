@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 export default function PaymentPage() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
     const location = useLocation();
     const { cart = [], totalAmount = 0, storeId } = location.state || {};
@@ -51,7 +52,7 @@ export default function PaymentPage() {
                 changeAmount: method === "cash" ? change : 0
             };
 
-            await axios.post("http://localhost:3000/orders/create", orderPayload, { headers });
+            await axios.post(`${API_BASE_URL}/orders/create`, orderPayload, { headers });
 
             alert("✅ ชำระเงินสำเร็จ และบันทึกประวัติเรียบร้อย");
             navigate(-1);

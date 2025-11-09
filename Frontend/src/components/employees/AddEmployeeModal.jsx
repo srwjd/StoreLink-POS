@@ -5,6 +5,8 @@ import axios from "axios";
 import { XCircle, Eye, EyeSlash, User, Envelope, Phone, MapPin, Calendar, CreditCard, FileText, Briefcase, Lock, Upload, X, Image as ImageIcon } from "phosphor-react";
 
 export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData }) {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const [positions, setPositions] = useState([]);
     const [showPass, setShowPass] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -37,7 +39,7 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
     const fetchPositions = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get(`http://localhost:3000/positions/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/positions/${storeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setPositions(res.data.positions || []);
@@ -105,7 +107,7 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
             const formData = new FormData();
             formData.append('file', file);
 
-            const res = await axios.post('http://localhost:3000/upload', formData, {
+            const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     // ไม่ต้องตั้ง Content-Type ให้ axios จัดการเองสำหรับ multipart/form-data
@@ -167,14 +169,14 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
                 if (!submitData.password) delete submitData.password;
 
                 await axios.put(
-                    `http://localhost:3000/employees/update/${editData._id}`,
+                    `${API_BASE_URL}/employees/update/${editData._id}`,
                     submitData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 alert("✅ อัปเดตพนักงานสำเร็จ");
             } else {
                 await axios.post(
-                    `http://localhost:3000/employees/create/${storeId}`,
+                    `${API_BASE_URL}/employees/create/${storeId}`,
                     submitData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );

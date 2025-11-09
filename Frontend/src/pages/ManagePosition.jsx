@@ -12,6 +12,8 @@ import {
 import { useStore } from "../context/StoreContext";
 
 export default function ManagePosition() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const { store } = useStore();
     const storeId = store?._id;
 
@@ -37,7 +39,7 @@ export default function ManagePosition() {
     const fetchPositions = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get(`http://localhost:3000/positions/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/positions/${storeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setPositions(res.data.positions || []);
@@ -91,14 +93,14 @@ export default function ManagePosition() {
         try {
             if (editData) {
                 await axios.put(
-                    `http://localhost:3000/positions/update/${editData._id}`,
+                    `${API_BASE_URL}/positions/update/${editData._id}`,
                     payload,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 alert("อัปเดตตำแหน่งสำเร็จ");
             } else {
                 await axios.post(
-                    `http://localhost:3000/positions/create/${storeId}`,
+                    `${API_BASE_URL}/positions/create/${storeId}`,
                     payload,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -119,7 +121,7 @@ export default function ManagePosition() {
         if (!window.confirm("ต้องการลบตำแหน่งนี้ใช่หรือไม่?")) return;
         const token = localStorage.getItem("token");
         try {
-            await axios.delete(`http://localhost:3000/positions/delete/${id}`, {
+            await axios.delete(`${API_BASE_URL}/positions/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             alert("ลบตำแหน่งสำเร็จ");

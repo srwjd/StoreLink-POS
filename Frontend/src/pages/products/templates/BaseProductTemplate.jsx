@@ -18,7 +18,7 @@ import {
 } from "../../../../public/icons/icons";
 
 export default function BaseProductTemplate() {
-    const API_BASE = "http://localhost:3000/products";
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const { store } = useStore();
     const [products, setProducts] = useState([]);
@@ -36,7 +36,7 @@ export default function BaseProductTemplate() {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get(`${API_BASE}/all/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/all/${storeId}`, {
                 headers: getAuthHeader(),
             });
             setProducts(res.data.products || []);

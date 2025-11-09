@@ -5,7 +5,7 @@ import Switch from '@mui/material/Switch';
 import { ImageIcon } from "../../../public/icons/icons";
 
 export default function ProductTable({ products, refresh }) {
-    const API_BASE = "http://localhost:3000/products";
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -15,7 +15,7 @@ export default function ProductTable({ products, refresh }) {
     const handleDelete = async (id) => {
         if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
         try {
-            await axios.delete(`${API_BASE}/${id}`, { headers: getAuthHeader() });
+            await axios.delete(`${API_BASE_URL}/product/${id}`, { headers: getAuthHeader() });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);

@@ -3,7 +3,7 @@ import { PencilSimple, Trash } from "phosphor-react";
 import axios from "axios";
 
 export default function ProductCardGrid({ products, refresh }) {
-    const API_BASE = "http://localhost:3000/products";
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
         return token ? { Authorization: `Bearer ${token}` } : {};
@@ -12,7 +12,7 @@ export default function ProductCardGrid({ products, refresh }) {
     const handleDelete = async (id) => {
         if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
         try {
-            await axios.delete(`${API_BASE}/${id}`, { headers: getAuthHeader() });
+            await axios.delete(`${API_BASE_URL}/product/${id}`, { headers: getAuthHeader() });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);

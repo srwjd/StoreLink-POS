@@ -25,6 +25,8 @@ import DropdownKebab from "../components/employees/dropdownKebab";
 import { useStore } from "../context/StoreContext";
 
 export default function ManageEmployees() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const navigate = useNavigate();
     const [showAdd, setShowAdd] = useState(false);
     const [activeTab, setActiveTab] = useState("all");
@@ -48,10 +50,10 @@ export default function ManageEmployees() {
             if (!storeId) return;
 
             const [empRes, posRes] = await Promise.all([
-                axios.get(`http://localhost:3000/employees/${storeId}`, {
+                axios.get(`${API_BASE_URL}/employees/${storeId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
-                axios.get(`http://localhost:3000/positions/${storeId}`, {
+                axios.get(`${API_BASE_URL}/positions/${storeId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
             ]);
@@ -97,7 +99,7 @@ export default function ManageEmployees() {
         if (!window.confirm("ต้องการลบพนักงานคนนี้ใช่หรือไม่?")) return;
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/employees/delete/${id}`, {
+            await axios.delete(`${API_BASE_URL}/employees/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchEmployees();

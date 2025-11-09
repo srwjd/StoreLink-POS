@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import axios from "axios";
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const [store, setStore] = useState(null);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -21,7 +23,7 @@ export const StoreProvider = ({ children }) => {
         }
 
         axios
-            .get("http://localhost:3000/auth/profile", {
+            .get(`${API_BASE_URL}/auth/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {
@@ -30,7 +32,7 @@ export const StoreProvider = ({ children }) => {
                 // ✅ ถ้ามีร้านใน localStorage ให้ลองโหลด
                 if (storeId) {
                     axios
-                        .get(`http://localhost:3000/stores/${storeId}`, {
+                        .get(`${API_BASE_URL}/stores/${storeId}`, {
                             headers: { Authorization: `Bearer ${token}` },
                         })
                         .then((sRes) => setStore(sRes.data.store))

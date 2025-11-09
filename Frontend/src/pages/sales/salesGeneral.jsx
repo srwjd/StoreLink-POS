@@ -16,6 +16,8 @@ import {
 import Header from "../../components/shared/Header";
 
 export default function SalesGeneral() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const navigate = useNavigate();
     const inputRef = useRef(null);
     const inputSerialRef = useRef(null);
@@ -35,14 +37,13 @@ export default function SalesGeneral() {
             }, 50);
         }
     }, [serialModal.open]);
-    const API_BASE = "http://localhost:3000/products";
     const token = localStorage.getItem("token");
     const storeId = localStorage.getItem("currentStore");
 
 
     const fetchAllProduct = async () => {
         try {
-            const res = await axios.get(`${API_BASE}/all/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setProducts(res.data.products);

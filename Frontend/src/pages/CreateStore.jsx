@@ -9,6 +9,8 @@ import Footer from "../components/shared/Footer";
 
 
 export default function CreateStore() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [form, setForm] = useState({
@@ -80,7 +82,7 @@ export default function CreateStore() {
     const handleSubmit = async () => {
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch("http://localhost:3000/stores/create-store", {
+            const res = await fetch(`${API_BASE_URL}/stores/create-store`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -10,6 +10,8 @@ export default function ProductModal({
     onClose,
     onSuccess,
 }) {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const [form, setForm] = useState({
         barcode: "",
         name: "",
@@ -24,7 +26,7 @@ export default function ProductModal({
         hasOptions: false,
     });
 
-    const API_BASE = "http://localhost:3000/products";
+
 
     useEffect(() => {
         if (editingProduct) {
@@ -53,9 +55,11 @@ export default function ProductModal({
         if (!checked) {
             setForm({ ...form, hasOptions: false, optionGroups: [] });
         } else {
-            setForm({ ...form, hasOptions: true, optionGroups: form.optionGroups?.length ? form.optionGroups : [
-                { name: "", selectionType: "single", required: false, maxSelections: "", choices: [{ label: "", priceDelta: "", isDefault: false }] }
-            ] });
+            setForm({
+                ...form, hasOptions: true, optionGroups: form.optionGroups?.length ? form.optionGroups : [
+                    { name: "", selectionType: "single", required: false, maxSelections: "", choices: [{ label: "", priceDelta: "", isDefault: false }] }
+                ]
+            });
         }
     };
 
@@ -163,10 +167,10 @@ export default function ProductModal({
             };
 
             if (editingProduct) {
-                await axios.put(`${API_BASE}/${editingProduct._id}`, payload, { headers });
+                await axios.put(`${API_BASE_URL}/product/${editingProduct._id}`, payload, { headers });
                 alert("✅ บันทึกการแก้ไขเรียบร้อย");
             } else {
-                await axios.post(`${API_BASE}/create/${storeId}`, payload, { headers });
+                await axios.post(`${API_BASE_URL}/product/create/${storeId}`, payload, { headers });
                 alert("✅ เพิ่มข้อมูลเรียบร้อย");
             }
 
@@ -326,126 +330,126 @@ export default function ProductModal({
 
                     {/* 🔹 กลุ่มออฟชันสินค้า (รวมตัวเลือก/ออฟชัน) */}
                     {form.hasOptions && (
-                    <div className="bg-slate-50 rounded-lg p-3">
-                        <div className="flex justify-between items-center mb-2">
-                            <p className="text-slate-700 font-medium">ตัวเลือก/ออฟชันสินค้า (เช่น ความหวาน, ท็อปปิ้ง)</p>
-                            <button
-                                type="button"
-                                onClick={addOptionGroup}
-                                className="text-[#3674B5] flex items-center gap-1 hover:underline"
-                            >
-                                <PlusCircle size={16} /> เพิ่มกลุ่มออฟชัน
-                            </button>
-                        </div>
-
-                        {form.optionGroups.map((g, gi) => (
-                            <div key={gi} className="border border-slate-200 rounded-lg p-3 mb-3">
-                                <div className="grid grid-cols-2 gap-3 mb-3">
-                                    <div>
-                                        <label className="block text-xs text-slate-600 mb-1">ชื่อกลุ่ม</label>
-                                        <input
-                                            type="text"
-                                            value={g.name}
-                                            onChange={(e) => handleOptionGroupChange(gi, "name", e.target.value)}
-                                            className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                            placeholder="เช่น ความหวาน / ท็อปปิ้ง"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-3 gap-2 items-end">
-                                        <div>
-                                            <label className="block text-xs text-slate-600 mb-1">รูปแบบเลือก</label>
-                                            <select
-                                                value={g.selectionType}
-                                                onChange={(e) => handleOptionGroupChange(gi, "selectionType", e.target.value)}
-                                                className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                            >
-                                                <option value="single">เลือกได้ 1</option>
-                                                <option value="multiple">เลือกได้หลาย</option>
-                                            </select>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                id={`required-${gi}`}
-                                                type="checkbox"
-                                                checked={!!g.required}
-                                                onChange={(e) => handleOptionGroupChange(gi, "required", e.target.checked)}
-                                            />
-                                            <label htmlFor={`required-${gi}`} className="text-sm">บังคับเลือก</label>
-                                        </div>
-                                        {g.selectionType === "multiple" && (
-                                            <div>
-                                                <label className="block text-xs text-slate-600 mb-1">เลือกได้สูงสุด</label>
-                                                <input
-                                                    type="number"
-                                                    value={g.maxSelections}
-                                                    onChange={(e) => handleOptionGroupChange(gi, "maxSelections", e.target.value)}
-                                                    className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                                    placeholder="เช่น 3"
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Choices */}
-                                <div className="flex justify-between items-center mb-2">
-                                    <p className="text-slate-700">รายการตัวเลือก</p>
-                                    <button
-                                        type="button"
-                                        onClick={() => addChoice(gi)}
-                                        className="text-[#3674B5] flex items-center gap-1 hover:underline"
-                                    >
-                                        <PlusCircle size={16} /> เพิ่มตัวเลือก
-                                    </button>
-                                </div>
-                                {g.choices?.map((c, ci) => (
-                                    <div key={ci} className="grid grid-cols-3 gap-2 mb-2 items-center">
-                                        <input
-                                            type="text"
-                                            placeholder="เช่น ไม่หวาน / หวานน้อย / ไข่มุก"
-                                            value={c.label}
-                                            onChange={(e) => handleChoiceChange(gi, ci, "label", e.target.value)}
-                                            className="border border-slate-300 rounded-lg px-3 py-2"
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="+ราคาเพิ่ม (ถ้ามี)"
-                                            value={c.priceDelta}
-                                            onChange={(e) => handleChoiceChange(gi, ci, "priceDelta", e.target.value)}
-                                            className="border border-slate-300 rounded-lg px-3 py-2"
-                                        />
-                                        <div className="flex items-center gap-3">
-                                            <label className="flex items-center gap-2 text-sm">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={!!c.isDefault}
-                                                    onChange={(e) => handleChoiceChange(gi, ci, "isDefault", e.target.checked)}
-                                                />
-                                                ค่าเริ่มต้น
-                                            </label>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeChoice(gi, ci)}
-                                                className="text-red-500"
-                                            >
-                                                <Trash size={18} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                <div className="flex justify-end mt-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => removeOptionGroup(gi)}
-                                        className="text-red-600 hover:underline"
-                                    >
-                                        ลบกลุ่มนี้
-                                    </button>
-                                </div>
+                        <div className="bg-slate-50 rounded-lg p-3">
+                            <div className="flex justify-between items-center mb-2">
+                                <p className="text-slate-700 font-medium">ตัวเลือก/ออฟชันสินค้า (เช่น ความหวาน, ท็อปปิ้ง)</p>
+                                <button
+                                    type="button"
+                                    onClick={addOptionGroup}
+                                    className="text-[#3674B5] flex items-center gap-1 hover:underline"
+                                >
+                                    <PlusCircle size={16} /> เพิ่มกลุ่มออฟชัน
+                                </button>
                             </div>
-                        ))}
-                    </div>
+
+                            {form.optionGroups.map((g, gi) => (
+                                <div key={gi} className="border border-slate-200 rounded-lg p-3 mb-3">
+                                    <div className="grid grid-cols-2 gap-3 mb-3">
+                                        <div>
+                                            <label className="block text-xs text-slate-600 mb-1">ชื่อกลุ่ม</label>
+                                            <input
+                                                type="text"
+                                                value={g.name}
+                                                onChange={(e) => handleOptionGroupChange(gi, "name", e.target.value)}
+                                                className="w-full border border-slate-300 rounded-lg px-3 py-2"
+                                                placeholder="เช่น ความหวาน / ท็อปปิ้ง"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2 items-end">
+                                            <div>
+                                                <label className="block text-xs text-slate-600 mb-1">รูปแบบเลือก</label>
+                                                <select
+                                                    value={g.selectionType}
+                                                    onChange={(e) => handleOptionGroupChange(gi, "selectionType", e.target.value)}
+                                                    className="w-full border border-slate-300 rounded-lg px-3 py-2"
+                                                >
+                                                    <option value="single">เลือกได้ 1</option>
+                                                    <option value="multiple">เลือกได้หลาย</option>
+                                                </select>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    id={`required-${gi}`}
+                                                    type="checkbox"
+                                                    checked={!!g.required}
+                                                    onChange={(e) => handleOptionGroupChange(gi, "required", e.target.checked)}
+                                                />
+                                                <label htmlFor={`required-${gi}`} className="text-sm">บังคับเลือก</label>
+                                            </div>
+                                            {g.selectionType === "multiple" && (
+                                                <div>
+                                                    <label className="block text-xs text-slate-600 mb-1">เลือกได้สูงสุด</label>
+                                                    <input
+                                                        type="number"
+                                                        value={g.maxSelections}
+                                                        onChange={(e) => handleOptionGroupChange(gi, "maxSelections", e.target.value)}
+                                                        className="w-full border border-slate-300 rounded-lg px-3 py-2"
+                                                        placeholder="เช่น 3"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Choices */}
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className="text-slate-700">รายการตัวเลือก</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => addChoice(gi)}
+                                            className="text-[#3674B5] flex items-center gap-1 hover:underline"
+                                        >
+                                            <PlusCircle size={16} /> เพิ่มตัวเลือก
+                                        </button>
+                                    </div>
+                                    {g.choices?.map((c, ci) => (
+                                        <div key={ci} className="grid grid-cols-3 gap-2 mb-2 items-center">
+                                            <input
+                                                type="text"
+                                                placeholder="เช่น ไม่หวาน / หวานน้อย / ไข่มุก"
+                                                value={c.label}
+                                                onChange={(e) => handleChoiceChange(gi, ci, "label", e.target.value)}
+                                                className="border border-slate-300 rounded-lg px-3 py-2"
+                                            />
+                                            <input
+                                                type="number"
+                                                placeholder="+ราคาเพิ่ม (ถ้ามี)"
+                                                value={c.priceDelta}
+                                                onChange={(e) => handleChoiceChange(gi, ci, "priceDelta", e.target.value)}
+                                                className="border border-slate-300 rounded-lg px-3 py-2"
+                                            />
+                                            <div className="flex items-center gap-3">
+                                                <label className="flex items-center gap-2 text-sm">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!!c.isDefault}
+                                                        onChange={(e) => handleChoiceChange(gi, ci, "isDefault", e.target.checked)}
+                                                    />
+                                                    ค่าเริ่มต้น
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeChoice(gi, ci)}
+                                                    className="text-red-500"
+                                                >
+                                                    <Trash size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <div className="flex justify-end mt-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => removeOptionGroup(gi)}
+                                            className="text-red-600 hover:underline"
+                                        >
+                                            ลบกลุ่มนี้
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     )}
 
                     {/* 🔹 Serial Number (เฉพาะถ้าเลือกแบบ SN) */}

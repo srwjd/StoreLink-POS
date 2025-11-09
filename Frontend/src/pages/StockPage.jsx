@@ -6,6 +6,8 @@ import axios from "axios";
 import { Search } from "lucide-react";
 
 export default function StockPage() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const { storeId } = useParams();
     const [products, setProducts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,8 +28,6 @@ export default function StockPage() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
-    const API_BASE = "http://localhost:3000/products";
-
     // 🔹 ดึง token จาก localStorage
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -44,7 +44,7 @@ export default function StockPage() {
     // 🔹 โหลดข้อมูลสินค้า
     const fetchProducts = async () => {
         try {
-            const res = await axios.get(`${API_BASE}/all/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
                 params: { keyword, sort, order, page, limit: 10 },
                 headers: getAuthHeader(), // ใส่ token
             });
@@ -92,7 +92,7 @@ export default function StockPage() {
 
             if (form.type === "standard") delete payload.serialList;
 
-            await axios.post(`${API_BASE}/create/${storeId}`, payload, {
+            await axios.post(`${API_BASE_URL}/create/${storeId}`, payload, {
                 headers: getAuthHeader(), // ใส่ token
             });
 
@@ -114,7 +114,7 @@ export default function StockPage() {
     // ฟังก์ชันเปิด modal สำหรับแก้ไข
     const openEditModal = async (productId) => {
         try {
-            const res = await axios.get(`${API_BASE}/${productId}`, {
+            const res = await axios.get(`${API_BASE_URL}/${productId}`, {
                 headers: getAuthHeader(),
             });
             const prod = res.data.product;
@@ -135,7 +135,7 @@ export default function StockPage() {
         e.preventDefault();
         try {
             const { _id, ...payload } = editingProduct;
-            await axios.put(`${API_BASE}/${_id}`, payload, {
+            await axios.put(`${API_BASE_URL}/${_id}`, payload, {
                 headers: getAuthHeader(),
             });
             setIsModalOpen(false);
@@ -150,7 +150,7 @@ export default function StockPage() {
     const handleDelete = async (productId) => {
         if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
         try {
-            await axios.delete(`${API_BASE}/${productId}`, {
+            await axios.delete(`${API_BASE_URL}/${productId}`, {
                 headers: getAuthHeader(),
             });
             fetchProducts();

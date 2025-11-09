@@ -13,6 +13,8 @@ import {
 } from "phosphor-react";
 
 export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
   const [categories, setCategories] = useState([]);
   const [menu, setMenu] = useState([]);
@@ -20,13 +22,12 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [optionsForm, setOptionsForm] = useState({});
-  const API_BASE = "http://localhost:3000/products";
   const token = localStorage.getItem("token");
   const storeId = localStorage.getItem("currentStore");
 
   const fetchMenu = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/all/${storeId}`, {
+      const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMenu(res.data.products);

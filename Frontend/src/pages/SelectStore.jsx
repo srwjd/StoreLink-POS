@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -9,6 +10,8 @@ import Footer from "../components/shared/Footer";
 import { useStore } from "../context/StoreContext";
 
 export default function SelectStore() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const { selectStore } = useStore();
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +28,7 @@ export default function SelectStore() {
                 return;
             }
 
-            const response = await axios.get("http://localhost:3000/stores/my-stores", {
+            const response = await axios.get(`${API_BASE_URL}/stores/my-stores`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

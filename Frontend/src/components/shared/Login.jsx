@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { EnvelopeSimple, Lock, Eye, EyeSlash } from "phosphor-react";
 
 export default function LoginPopup({ onClose, onRegister }) {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const navigate = useNavigate();
     const [showPass, setShowPass] = useState(false);
     const [form, setForm] = useState({
@@ -36,7 +38,7 @@ export default function LoginPopup({ onClose, onRegister }) {
                 [isEmail ? "email" : "username"]: form.loginIdentifier
             };
 
-            const res = await fetch("http://localhost:3000/auth/login", {
+            const res = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(loginData),
