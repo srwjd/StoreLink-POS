@@ -43,7 +43,7 @@ export default function SalesGeneral() {
 
     const fetchAllProduct = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setProducts(res.data.products);

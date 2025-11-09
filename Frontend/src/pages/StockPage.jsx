@@ -44,7 +44,7 @@ export default function StockPage() {
     // 🔹 โหลดข้อมูลสินค้า
     const fetchProducts = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
                 params: { keyword, sort, order, page, limit: 10 },
                 headers: getAuthHeader(), // ใส่ token
             });

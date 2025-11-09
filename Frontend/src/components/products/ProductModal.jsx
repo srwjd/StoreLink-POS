@@ -167,10 +167,10 @@ export default function ProductModal({
             };
 
             if (editingProduct) {
-                await axios.put(`${API_BASE_URL}/product/${editingProduct._id}`, payload, { headers });
+                await axios.put(`${API_BASE_URL}/products/${editingProduct._id}`, payload, { headers });
                 alert("✅ บันทึกการแก้ไขเรียบร้อย");
             } else {
-                await axios.post(`${API_BASE_URL}/product/create/${storeId}`, payload, { headers });
+                await axios.post(`${API_BASE_URL}/products/create/${storeId}`, payload, { headers });
                 alert("✅ เพิ่มข้อมูลเรียบร้อย");
             }
 

@@ -36,7 +36,7 @@ export default function BaseProductTemplate() {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
+            const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
                 headers: getAuthHeader(),
             });
             setProducts(res.data.products || []);

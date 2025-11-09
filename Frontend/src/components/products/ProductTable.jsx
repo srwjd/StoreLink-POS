@@ -15,7 +15,7 @@ export default function ProductTable({ products, refresh }) {
     const handleDelete = async (id) => {
         if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
         try {
-            await axios.delete(`${API_BASE_URL}/product/${id}`, { headers: getAuthHeader() });
+            await axios.delete(`${API_BASE_URL}/products/${id}`, { headers: getAuthHeader() });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);

@@ -27,7 +27,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
 
   const fetchMenu = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/product/all/${storeId}`, {
+      const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMenu(res.data.products);
