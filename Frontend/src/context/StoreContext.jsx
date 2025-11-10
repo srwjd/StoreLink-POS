@@ -35,7 +35,7 @@ export const StoreProvider = ({ children }) => {
                         .get(`${API_BASE_URL}/stores/${storeId}`, {
                             headers: { Authorization: `Bearer ${token}` },
                         })
-                        .then((sRes) => setStore(sRes.data.store))
+                       .then((sRes) => setStore(sRes.data))
                         .catch((err) => {
                             console.warn("⚠️ โหลดร้านไม่สำเร็จ (อาจถูกลบ)", err.response?.status);
                             localStorage.removeItem("currentStore");

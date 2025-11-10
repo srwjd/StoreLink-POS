@@ -3,12 +3,17 @@ import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/shared/Header";
+import ReceiptModal from '../../components/receipt/ReceiptModal';
 import axios from "axios";
 
 export default function PaymentPage() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
     const location = useLocation();
+    const [showReceipt, setShowReceipt] = useState(false);
+    const [receiptData, setReceiptData] = useState(null);
+
+
 
     // 🔹 รับค่าที่มาจากหน้า Sales หรือ Table
     const { cart = [], totalAmount = 0, storeId, tableNumber = null } = location.state || {};
@@ -94,16 +99,9 @@ export default function PaymentPage() {
 
             console.log("✅ Order created:", res.data);
 
-            // ✅ เมื่อสร้างออเดอร์สำเร็จ
-            if (res.data.order && res.data.order._id) {
-                alert("✅ ชำระเงินสำเร็จ และบันทึกประวัติเรียบร้อย");
-
-                // 👉 ไปหน้าใบเสร็จโดยใช้ order._id ที่ backend ส่งกลับมา
-                navigate(`/receipt/${res.data.order._id}`);
-            } else {
-                alert("❌ ไม่พบข้อมูลใบเสร็จจากเซิร์ฟเวอร์");
-            }
-
+            // ✅ เก็บใบเสร็จไว้ใน state และเปิดป๊อปอัพ
+            setReceiptData(res.data.order);
+            setShowReceipt(true);
         } catch (err) {
             console.error("❌ Error saving order:", err);
             alert("เกิดข้อผิดพลาดในการบันทึกประวัติการขาย");
@@ -264,6 +262,12 @@ export default function PaymentPage() {
                     </div>
                 </div>
             </div>
+            {showReceipt && (
+                <ReceiptModal
+                    receipt={receiptData}
+                    onClose={() => setShowReceipt(false)}
+                />
+            )}
         </div>
     );
 }

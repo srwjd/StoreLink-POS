@@ -84,6 +84,7 @@ import {
     Users,
     CaretDown,
     PencilSimple,
+    Storefront,
 } from "phosphor-react";
 export {
     FunnelSimple, // กรอง
@@ -91,4 +92,5 @@ export {
     Users, // ไอคอนกลุ่มผู้ใช้
     CaretDown, // ลูกศรชี้ลง
     PencilSimple, // ไอคอนดินสอ
+    Storefront, // ไอคอนร้าน
 };

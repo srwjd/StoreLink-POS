@@ -30,7 +30,29 @@ export default function ProductTable({ products, refresh, storeId }) {
     const handleEdit = (product) => {
         setSelectedProduct(product);
         setShowModal(true);
+
     };
+
+    const handleToggleStatus = async (product) => {
+        try {
+            const token = localStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
+
+            const newStatus = product.status === "available" ? "unavailable" : "available";
+
+            await axios.put(
+                `${API_BASE_URL}/products/${product._id}`,
+                { status: newStatus },
+                { headers }
+            );
+
+            refresh(); // รีเฟรชข้อมูลสินค้าในตาราง
+        } catch (err) {
+            console.error("Error updating status:", err);
+            alert("เกิดข้อผิดพลาดในการเปลี่ยนสถานะสินค้า");
+        }
+    };
+
 
     return (
         <div className="overflow-x-auto bg-white rounded-md shadow-md border border-slate-200">
@@ -58,9 +80,9 @@ export default function ProductTable({ products, refresh, storeId }) {
 
                                 {/* ชื่อ + รูปสินค้า */}
                                 <td className="px-4 py-3 flex items-center gap-3">
-                                    {p.image ? (
+                                    {p.productImage ? (
                                         <img
-                                            src={p.image}
+                                            src={p.productImage}
                                             alt={p.name}
                                             className="w-10 h-10 object-cover rounded-sm"
                                         />
@@ -92,7 +114,10 @@ export default function ProductTable({ products, refresh, storeId }) {
                                 </td>
 
                                 <td className="px-4 py-3 text-center">
-                                    <Switch defaultChecked />
+                                    <Switch
+                                        checked={p.status === "available"}
+                                        onChange={() => handleToggleStatus(p)}
+                                    />
                                 </td>
 
                                 <td className="px-4 py-3 text-center">

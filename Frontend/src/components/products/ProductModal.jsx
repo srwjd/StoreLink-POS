@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { X, PlusCircle, Trash } from "phosphor-react";
@@ -162,9 +163,9 @@ export default function ProductModal({
 
             // เมื่ออัปโหลดเสร็จ → เซ็ต URL จริงแทน local preview
             setForm((prev) => ({ ...prev, productImage: res.data.url }));
-            console.log("✅ Upload success:", res.data.imageUrl);
-            setPreview(res.data.imageUrl);
-            setFile(res.data.imageUrl);
+            console.log("✅ Upload success:", res.data.url);
+            setPreview(res.data.url);
+            setFile(res.data.url);
         } catch (err) {
             console.error("❌ Upload error:", err);
             alert("เกิดข้อผิดพลาดในการอัปโหลดรูป");
@@ -256,26 +257,27 @@ export default function ProductModal({
                 <div className="max-h-[70vh] p-3 overflow-y-auto">
                     <form onSubmit={handleSubmit} className="space-y-4">
 
-                        {/* 📷 รูปสินค้า */}
+                        {/* 📸 อัปโหลดรูปสินค้า */}
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 รูปสินค้า
                             </label>
-                            <div className="border border-slate-300 rounded-lg p-3 flex flex-col items-center">
+
+                            <div className="border-2 border-dashed border-slate-300 rounded-xl p-5 flex flex-col items-center justify-center hover:border-[#3674B5] transition">
                                 {preview ? (
                                     <img
-                                        src={file}
-                                        alt="Preview"
-                                        className="w-40 h-40 object-cover rounded-md border mb-3"
+                                        src={preview}
+                                        alt="Product preview"
+                                        className="w-40 h-40 object-cover rounded-lg shadow-sm mb-3 border"
                                     />
                                 ) : (
-                                    <div className="w-40 h-40 bg-slate-100 rounded-md flex items-center justify-center text-slate-400 text-sm mb-3">
-                                        ไม่มีรูป
+                                    <div className="w-40 h-40 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 text-sm mb-3">
+                                        ยังไม่มีรูป
                                     </div>
                                 )}
 
-                                <label className="cursor-pointer bg-[#3674B5] text-white text-sm px-3 py-1.5 rounded-lg hover:bg-[#2f5fa0] transition">
-                                    {uploading ? "กำลังอัปโหลด..." : "เลือกรูปภาพ"}
+                                <label className="cursor-pointer bg-[#3674B5] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#2f5fa0] active:scale-95 transition">
+                                    {uploading ? "กำลังอัปโหลด..." : "📤 เลือกรูปภาพ"}
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -284,8 +286,26 @@ export default function ProductModal({
                                         disabled={uploading}
                                     />
                                 </label>
+
+                                {preview && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setPreview(null);
+                                            setForm((prev) => ({ ...prev, productImage: "" }));
+                                        }}
+                                        className="text-xs text-red-500 mt-2 hover:underline"
+                                    >
+                                        ลบรูปออก
+                                    </button>
+                                )}
                             </div>
+
+                            <p className="text-xs text-slate-400 mt-1 text-center">
+                                รองรับ JPG, PNG ขนาดไม่เกิน 5MB
+                            </p>
                         </div>
+
 
                         {/* ✅ รหัสสินค้า (Barcode) */}
                         <div>

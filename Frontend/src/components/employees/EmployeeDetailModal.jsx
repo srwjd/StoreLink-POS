@@ -8,20 +8,6 @@ import {
   Divider,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-// import {
-//   User,
-//   Phone,
-//   Mail,
-//   MapPin,
-//   IdentificationCard,
-//   GenderIntersex,
-//   Calendar,
-//   Briefcase,
-//   Storefront,
-//   CurrencyCircleDollar,
-//   WarningCircle,
-//   Clock,
-// } from "phosphor-react";
 
 export default function EmployeeDetailModal({ open, onClose, employee }) {
   if (!employee) return null;
@@ -33,21 +19,19 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
-      fullWidth
       PaperProps={{
         sx: {
           borderRadius: "16px",
           overflow: "hidden",
           background: "linear-gradient(to bottom, #ffffff, #F3F7FB)",
+          width: "60%",
         },
       }}
     >
       {/* 🔹 Header */}
       <DialogTitle
         sx={{
-          backgroundColor: "#3674B5",
-          color: "white",
+          color: "#3674B5",
           display: "flex",
           alignItems: "center",
           gap: 2,
@@ -55,14 +39,14 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
         }}
       >
         <Avatar
-          src={employee.profileImage || "/default-avatar.png"}
-          sx={{ width: 60, height: 60, border: "2px solid white" }}
+          src={employee.profileImage || ""}
+          sx={{ width: 50, height: 50 }}
         />
         <div>
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-xl font-semibold">
             {employee.firstName} {employee.lastName}
           </h2>
-          <p className="text-sm opacity-90">
+          <p className="text-sm">
             {employee.positionId?.positionName || "ไม่ระบุตำแหน่ง"}
           </p>
         </div>
@@ -72,28 +56,19 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
       <DialogContent sx={{ py: 3, px: 4 }}>
         {/* Section 1: ข้อมูลส่วนตัว */}
         <div className="mb-5">
-          <h3 className="text-[#3674B5] font-semibold mb-2">
-            🧍‍♀️ ข้อมูลส่วนตัว
+          <h3 className="flex items-center text-[#3674B5] font-semibold mb-2">
+            <span className="w-1 h-4 rounded-full bg-[#3674B5] inline-block mr-2"></span>
+            ข้อมูลส่วนตัว
           </h3>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
             <p>
-              {/* <GenderIntersex size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>เพศ:</strong> {employee.gender || "-"}
+              <strong>เลขบัตรประชาชน :</strong> {employee.idCard || "-"}
             </p>
             <p>
-              {/* <Calendar size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>วันเกิด:</strong> {formatDate(employee.birthDate)}
+              <strong>วันเกิด :</strong> {formatDate(employee.birthDate)}
             </p>
-            <p className="col-span-2">
-              {/* <IdentificationCard
-                size={16}
-                className="inline mr-2 text-[#3674B5]"
-              /> */}
-              <strong>เลขบัตรประชาชน:</strong> {employee.idCard || "-"}
-            </p>
-            <p className="col-span-2">
-              {/* <MapPin size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>ที่อยู่:</strong> {employee.address || "-"}
+            <p>
+              <strong>เพศ :</strong> {employee.gender || "-"}
             </p>
           </div>
         </div>
@@ -102,20 +77,23 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
 
         {/* Section 2: การติดต่อ */}
         <div className="mt-5 mb-5">
-          <h3 className="text-[#3674B5] font-semibold mb-2">📞 การติดต่อ</h3>
+          <h3 className="flex items-center text-[#3674B5] font-semibold mb-2">
+            <span className="w-1 h-4 rounded-full bg-[#3674B5] inline-block mr-2"></span>
+            การติดต่อ
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-700">
             <p>
-              {/* <Mail size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>อีเมล:</strong> {employee.email || "-"}
+              <strong>อีเมล :</strong> {employee.email || "-"}
             </p>
             <p>
-              {/* <Phone size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>เบอร์โทร:</strong> {employee.phone || "-"}
+              <strong>เบอร์โทร :</strong> {employee.phone || "-"}
             </p>
             <p className="col-span-2">
-              {/* <WarningCircle size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>ผู้ติดต่อฉุกเฉิน:</strong>{" "}
+              <strong>ผู้ติดต่อฉุกเฉิน :</strong>{" "}
               {employee.emergencyContact || "-"}
+            </p>
+            <p className="col-span-2">
+              <strong>ที่อยู่ :</strong> {employee.address || "-"}
             </p>
           </div>
         </div>
@@ -124,19 +102,16 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
 
         {/* Section 3: บัญชีผู้ใช้ */}
         <div className="mt-5 mb-5">
-          <h3 className="text-[#3674B5] font-semibold mb-2">🔐 บัญชีผู้ใช้</h3>
+          <h3 className="flex items-center text-[#3674B5] font-semibold mb-2">
+            <span className="w-1 h-4 rounded-full bg-[#3674B5] inline-block mr-2"></span>
+            บัญชีผู้ใช้
+          </h3>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
             <p>
-              {/* <User size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>ชื่อผู้ใช้:</strong> {employee.username || "-"}
+              <strong>ชื่อผู้ใช้ :</strong> {employee.username || "-"}
             </p>
             <p>
-              {/* <Briefcase size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>บทบาท:</strong> {employee.role || "-"}
-            </p>
-            <p>
-              {/* <Clock size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>สถานะ:</strong> {employee.status || "-"}
+              <strong>สถานะ :</strong> {employee.status || "-"}
             </p>
           </div>
         </div>
@@ -145,22 +120,16 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
 
         {/* Section 4: การทำงาน */}
         <div className="mt-5 mb-5">
-          <h3 className="text-[#3674B5] font-semibold mb-2">💼 ข้อมูลการทำงาน</h3>
+          <h3 className="flex items-center text-[#3674B5] font-semibold mb-2">
+            <span className="w-1 h-4 rounded-full bg-[#3674B5] inline-block mr-2"></span>
+            ข้อมูลการทำงาน
+          </h3>
           <div className="grid grid-cols-2 gap-3 text-sm text-slate-700">
             <p>
-              {/* <Calendar size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>วันที่เริ่มงาน:</strong> {formatDate(employee.hireDate)}
+              <strong>วันที่เริ่มงาน :</strong> {formatDate(employee.hireDate)}
             </p>
             <p>
-              {/* <Calendar size={16} className="inline mr-2 text-[#3674B5]" /> */}
-              <strong>วันที่ลาออก:</strong> {formatDate(employee.resignDate)}
-            </p>
-            <p className="col-span-2">
-              {/* <CurrencyCircleDollar
-                size={16}
-                className="inline mr-2 text-[#3674B5]"
-              /> */}
-              <strong>เงินเดือน:</strong>{" "}
+              <strong>เงินเดือน :</strong>{" "}
               {employee.salary ? employee.salary.toLocaleString() + " บาท" : "-"}
             </p>
           </div>
@@ -170,8 +139,9 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
 
         {/* Section 5: ร้านที่สังกัด */}
         <div className="mt-5 mb-5">
-          <h3 className="text-[#3674B5] font-semibold mb-2">
-            🏪 ร้านที่สังกัด
+          <h3 className="flex items-center text-[#3674B5] font-semibold mb-2">
+            <span className="w-1 h-4 rounded-full bg-[#3674B5] inline-block mr-2"></span>
+            ร้านที่สังกัด
           </h3>
           {employee.storeIds && employee.storeIds.length > 0 ? (
             <ul className="list-disc ml-5 text-sm text-slate-700 space-y-1">
@@ -191,7 +161,10 @@ export default function EmployeeDetailModal({ open, onClose, employee }) {
 
         {/* Section 6: อื่น ๆ */}
         <div className="mt-5">
-          <h3 className="text-[#3674B5] font-semibold mb-2">🗒️ ข้อมูลอื่น ๆ</h3>
+          <h3 className="flex items-center text-[#3674B5] font-semibold mb-2">
+            <span className="w-1 h-4 rounded-full bg-[#3674B5] inline-block mr-2"></span>
+            ข้อมูลอื่น ๆ
+          </h3>
           <div className="text-sm text-slate-700 space-y-1">
             <p>
               {/* <Clock size={15} className="inline mr-2 text-[#3674B5]" /> */}

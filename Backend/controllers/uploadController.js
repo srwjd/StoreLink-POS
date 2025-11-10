@@ -48,7 +48,7 @@ export const uploadImage = async (req, res) => {
       
       return res.json({
         message: "Upload success (local)",
-        imageUrl: fileUrl,
+        url: fileUrl,
       });
     }
 
@@ -67,7 +67,7 @@ export const uploadImage = async (req, res) => {
 
     res.json({
       message: "Upload success",
-      imageUrl: result.secure_url,
+      url: result.secure_url,
     });
   } catch (error) {
     console.error("Upload error:", error);

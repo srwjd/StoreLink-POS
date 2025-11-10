@@ -115,8 +115,8 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
             });
 
             setIdCardImage(file);
-            setIdCardImagePreview(res.data.imageUrl);
-            setForm({ ...form, idCardImage: res.data.imageUrl });
+            setIdCardImagePreview(res.data.url);
+            setForm({ ...form, idCardImage: res.data.url });
         } catch (err) {
             console.error("Upload error:", err);
             const errorMessage = err.response?.data?.message || err.message || "เกิดข้อผิดพลาดในการอัปโหลดไฟล์";

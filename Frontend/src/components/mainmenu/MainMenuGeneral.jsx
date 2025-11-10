@@ -8,6 +8,7 @@ export default function MainMenuGeneral() {
     const navigate = useNavigate();
     const { store, loading } = useStore();
 
+
     if (loading || !store) {
         return (
             <div className="flex items-center justify-center h-screen text-slate-600">

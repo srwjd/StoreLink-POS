@@ -9,7 +9,6 @@ import ManageEmployees from './pages/ManageEmployees.jsx'
 import ManageProduct from './pages/products/templates/BaseProductTemplate.jsx'
 import SalesTemplate from './pages/sales/SalesTemplate.jsx';
 import PaymentPage from './pages/sales/PaymentPage.jsx';
-import ReceiptPage from './pages/receipt/ReceiptPage.jsx';
 
 function App() {
 
@@ -75,15 +74,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <PaymentPage />
-              </ProtectedRoute>
-            }
-          />
-          {/* หน้าใบเสร็จ */}
-          <Route
-            path="/receipt/:oderId"
-            element={
-              <ProtectedRoute>
-                <ReceiptPage />
               </ProtectedRoute>
             }
           />

@@ -24,6 +24,6 @@ router.get("/:orderId/receipt", requireAuth, getReceipt);
 //ยกเลิกออเดอร์
 router.put("/:orderId/cancel", requireAuth, cancelReceipt);
 // ดึงประวัติการขายของร้าน
-router.get("/:storeId/receipts", requireAuth, getAllReceipts);
+router.get("/:storeId/all-receipts", requireAuth, getAllReceipts);
 
 export default router;
