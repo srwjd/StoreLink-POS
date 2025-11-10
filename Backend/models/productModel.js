@@ -32,7 +32,8 @@ const productSchema = new mongoose.Schema({
         }
     ],
     status: { type: String, enum: ["available", "out-of-stock"], default: "available" },
-    description: String
+    description: String,
+    productImage: String
 }, { timestamps: true });
 
 export default mongoose.model("Product", productSchema);

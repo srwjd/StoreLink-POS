@@ -148,7 +148,7 @@ export default function BaseProductTemplate() {
 
                 {/* ✅ แสดงสินค้าตาม viewMode */}
                 {viewMode === "table" ? (
-                    <ProductTable products={filteredProducts} refresh={fetchProducts} />
+                    <ProductTable products={filteredProducts} refresh={fetchProducts} storeId={storeId} />
                 ) : (
                     <ProductCardGrid products={filteredProducts} refresh={fetchProducts} />
                 )}

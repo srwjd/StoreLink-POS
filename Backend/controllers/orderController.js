@@ -1,33 +1,166 @@
-import OrderHistory from "../models/OrderHistory.js";
+import Order from "../models/OrderModel.js";
+import Product from "../models/productModel.js";
+import Table from "../models/tableModel.js";
 
-// สร้างประวัติการขายใหม่
+// ✅ createOrder รองรับทั้งร้านทั่วไปและร้านอาหาร
 export const createOrder = async (req, res) => {
     try {
-        const { storeId, userId, items, subTotal, tax, total, paymentMethod, paidAmount, changeAmount } = req.body;
+        const { storeId, userId, tableNumber, queueNumber, items, isInstantPay, paymentMethod, paidAmount, changeAmount } = req.body;
 
-        const order = new OrderHistory({
-            storeId, userId,
-            items,
-            subTotal, tax, total,
-            paymentMethod, paidAmount, changeAmount
+        // 🧾 สร้างออเดอร์
+        const order = await Order.create({
+            storeId,
+            userId,
+            tableNumber: tableNumber || null,
+            queueNumber: queueNumber || null,
+            items: items || [],
+            paymentMethod: paymentMethod || "none",
+            paidAmount: paidAmount || 0,
+            changeAmount: changeAmount || 0,
+            status: isInstantPay ? "paid" : "pending", // ✅ จ่ายเลยถ้า isInstantPay = true
         });
 
-        const saved = await order.save();
-        res.status(201).json({ success: true, order: saved });
+        // 📦 ถ้า isInstantPay = true → ตัดสต็อกทันที
+        if (isInstantPay) {
+            for (const item of items) {
+                const product = await Product.findById(item.productId);
+                if (product && product.stockQty != null) {
+                    product.stockQty = Math.max(product.stockQty - item.qty, 0);
+                    await product.save();
+                }
+            }
+        }
+
+        // 🍽️ ถ้ามีโต๊ะ → mark โต๊ะว่า occupied
+        if (tableNumber) {
+            await Table.findOneAndUpdate(
+                { storeId, tableNumber },
+                { status: "occupied", currentOrder: order._id },
+                { new: true }
+            );
+        }
+
+        res.status(201).json({
+            message: isInstantPay
+                ? "✅ Order created and paid successfully"
+                : "🧾 Order created and pending payment",
+            order,
+        });
     } catch (err) {
-        console.error("Error create order:", err);
-        res.status(500).json({ success: false, message: "เกิดข้อผิดพลาดในการบันทึกประวัติ" });
+        console.error("❌ Error creating order:", err);
+        res.status(500).json({ error: "Failed to create order" });
     }
 };
 
-// ดึงประวัติการขายของร้าน
-export const getOrdersByStore = async (req, res) => {
+
+// 2️⃣ เพิ่มเมนูในบิลที่ยังเปิดอยู่
+export const addItemToOrder = async (req, res) => {
     try {
-        const { storeId } = req.params;
-        const orders = await OrderHistory.find({ storeId }).sort({ createdAt: -1 });
-        res.status(200).json({ success: true, orders });
+        const order = await Order.findById(req.params.id);
+        if (!order || order.status !== "pending")
+            return res.status(400).json({ error: "Order not found or already paid" });
+
+        order.items.push(req.body);
+        await order.save();
+        res.json({ message: "✅ Item added", order });
     } catch (err) {
-        console.error("Error get orders:", err);
-        res.status(500).json({ success: false, message: "เกิดข้อผิดพลาดในการดึงข้อมูล" });
+        console.error(err);
+        res.status(500).json({ error: "Failed to add item" });
+    }
+};
+
+// 3️⃣ ชำระเงินและปิดบิล
+export const payOrder = async (req, res) => {
+    try {
+        const { paymentMethod, paidAmount, changeAmount } = req.body;
+        const order = await Order.findById(req.params.id);
+        if (!order) return res.status(404).json({ error: "Order not found" });
+
+        order.paymentMethod = paymentMethod;
+        order.paidAmount = paidAmount;
+        order.changeAmount = changeAmount;
+        order.status = "paid"; // ✅ เพิ่มสถานะ
+        order.paidAt = new Date();
+
+        // ✅ ถ้ามีโต๊ะ → เปลี่ยนสถานะเป็น paid
+        if (order.tableNumber) {
+            await Table.findOneAndUpdate(
+                { storeId: order.storeId, tableNumber: order.tableNumber },
+                { status: "paid", currentOrder: null }
+            );
+        }
+
+        // 📦 ตัดสต็อก
+        for (const item of order.items) {
+            const product = await Product.findById(item.productId);
+            if (product && product.stockQty != null) {
+                product.stockQty = Math.max(product.stockQty - item.qty, 0);
+                await product.save();
+            }
+        }
+
+        await order.save();
+        res.json({ message: "💰 Payment successful", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to pay order" });
+    }
+};
+
+// 4️⃣ ดูใบเสร็จ
+export const getReceipt = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id)
+            .populate("storeId", "storeName address phone paymentSettings")
+            .populate("userId", "firstName lastName email");
+
+        if (!order) return res.status(404).json({ error: "Receipt not found" });
+
+        res.json({
+            receiptId: order._id,
+            storeName: order.storeId?.storeName || "ร้านค้า",
+            address: order.storeId?.address || "-",
+            phone: order.storeId?.phone || "-",
+            cashier: order.userId
+                ? `${order.userId.firstName} ${order.userId.lastName}`
+                : "ไม่ระบุ",
+            items: order.items,
+            subTotal: order.subTotal,
+            tax: order.tax,
+            total: order.total,
+            paymentMethod: order.paymentMethod,
+            paidAmount: order.paidAmount,
+            changeAmount: order.changeAmount,
+            createdAt: order.createdAt,
+        });
+    } catch (err) {
+        console.error("❌ Error fetching receipt:", err);
+        res.status(500).json({ error: "Failed to fetch receipt" });
+    }
+};
+
+
+// 5️⃣ ดูใบเสร็จทั้งหมด
+export const getAllReceipts = async (req, res) => {
+    try {
+        const receipts = await Order.find({}).populate("storeId");
+        res.json(receipts);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch receipts" });
+    }
+};
+
+// 6️⃣ ยกเลิกใบเสร็จ
+export const cancelReceipt = async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) return res.status(404).json({ error: "Receipt not found" });
+        order.status = "canceled";
+        await order.save();
+        res.json({ message: "🗑️ Receipt canceled", order });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to cancel receipt" });
     }
 };

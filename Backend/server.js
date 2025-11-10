@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -14,6 +15,7 @@ import positionRoutes from "./routes/positionRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import tableRoutes from "./routes/tableRoutes.js";
 
 import "./config/env.js";
 import connectDB from "./config/db.js";
@@ -62,6 +64,7 @@ const PORT = process.env.PORT || 3000;
   app.use("/employees", employeeRoutes);
   app.use("/products", productRoutes);
   app.use("/orders", orderRoutes);
+  app.use("/tables", tableRoutes);
 
   // ✅ Health check route (Render จะ ping อันนี้)
   app.get("/health", (_, res) => res.json({ ok: true }));

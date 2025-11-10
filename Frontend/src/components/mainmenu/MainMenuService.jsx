@@ -8,6 +8,9 @@ export default function MainMenuService() {
     const navigate = useNavigate();
     const { store, loading } = useStore();
 
+    const storeId = store._id;
+    const storeType = store.storeType;
+
     if (loading || !store) {
         return (
             <div className="flex items-center justify-center h-screen text-slate-600">
@@ -15,10 +18,7 @@ export default function MainMenuService() {
             </div>
         );
     }
-
-    const storeId = store._id;
-    const storeType = store.storeType;
-
+    
     const menuItems = [
         { icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeType}/${storeId}` },
         { icon: <Notebook size={48} />, label: "บริการ", navigateTo: `/products/service/${storeId}` },

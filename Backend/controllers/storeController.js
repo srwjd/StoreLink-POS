@@ -100,3 +100,12 @@ export const getMyStores = async (req, res) => {
     }
 };
 
+export const getStoreById = async (req, res) => {
+  try {
+    const store = await Store.findById(req.params.id);
+    res.status(200).json(store);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+

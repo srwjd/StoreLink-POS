@@ -53,7 +53,7 @@ function sanitizeOptionGroups(input) {
 ------------------------------------------- */
 export const createProduct = async (req, res) => {
   try {
-    const { storeId, barcode, name, category, type, price, unit, stockQty, serialList, description, optionGroups } = req.body;
+    const { storeId, barcode, name, category, type, price, unit, stockQty, serialList, description, optionGroups, productImage } = req.body;
 
     if (!storeId || !name || !price)
       return res.status(400).json({ message: "กรุณากรอกข้อมูลสินค้าหลักให้ครบ" });
@@ -93,9 +93,10 @@ export const createProduct = async (req, res) => {
       serialList: type === "serialized" ? normalizedSerialList : [],
       description: description || "",
       optionGroups: sanitizedOptionGroups,
+      productImage: productImage || "",
     });
 
-    res.status(201).json(newProduct);
+    res.status(201).json({ message: "สร้างสินค้าสําเร็จ", product: newProduct });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "เกิดข้อผิดพลาดในการสร้างสินค้า" });

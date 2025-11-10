@@ -1,11 +1,16 @@
 /* eslint-disable react/prop-types */
-import { PencilSimple, Trash } from "phosphor-react";
+import { useState } from "react";
 import axios from "axios";
 import Switch from '@mui/material/Switch';
 import { ImageIcon } from "../../../public/icons/icons";
+import { PencilSimple, Trash } from "phosphor-react";
+import ProductModal from "./ProductModal";
 
-export default function ProductTable({ products, refresh }) {
+export default function ProductTable({ products, refresh, storeId }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+    const [showModal, setShowModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -20,6 +25,11 @@ export default function ProductTable({ products, refresh }) {
         } catch (err) {
             console.error("Error deleting product:", err);
         }
+    };
+
+    const handleEdit = (product) => {
+        setSelectedProduct(product);
+        setShowModal(true);
     };
 
     return (
@@ -87,7 +97,9 @@ export default function ProductTable({ products, refresh }) {
 
                                 <td className="px-4 py-3 text-center">
                                     <div className="flex justify-center gap-3">
-                                        <button className="text-[#3674B5] hover:text-[#2f5fa0] flex items-center gap-1 text-sm">
+                                        <button
+                                            onClick={() => handleEdit(p)}
+                                            className="text-[#3674B5] hover:text-[#2f5fa0] flex items-center gap-1 text-sm">
                                             <PencilSimple size={16} /> แก้ไข
                                         </button>
                                         <button
@@ -112,6 +124,16 @@ export default function ProductTable({ products, refresh }) {
                     )}
                 </tbody>
             </table>
+
+            {showModal &&
+                <ProductModal
+                    storeId={storeId}
+                    type="product"
+                    onClose={() => setShowModal(false)}
+                    onSuccess={refresh}
+                    editingProduct={selectedProduct}
+                />
+            }
         </div >
     );
 }
