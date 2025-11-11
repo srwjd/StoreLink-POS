@@ -5,7 +5,7 @@ import Table from "../models/tableModel.js";
 // ✅ createOrder รองรับทั้งร้านทั่วไปและร้านอาหาร
 export const createOrder = async (req, res) => {
     try {
-        const { storeId, userId, tableNumber, queueNumber, items, isInstantPay, paymentMethod, paidAmount, changeAmount } = req.body;
+        const { storeId, userId, tableNumber, queueNumber, subTotal, tax, total, items, isInstantPay, paymentMethod, paidAmount, changeAmount } = req.body;
 
         // 🧾 สร้างออเดอร์
         const order = await Order.create({
@@ -14,6 +14,9 @@ export const createOrder = async (req, res) => {
             tableNumber: tableNumber || null,
             queueNumber: queueNumber || null,
             items: items || [],
+            subTotal,
+            tax,
+            total,
             paymentMethod: paymentMethod || "none",
             paidAmount: paidAmount || 0,
             changeAmount: changeAmount || 0,

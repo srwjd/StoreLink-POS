@@ -9,6 +9,7 @@ import ManageEmployees from './pages/ManageEmployees.jsx'
 import ManageProduct from './pages/products/templates/BaseProductTemplate.jsx'
 import SalesTemplate from './pages/sales/SalesTemplate.jsx';
 import PaymentPage from './pages/sales/PaymentPage.jsx';
+import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 
 function App() {
 
@@ -83,6 +84,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ManageProduct />
+              </ProtectedRoute>
+            }
+          />
+          {/* หน้าแดชบอร์ด */}
+          <Route
+            path="/dashboard/:storeId"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
               </ProtectedRoute>
             }
           />
