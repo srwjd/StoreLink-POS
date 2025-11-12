@@ -10,6 +10,7 @@ import ManageProduct from './pages/products/templates/BaseProductTemplate.jsx'
 import SalesTemplate from './pages/sales/SalesTemplate.jsx';
 import PaymentPage from './pages/sales/PaymentPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
+import StoreSettings from './pages/StoreSettings.jsx';
 
 function App() {
 
@@ -93,6 +94,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          {/* หน้าตั้งค่าร้าน */}
+          <Route
+            path="/settings/:storeId"
+            element={
+              <ProtectedRoute>
+                <StoreSettings />
               </ProtectedRoute>
             }
           />
