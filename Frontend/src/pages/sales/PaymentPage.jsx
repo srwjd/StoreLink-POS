@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { jwtDecode } from "jwt-decode";
+import { useStore } from "../../context/StoreContext";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/shared/Header";
@@ -7,11 +8,13 @@ import ReceiptModal from '../../components/receipt/ReceiptModal';
 import axios from "axios";
 
 export default function PaymentPage() {
+    const { store } = useStore();
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
     const location = useLocation();
     const [showReceipt, setShowReceipt] = useState(false);
     const [receiptData, setReceiptData] = useState(null);
+    const taxRate = store?.taxRate || 0;
 
 
 
@@ -25,7 +28,7 @@ export default function PaymentPage() {
     const [showFullQR, setShowFullQR] = useState(false);
 
     const subtotal = totalAmount;
-    const vat = subtotal * 0.07;
+    const vat = subtotal * (taxRate / 100) || 0;
     const total = subtotal + vat;
 
 
@@ -46,9 +49,21 @@ export default function PaymentPage() {
     }, [storeId]);
 
     const handlePaidChange = (e) => {
-        const value = Number(e.target.value);
-        setPaid(value);
-        setChange(value - total);
+        let value = e.target.value;
+
+        // ถ้าผู้ใช้ลบค่าทั้งหมดออก → set เป็น 0
+        if (value === "" || value === null) {
+            setPaid(0);
+            setChange(0 - total);
+            return;
+        }
+
+        // แปลงเป็นตัวเลขอย่างปลอดภัย
+        const numericValue = parseFloat(value.replace(/,/g, "")); // กันกรณีมีคอมม่า
+        if (isNaN(numericValue)) return;
+
+        setPaid(numericValue);
+        setChange(numericValue - total);
     };
 
     // ✅ แก้ logic ให้รองรับทั้งร้านทั่วไป และร้านอาหาร
@@ -77,6 +92,7 @@ export default function PaymentPage() {
                 userId,
                 tableNumber, // ถ้ามีถือว่าร้านอาหาร
                 isInstantPay: !tableNumber, // ถ้าไม่มีโต๊ะ = จ่ายเลย
+                isRestaurantOrder: !!tableNumber,
                 items: cart.map((i) => ({
                     productId: i._id,
                     barcode: i.barcode,
@@ -135,15 +151,15 @@ export default function PaymentPage() {
                     <div className="bg-slate-50 rounded-lg p-4 mb-5">
                         <div className="flex justify-between text-slate-600 mb-1">
                             <span>ยอดรวม</span>
-                            <span>{subtotal.toFixed(2)} ฿</span>
+                            <span>{subtotal.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿</span>
                         </div>
                         <div className="flex justify-between text-slate-600 mb-1">
-                            <span>ภาษี (7%)</span>
-                            <span>{vat.toFixed(2)} ฿</span>
+                            <span>ภาษี {taxRate}%</span>
+                            <span>{vat.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿</span>
                         </div>
                         <div className="flex justify-between font-semibold text-[#3674B5] text-lg border-t pt-2">
                             <span>ยอดสุทธิ</span>
-                            <span>{total.toFixed(2)} ฿</span>
+                            <span>{total.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿</span>
                         </div>
                     </div>
 
@@ -173,8 +189,9 @@ export default function PaymentPage() {
                             <label className="block text-sm text-slate-700 mb-1">เงินที่ลูกค้าชำระ (บาท)</label>
                             <input
                                 type="number"
-                                value={paid}
+                                value={paid === 0 ? "" : paid}
                                 onChange={handlePaidChange}
+                                onWheel={(e) => e.target.blur()}
                                 className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
                             />
                             <p className="text-right text-slate-600 mt-2">
@@ -183,7 +200,7 @@ export default function PaymentPage() {
                                     className={`font-semibold ${change < 0 ? "text-red-500" : "text-[#3674B5]"
                                         }`}
                                 >
-                                    {change.toFixed(2)} ฿
+                                    {change.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿
                                 </span>
                             </p>
                         </div>
@@ -209,7 +226,7 @@ export default function PaymentPage() {
                                                 <p className="text-slate-700 mb-1 font-medium">พร้อมเพย์</p>
                                                 <p className="text-slate-600 text-sm">PromptPay: {promptPayNumber}</p>
                                                 <p className="font-semibold text-[#3674B5] text-sm">
-                                                    ยอด {total.toFixed(2)} ฿
+                                                    ยอด {total.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿
                                                 </p>
                                                 <p className="text-xs text-slate-400 mt-1">(แตะเพื่อขยาย)</p>
                                             </div>
@@ -225,7 +242,7 @@ export default function PaymentPage() {
                                                 className="w-80 h-80 rounded-xl shadow-xl border-4 border-white"
                                             />
                                             <p className="mt-3 text-white font-semibold text-lg">
-                                                สแกนเพื่อชำระ {total.toFixed(2)} ฿
+                                                สแกนเพื่อชำระ {total.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿
                                             </p>
                                             <p className="text-slate-100 mt-1">PromptPay: {promptPayNumber}</p>
 
@@ -239,7 +256,7 @@ export default function PaymentPage() {
                                     )}
                                 </>
                             ) : (
-                                <p className="text-red-500 text-sm">
+                                <p className="text-red-500 text-sm text-center">
                                     ❌ ร้านนี้ยังไม่ได้ตั้งค่าหมายเลขพร้อมเพย์
                                 </p>
                             )}
@@ -265,7 +282,7 @@ export default function PaymentPage() {
             {showReceipt && (
                 <ReceiptModal
                     receipt={receiptData}
-                    onClose={() => {    setShowReceipt(false); setReceiptData(null); navigate(-1); }}
+                    onClose={() => { setShowReceipt(false); setReceiptData(null); navigate(-1); }}
                 />
             )}
         </div>

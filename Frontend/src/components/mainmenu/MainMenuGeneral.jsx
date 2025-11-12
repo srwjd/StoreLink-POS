@@ -3,6 +3,7 @@ import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { Receipt } from "../../../public/icons/icons";
 
 export default function MainMenuGeneral() {
     const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function MainMenuGeneral() {
 
     const menuItems = [
         { icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeType}/${storeId}` },
+        { icon: <Receipt size={48} />, label: "ใบเสร็จ", navigateTo: `/all-receipts/${storeId}` },
         { icon: <Package size={48} />, label: "สินค้า", navigateTo: `/products/product/${storeId}` },
         { icon: <ChartBar size={48} />, label: "แดชบอร์ด", navigateTo: `/dashboard/${storeId}` },
         { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },

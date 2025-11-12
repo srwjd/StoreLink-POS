@@ -13,16 +13,18 @@ export const createOrder = async (req, res) => {
         } = req.body;
 
         // ✅ ตรวจสอบว่าสินค้าพอไหมก่อนสร้างออเดอร์
-        for (const item of items) {
-            const product = await Product.findById(item.productId);
-            if (!product) {
-                return res.status(400).json({ error: `ไม่พบสินค้า ${item.name}` });
-            }
+        if (!req.body.isRestaurantOrder) {
+            for (const item of items) {
+                const product = await Product.findById(item.productId);
+                if (!product) {
+                    return res.status(400).json({ error: `ไม่พบสินค้า ${item.name}` });
+                }
 
-            if (product.stockQty != null && product.stockQty < item.qty) {
-                return res.status(400).json({
-                    error: `สินค้า "${product.name}" มีสต็อกไม่เพียงพอ (${product.stockQty} ชิ้นคงเหลือ)`
-                });
+                if (product.stockQty != null && product.stockQty < item.qty) {
+                    return res.status(400).json({
+                        error: `สินค้า "${product.name}" มีสต็อกไม่เพียงพอ (${product.stockQty} ชิ้นคงเหลือ)`
+                    });
+                }
             }
         }
 
@@ -53,14 +55,15 @@ export const createOrder = async (req, res) => {
             }
         }
 
-        // 🍽️ ถ้ามีโต๊ะ → mark โต๊ะว่า occupied
+        // 🍽️ ถ้ามีโต๊ะ → mark โต๊ะว่า
         if (tableNumber) {
             await Table.findOneAndUpdate(
                 { storeId, tableNumber },
-                { status: "occupied", currentOrder: order._id },
+                { status: "pending", currentOrder: order._id },
                 { new: true }
             );
         }
+
 
         return res.status(201).json({
             message: isInstantPay
@@ -168,22 +171,23 @@ export const getAllReceipts = async (req, res) => {
     try {
         const { storeId } = req.params;
 
-        // ✅ ตรวจว่าถูกต้อง
-        if (!storeId || !mongoose.Types.ObjectId.isValid(storeId)) {
-            return res.status(400).json({ error: "Invalid storeId" });
-        }
+        const receipts = await Order.find({ storeId })
+            .populate({
+                path: "storeId",
+                select: "storeName address phone paymentSettings",
+            })
+            .populate({
+                path: "userId",
+                select: "firstName lastName email",
+            });
 
-        const receipts = await Order.find({ storeId: new mongoose.Types.ObjectId(storeId) })
-            .populate("storeId", "storeName address phone paymentSettings")
-            .populate("userId", "firstName lastName email")
-            .sort({ createdAt: -1 });
-
-        res.status(200).json(receipts);
+        res.json(receipts);
     } catch (err) {
         console.error("❌ Error fetching receipts:", err);
         res.status(500).json({ error: "Failed to fetch receipts" });
     }
 };
+
 
 // 6️⃣ ยกเลิกใบเสร็จ
 export const cancelReceipt = async (req, res) => {

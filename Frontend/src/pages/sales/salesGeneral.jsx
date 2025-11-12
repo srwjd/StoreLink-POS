@@ -184,7 +184,7 @@ export default function SalesGeneral() {
                                             <td className="text-center text-slate-600">{i.barcode}</td>
                                             <td className="text-slate-700 font-medium">{i.name}</td>
                                             <td className="text-center text-slate-600">
-                                                {i.price.toFixed(2)}&nbsp;&nbsp;บาท
+                                                {i.price.toLocaleString("th-TH", { minimumFractionDigits: 2 })}&nbsp;&nbsp;บาท
                                             </td>
                                             <td className="text-center">
                                                 {i.type === "serialized" && i.selectedSerial ? (
@@ -226,7 +226,7 @@ export default function SalesGeneral() {
                                                 )}
                                             </td>
                                             <td className="text-center text-slate-700 font-semibold">
-                                                {(i.price * i.qty).toFixed(2)}&nbsp;&nbsp;บาท
+                                                {(i.price * i.qty).toLocaleString("th-TH", { minimumFractionDigits: 2 })}&nbsp;&nbsp;บาท
                                             </td>
                                             <td className="text-center">
                                                 <button
@@ -253,15 +253,15 @@ export default function SalesGeneral() {
                         </h2>
                         <div className="flex justify-between mb-2 text-slate-600">
                             <span>รวม</span>
-                            <span>{total.toFixed(2)} ฿</span>
+                            <span>{total.toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿</span>
                         </div>
                         <div className="flex justify-between mb-2 text-slate-600">
-                            <span>ภาษี (7%)</span>
-                            <span>{(total * 0.07).toFixed(2)} ฿</span>
+                            <span>ภาษี {store?.taxRate} %</span>
+                            <span>{(total * (store?.taxRate / 100)).toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿</span>
                         </div>
                         <div className="flex justify-between text-lg font-bold text-[#3674B5] border-t pt-3">
                             <span>ยอดสุทธิ</span>
-                            <span>{(total * 1.07).toFixed(2)} ฿</span>
+                            <span>{(total * (1 + store?.taxRate / 100)).toLocaleString("th-TH", { minimumFractionDigits: 2 })} ฿</span>
                         </div>
                     </div>
 

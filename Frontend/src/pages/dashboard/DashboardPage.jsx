@@ -2,13 +2,11 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Dialog } from "@mui/material";
 import {
     ResponsiveContainer,
     LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid
 } from "recharts";
 import { ChartLineUp, ShoppingBag, Receipt } from "phosphor-react";
-import { ZoomOutIcon } from "../../../public/icons/icons";
 
 import Header from "../../components/shared/Header";
 
@@ -21,10 +19,8 @@ export default function DashboardPage() {
     const [salesData, setSalesData] = useState([]);
     const [topProducts, setTopProducts] = useState([]);
     const [recentOrders, setRecentOrders] = useState([]);
-    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [range, setRange] = useState("today");
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const storeId = localStorage.getItem("currentStore");
 
@@ -34,6 +30,10 @@ export default function DashboardPage() {
         { title: "เดือนนี้", value: "month" },
         { title: "ปีนี้", value: "year" },
     ]
+
+    useEffect(() => {
+        fetchData();
+    }, [range]);
 
     const fetchData = async () => {
         try {
@@ -50,15 +50,11 @@ export default function DashboardPage() {
             const recentOrdersRes = await axios.get(`${API_BASE_URL}/reports/recent/${storeId}`, {
                 headers,
             });
-            const ordersRes = await axios.get(`${API_BASE_URL}/orders/${storeId}/all-receipts`, {
-                headers,
-            })
 
             setSummary(summaryRes.data);
             setSalesData(salesRes.data);
             setTopProducts(topProductsRes.data);
             setRecentOrders(recentOrdersRes.data);
-            setOrders(ordersRes.data);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -66,9 +62,10 @@ export default function DashboardPage() {
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, [range]);
+
+
+
+
 
     if (loading) return <p className="text-center mt-20 text-slate-500">กำลังโหลดแดชบอร์ด...</p>;
 
@@ -100,20 +97,11 @@ export default function DashboardPage() {
                         title="ยอดขายรวม"
                         value={`฿ ${(summary?.totalSales || 0).toLocaleString()}`}
                     />
-                    <div className="relative">
-                        <SummaryCard
-                            icon={<Receipt size={32} />}
-                            title="จำนวนบิล"
-                            value={`${summary.totalOrders} บิล`}
-                        />
-                        <div className="absolute top-6 right-3 ">
-                            <div
-                                onClick={() => setIsModalOpen(true)}
-                                className="hover:bg-[#3674B5]/20 rounded-full p-2">
-                                <ZoomOutIcon className="text-slate-400 " />
-                            </div>
-                        </div>
-                    </div>
+                    <SummaryCard
+                        icon={<Receipt size={32} />}
+                        title="จำนวนบิล"
+                        value={`${summary.totalOrders} บิล`}
+                    />
                     <SummaryCard
                         icon={<ShoppingBag size={32} />}
                         title="สินค้าขายดี"
@@ -184,49 +172,6 @@ export default function DashboardPage() {
                         </tbody>
                     </table>
                 </div>
-
-                {/* ✅ Pop-up Modal แสดงรายการออเดอร์ */}
-                <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                    <div className="p-6 bg-white rounded-xl shadow-lg max-w-3xl w-full mx-auto">
-                        <h2 className="text-xl font-semibold text-[#3674B5] mb-4">
-                            รายการคำสั่งซื้อ ({selectView.find(v => v.value === range)?.title})
-                        </h2>
-
-                        {orders.length > 0 ? (
-                            <table className="w-full text-sm text-slate-700 border">
-                                <thead className="bg-slate-50 border-b text-slate-500">
-                                    <tr>
-                                        <th className="text-left py-2 px-3">เวลา</th>
-                                        <th className="text-left py-2 px-3">พนักงาน</th>
-                                        <th className="text-right py-2 px-3">ยอดขาย</th>
-                                        <th className="text-center py-2 px-3">วิธีชำระ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.map((o, i) => (
-                                        <tr key={i} className="border-b hover:bg-slate-50">
-                                            <td className="py-2 px-3">{o.time}</td>
-                                            <td className="py-2 px-3">{o.staff}</td>
-                                            <td className="text-right py-2 px-3 text-[#3674B5] font-medium">฿ {o.total}</td>
-                                            <td className="text-center py-2 px-3">{o.payment}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p className="text-center text-slate-500">ไม่มีคำสั่งซื้อในช่วงนี้</p>
-                        )}
-
-                        <div className="mt-5 text-center">
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="bg-[#3674B5] text-white px-4 py-2 rounded-lg hover:bg-[#2f5fa0]"
-                            >
-                                ปิด
-                            </button>
-                        </div>
-                    </div>
-                </Dialog>
 
             </main>
         </div>

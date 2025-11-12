@@ -2,6 +2,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useStore } from "../../context/StoreContext";
 import axios from "axios";
 import {
   MagnifyingGlass,
@@ -11,10 +13,14 @@ import {
   MinusCircle,
   PlusCircle,
 } from "phosphor-react";
+import { ImageIcon } from "../../../public/icons/icons";
 
 export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+  const navigate = useNavigate();
+  const { store } = useStore();
+  const [viweAllOrder, setViweAllOrder] = useState(false);
   const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
   const [categories, setCategories] = useState([]);
   const [menu, setMenu] = useState([]);
@@ -150,104 +156,136 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
   const total = cart.reduce((sum, i) => sum + (i.price + (i.extra || 0)) * i.qty, 0);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 min-h-[80vh]">
+    <div className="flex flex-col lg:flex-row gap-6 min-h-screen bg-gradient-to-b from-[#EAF2FF] to-[#C6D8FF]">
       {/* 🔹 เมนูอาหาร */}
-      <div className="flex-1 bg-white rounded-xl shadow-md border border-slate-200 p-5 flex flex-col ">
+      <div className="h-[calc(100vh-100px)] flex-1 bg-white rounded-xl shadow-md border border-slate-200 p-5 flex flex-col ">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-[#3674B5] flex items-center gap-2">
-            <ForkKnife size={22} /> เมนูอาหาร
-          </h2>
-          <button
-            onClick={onBack}
-            className="text-slate-500 hover:text-slate-700 transition"
-          >
-            กลับ
-          </button>
-        </div>
-
-        {/* หมวดหมู่ */}
-        <div className="flex gap-2 overflow-x-auto mb-4 pb-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeCategory === cat
-                ? "bg-[#3674B5] text-white shadow-md"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* ค้นหา */}
-        <div className="relative mb-4">
-          <MagnifyingGlass
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-          <input
-            type="text"
-            placeholder={`ค้นหาใน "${activeCategory}" ...`}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg w-full focus:ring-2 focus:ring-[#3674B5]"
-          />
-        </div>
-
-        {/* รายการเมนู */}
-        <div className="flex overflow-x-auto gap-4 pb-3 px-1 custom-scroll flex-wrap max-h-[48vh]">
-          {filteredMenu.length === 0 ? (
-            <p className="text-center text-slate-400 w-full mt-6">
-              ไม่พบเมนูในหมวดนี้
-            </p>
+          {viweAllOrder ? (
+            <h2 className="text-xl font-semibold text-[#3674B5] flex items-center gap-2">
+              รายการสั่ง
+            </h2>
           ) : (
-            filteredMenu.map((item) => (
-              <button
-                key={item._id}
-                onClick={() => handleSelectMenu(item)}
-                className="flex items-center gap-2 min-w-[180px] border-[1.5px] border-[#C4D9FA] rounded-2xl p-2 text-[#3674B5] 
+            <h2 onClick={onBack} className="text-xl font-semibold text-[#3674B5] flex items-center gap-2">
+              <ForkKnife size={22} /> เมนูอาหาร
+            </h2>
+          )}
+          {/* {viweAllOrder ? (
+            <button
+              onClick={() => { setViweAllOrder(false) }}
+              className="text-[#3674B5] border border-[#3674B5] px-4 py-2 rounded-lg hover:bg-[#2f5fa0] hover:text-white">
+              ขายต่อ
+            </button>
+          ) : (
+            <button
+              onClick={() => { setViweAllOrder(true) }}
+              className="text-[#3674B5] border border-[#3674B5] px-4 py-2 rounded-lg hover:bg-[#2f5fa0] hover:text-white">
+              ดูรายการสั่ง
+            </button>
+          )} */}
+        </div>
+
+        {!viweAllOrder ? (
+          <div>
+            {/* หมวดหมู่ */}
+            <div className="flex gap-2 overflow-x-auto mb-4 pb-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeCategory === cat
+                    ? "bg-[#3674B5] text-white shadow-md"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* ค้นหา */}
+            <div className="relative mb-4">
+              <MagnifyingGlass
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="text"
+                placeholder={`ค้นหาใน "${activeCategory}" ...`}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg w-full focus:ring-2 focus:ring-[#3674B5]"
+              />
+            </div>
+
+
+
+            {/* รายการเมนู */}
+            <div className="flex overflow-x-auto gap-4 pb-3 px-1 custom-scroll flex-wrap max-h-[48vh]">
+              {filteredMenu.length === 0 ? (
+                <p className="text-center text-slate-400 w-full mt-6">
+                  ไม่พบเมนูในหมวดนี้
+                </p>
+              ) : (
+                filteredMenu.map((item) => (
+                  <button
+                    key={item._id}
+                    onClick={() => handleSelectMenu(item)}
+                    className="flex items-center gap-2 min-w-[180px] border-[1.5px] border-[#C4D9FA] rounded-2xl p-2 text-[#3674B5] 
                    hover:border-[#3674B5] hover:text-[#3674B5] shadow-sm hover:shadow-md
                    transition-all duration-300"
-              >
-                {/* รูปเมนู */}
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-20 h-20 object-cover rounded-xl border border-[#C7D8F5] shadow-sm"
-                />
+                  >
+                    {/* รูปเมนู */}
+                    {item.productImage ? (
+                      <img
+                        src={item.productImage}
+                        alt={item.name}
+                        className="w-20 h-20 object-cover rounded-xl border border-[#C7D8F5] shadow-sm"
+                      />
+                    ) : (
+                      <div
+                        className="w-20 h-20 object-cover rounded-xl border border-[#C7D8F5] shadow-sm"
+                      >
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ImageIcon size={30} />
+                        </div>
+                      </div>
+                    )}
 
-                {/* ชื่อและราคา */}
-                <div>
-                  <div className="text-center w-full">
-                    <p className="font-semibold text-slate-700 leading-tight">
-                      {item.name}
-                    </p>
-                    <p className="text-sm text-[#3674B5] font-medium mt-1">
-                      {item.price} บาท
-                    </p>
-                  </div>
+                    {/* ชื่อและราคา */}
+                    <div>
+                      <div className="text-center w-full">
+                        <p className="font-semibold text-slate-700 leading-tight">
+                          {item.name}
+                        </p>
+                        <p className="text-sm text-[#3674B5] font-medium mt-1">
+                          {item.price.toLocaleString("th-TH")} บาท
+                        </p>
+                      </div>
 
-                  {/* แท็ก “มีตัวเลือก” */}
-                  {Array.isArray(item.optionGroups) && item.optionGroups.length > 0 && (
-                    <div className="flex items-center justify-center mt-2">
-                      <span className="bg-[#EAF2FF] text-xs text-[#3674B5] px-2 py-0.5 rounded-full border border-[#C4D9FA]">
-                        มีตัวเลือก
-                      </span>
+                      {/* แท็ก “มีตัวเลือก” */}
+                      {Array.isArray(item.optionGroups) && item.optionGroups.length > 0 && (
+                        <div className="flex items-center justify-center mt-2">
+                          <span className="bg-[#EAF2FF] text-xs text-[#3674B5] px-2 py-0.5 rounded-full border border-[#C4D9FA]">
+                            มีตัวเลือก
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </button>
-            ))
-          )}
-        </div>
-
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        ) : (
+          <div>
+            {/* ดูรายการสั่ง */}
+          </div>
+        )}
 
       </div>
 
       {/* 🔹 ใบสั่งอาหาร */}
-      <div className="w-full lg:w-80 bg-white rounded-xl shadow-md border border-slate-200 p-5 flex flex-col">
+      <div className="h-[calc(100vh-100px)] w-full lg:w-80 bg-white rounded-xl shadow-md border border-slate-200 p-5 flex flex-col">
         <h2 className="text-xl font-semibold text-[#3674B5] mb-4 flex items-center gap-2">
           ใบสั่งอาหาร
         </h2>
@@ -257,7 +295,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
           <span>{cart.length} รายการ</span>
         </div>
 
-        <div className="border-t border-b border-slate-200 py-3 space-y-3 overflow-y-auto max-h-[44vh] min-h-[44vh]">
+        <div className="border-t border-b border-slate-200 py-3 space-y-3 overflow-y-auto h-full">
           {cart.length === 0 ? (
             <p className="text-center text-slate-400 mt-6">ยังไม่มีรายการอาหาร</p>
           ) : (
@@ -314,6 +352,10 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
 
           <button
             disabled={cart.length === 0}
+            onClick={() => {
+              if (cart.length === 0) return alert("ยังไม่มีรายการสินค้า");
+              navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId } })
+            }}
             className={`mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold shadow-md transition-all ${cart.length === 0
               ? "bg-slate-300 text-slate-500 cursor-not-allowed"
               : "bg-[#3674B5] hover:bg-[#2f5fa0] text-white"

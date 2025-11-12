@@ -11,6 +11,7 @@ import SalesTemplate from './pages/sales/SalesTemplate.jsx';
 import PaymentPage from './pages/sales/PaymentPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import StoreSettings from './pages/StoreSettings.jsx';
+import ViweAllReceipt from './pages/dashboard/viweAllReceipt.jsx';
 
 function App() {
 
@@ -103,6 +104,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <StoreSettings />
+              </ProtectedRoute>
+            }
+          />
+          {/* หน้าดูทั้งหมด */}
+          <Route
+            path="/all-receipts/:storeId"
+            element={
+              <ProtectedRoute>
+                <ViweAllReceipt />
               </ProtectedRoute>
             }
           />
