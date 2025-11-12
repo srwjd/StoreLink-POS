@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   MagnifyingGlass,
@@ -11,10 +12,12 @@ import {
   MinusCircle,
   PlusCircle,
 } from "phosphor-react";
+import { ImageIcon } from "../../../public/icons/icons";
 
 export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
   const [categories, setCategories] = useState([]);
   const [menu, setMenu] = useState([]);
@@ -154,15 +157,9 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
       {/* 🔹 เมนูอาหาร */}
       <div className="flex-1 bg-white rounded-xl shadow-md border border-slate-200 p-5 flex flex-col ">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-[#3674B5] flex items-center gap-2">
+          <h2 onClick={onBack} className="text-xl font-semibold text-[#3674B5] flex items-center gap-2">
             <ForkKnife size={22} /> เมนูอาหาร
           </h2>
-          <button
-            onClick={onBack}
-            className="text-slate-500 hover:text-slate-700 transition"
-          >
-            กลับ
-          </button>
         </div>
 
         {/* หมวดหมู่ */}
@@ -212,11 +209,21 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
                    transition-all duration-300"
               >
                 {/* รูปเมนู */}
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-20 h-20 object-cover rounded-xl border border-[#C7D8F5] shadow-sm"
-                />
+                {item.productImage ? (
+                  <img
+                    src={item.productImage}
+                    alt={item.name}
+                    className="w-20 h-20 object-cover rounded-xl border border-[#C7D8F5] shadow-sm"
+                  />
+                ) : (
+                  <div
+                    className="w-20 h-20 object-cover rounded-xl border border-[#C7D8F5] shadow-sm"
+                  >
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon size={30} />
+                    </div>
+                  </div>
+                )}
 
                 {/* ชื่อและราคา */}
                 <div>
@@ -225,7 +232,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
                       {item.name}
                     </p>
                     <p className="text-sm text-[#3674B5] font-medium mt-1">
-                      {item.price} บาท
+                      {item.price.toLocaleString("th-TH")} บาท
                     </p>
                   </div>
 
@@ -314,6 +321,10 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
 
           <button
             disabled={cart.length === 0}
+            onClick={() => {
+              if (cart.length === 0) return alert("ยังไม่มีรายการสินค้า");
+              navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId } })
+            }}
             className={`mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold shadow-md transition-all ${cart.length === 0
               ? "bg-slate-300 text-slate-500 cursor-not-allowed"
               : "bg-[#3674B5] hover:bg-[#2f5fa0] text-white"

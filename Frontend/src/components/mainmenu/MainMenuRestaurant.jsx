@@ -1,8 +1,10 @@
-import { ShoppingCart, ForkKnife, ChartBar, Users, Gear } from "phosphor-react";
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+
+import { ShoppingCart, ForkKnife, ChartBar, Users, Gear } from "phosphor-react";
+import { Receipt } from "../../../public/icons/icons";
 
 
 export default function MainMenuRestaurant() {
@@ -26,8 +28,9 @@ export default function MainMenuRestaurant() {
 
     const menuItems = [
         { icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeType}/${storeId}` },
+        { icon: <Receipt size={48} />, label: "ใบเสร็จ", navigateTo: `/all-receipts/${storeId}` },
         { icon: <ForkKnife size={48} />, label: "เมนูอาหาร", navigateTo: `/products/menu/${storeId}` },
-        { icon: <ChartBar size={48} />, label: "รายงาน" },
+        { icon: <ChartBar size={48} />, label: "แดชบอร์ด", navigateTo: `/dashboard/${storeId}` },
         { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },
         { icon: <Gear size={48} />, label: "ตั้งค่า" },
     ];

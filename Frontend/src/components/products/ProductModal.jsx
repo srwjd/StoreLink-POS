@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, PlusCircle, Trash } from "phosphor-react";
 import axios from "axios";
+import { useStore } from "../../context/StoreContext";
 
 export default function ProductModal({
     storeId,
@@ -13,6 +14,7 @@ export default function ProductModal({
 }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+    const { store } = useStore();
     const [uploading, setUploading] = useState(false);
     const [preview, setPreview] = useState(null);
     const [file, setFile] = useState(null);
@@ -304,22 +306,27 @@ export default function ProductModal({
                         </div>
 
                         {/* 🔹 ประเภทสินค้า */}
-                        <div className="flex items-center justify-between py-2 rounded-lg">
-                            <label className="text-md font-medium text-slate-600">
-                                ประเภทสินค้า : {form.productType === "serialized" ? "มี Serial Number" : "ทั่วไป"}
-                            </label>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={form.productType === "serialized"}
-                                    onChange={(e) =>
-                                        setForm({ ...form, productType: e.target.checked ? "serialized" : "standard" })
-                                    }
-                                />
-                                <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-[#3674B5] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
-                            </label>
-                        </div>
+                        {store?.storeType === "restaurant" ? (
+                            <div></div>
+                        ) : (
+                            <div className="flex items-center justify-between py-2 rounded-lg">
+                                <label className="text-md font-medium text-slate-600">
+                                    ประเภทสินค้า : {form.productType === "serialized" ? "มี Serial Number" : "ทั่วไป"}
+                                </label>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={form.productType === "serialized"}
+                                        onChange={(e) =>
+                                            setForm({ ...form, productType: e.target.checked ? "serialized" : "standard" })
+                                        }
+                                    />
+                                    <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-[#3674B5] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
+                                </label>
+                            </div>
+                        )}
+
 
                         {/* ✅ รหัสสินค้า (Barcode) */}
                         <div>
@@ -415,7 +422,7 @@ export default function ProductModal({
                         {/* 🔹 ราคา */}
                         <div>
                             <label className="block text-sm font-medium text-slate-600 mb-1">
-                                ราคาเริ่มต้น (บาท)
+                                {form.productType === "serialized" ? "ราคา (บาท)" : "ราคาเริ่มต้น (บาท)" }
                             </label>
                             <input
                                 type="number"
@@ -428,20 +435,25 @@ export default function ProductModal({
                         </div>
 
                         {/* 🔹 สวิตช์: สินค้าหลายตัวเลือก */}
-                        <div className="flex items-center justify-between py-2 rounded-lg">
-                            <label className="text-md font-medium text-slate-600">
-                                สินค้าหลายตัวเลือก
-                            </label>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only peer"
-                                    checked={!!form.hasOptions}
-                                    onChange={(e) => toggleHasOptions(e.target.checked)}
-                                />
-                                <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-[#3674B5] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
-                            </label>
-                        </div>
+                        {form.productType === "serialized" ? (
+                            <div></div>
+                        ) : (
+                            <div className="flex items-center justify-between py-2 rounded-lg">
+                                <label className="text-md font-medium text-slate-600">
+                                    สินค้าหลายตัวเลือก
+                                </label>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only peer"
+                                        checked={!!form.hasOptions}
+                                        onChange={(e) => toggleHasOptions(e.target.checked)}
+                                    />
+                                    <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-[#3674B5] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
+                                </label>
+                            </div>
+                        )}
+
 
                         {/* 🔹 กลุ่มออฟชันสินค้า (รวมตัวเลือก/ออฟชัน) */}
                         {form.hasOptions && (

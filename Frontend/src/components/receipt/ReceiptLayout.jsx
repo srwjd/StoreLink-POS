@@ -1,3 +1,4 @@
+
 import { useStore } from "../../context/StoreContext";
 import {
     Storefront
@@ -8,9 +9,10 @@ import { useEffect } from "react";
 export default function ReceiptLayout({ receipt }) {
     const { store } = useStore();
 
+   
     useEffect(() => {
-
-    },[])
+        
+    }, []);
 
     return (
         <div className="w-[320px] bg-white rounded-xs shadow-xl p-5 font-sans text-gray-700">
@@ -30,7 +32,7 @@ export default function ReceiptLayout({ receipt }) {
                     <p>Date: {new Date(receipt.createdAt).toLocaleDateString("th-TH")}</p>
                 </div>
                 <div className="text-right">
-                    <p>Cashier: {receipt.cashier || "—"}</p>
+                    <p>Cashier: {receipt.userId?.firstName || "—"}</p>
                     <p>{new Date(receipt.createdAt).toLocaleTimeString("th-TH")}</p>
                 </div>
             </div>
@@ -52,10 +54,10 @@ export default function ReceiptLayout({ receipt }) {
                     <span>{receipt.subTotal?.toFixed(2)} ฿</span>
                 </div>
                 <div className="flex justify-between">
-                    <span>Tax 7%</span>
+                    <span>Tax {store.taxRate}%</span>
                     <span>{receipt.tax?.toFixed(2)} ฿</span>
                 </div>
-                <div className="flex justify-between font-semibold text-red-600">
+                <div className="flex justify-between font-semibold text-[#3674B5]">
                     <span>Total</span>
                     <span>{receipt.total?.toFixed(2)} ฿</span>
                 </div>
@@ -71,9 +73,9 @@ export default function ReceiptLayout({ receipt }) {
 
             {/* Footer */}
             <div className="text-center mt-3 border-t border-dotted pt-2">
-                <p className="text-sm text-red-500 font-semibold">Have a nice day! 🍓</p>
+                <p className="text-sm text-[#3674B5] font-semibold">Have a nice day!</p>
                 <p className="text-[10px] text-gray-500">
-                    ขอบคุณที่ใช้บริการ StoreLink POS ❤️
+                    ขอบคุณที่ใช้บริการ {store.storeName}
                 </p>
             </div>
         </div>

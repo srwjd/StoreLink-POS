@@ -43,10 +43,12 @@ export {
 
 
 import {
-    IoHourglassOutline
+    IoHourglassOutline,
+    IoReceiptOutline
 } from "react-icons/io5";
 export {
-    IoHourglassOutline as TimeIcon // ไอคอนเวลา
+    IoHourglassOutline as TimeIcon, // ไอคอนเวลา
+    IoReceiptOutline as Receipt // ไอคอนใบเสร็จ
 };
 
 

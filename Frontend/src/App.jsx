@@ -10,6 +10,7 @@ import ManageProduct from './pages/products/templates/BaseProductTemplate.jsx'
 import SalesTemplate from './pages/sales/SalesTemplate.jsx';
 import PaymentPage from './pages/sales/PaymentPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
+import ViweAllReceipt from './pages/dashboard/viweAllReceipt.jsx';
 
 function App() {
 
@@ -93,6 +94,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          {/* หน้าดูทั้งหมด */}
+          <Route
+            path="/all-receipts/:storeId"
+            element={
+              <ProtectedRoute>
+                <ViweAllReceipt />
               </ProtectedRoute>
             }
           />
