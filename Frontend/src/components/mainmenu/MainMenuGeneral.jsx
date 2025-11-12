@@ -26,7 +26,7 @@ export default function MainMenuGeneral() {
         { icon: <Package size={48} />, label: "สินค้า", navigateTo: `/products/product/${storeId}` },
         { icon: <ChartBar size={48} />, label: "แดชบอร์ด", navigateTo: `/dashboard/${storeId}` },
         { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },
-        { icon: <Gear size={48} />, label: "ตั้งค่า" },
+        { icon: <Gear size={48} />, label: "ตั้งค่า", navigateTo: `/settings/${storeId}` },
     ];
 
     return (
