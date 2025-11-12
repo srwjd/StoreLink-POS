@@ -102,7 +102,7 @@ export default function ProductTable({ products, refresh, storeId }) {
                                 <td className="px-4 py-3">{p.category || "-"}</td>
 
                                 <td className="px-4 py-3 text-center font-medium text-slate-800">
-                                    {p.price?.toFixed(2)} ฿
+                                    {p.price != null ? p.price.toLocaleString("th-TH", { minimumFractionDigits: 2 }) : "0.00"} ฿
                                 </td>
 
                                 <td className="px-4 py-3 text-center">

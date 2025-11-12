@@ -61,6 +61,14 @@ export {
 
 
 import {
+    BsArrowsAngleExpand
+} from "react-icons/bs";
+export {
+    BsArrowsAngleExpand as ZoomOutIcon // ไอคอนขยาย
+};
+
+
+import {
     HiOutlineDotsVertical,
     HiOutlineMail,
     HiOutlinePhone,

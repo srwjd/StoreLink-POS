@@ -1,11 +1,30 @@
 import Order from "../models/OrderModel.js";
 import Product from "../models/productModel.js";
 import Table from "../models/tableModel.js";
+import mongoose from "mongoose";
 
 // ✅ createOrder รองรับทั้งร้านทั่วไปและร้านอาหาร
 export const createOrder = async (req, res) => {
     try {
-        const { storeId, userId, tableNumber, queueNumber, subTotal, tax, total, items, isInstantPay, paymentMethod, paidAmount, changeAmount } = req.body;
+        const {
+            storeId, userId, tableNumber, queueNumber,
+            subTotal, tax, total, items, isInstantPay,
+            paymentMethod, paidAmount, changeAmount
+        } = req.body;
+
+        // ✅ ตรวจสอบว่าสินค้าพอไหมก่อนสร้างออเดอร์
+        for (const item of items) {
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                return res.status(400).json({ error: `ไม่พบสินค้า ${item.name}` });
+            }
+
+            if (product.stockQty != null && product.stockQty < item.qty) {
+                return res.status(400).json({
+                    error: `สินค้า "${product.name}" มีสต็อกไม่เพียงพอ (${product.stockQty} ชิ้นคงเหลือ)`
+                });
+            }
+        }
 
         // 🧾 สร้างออเดอร์
         const order = await Order.create({
@@ -20,10 +39,10 @@ export const createOrder = async (req, res) => {
             paymentMethod: paymentMethod || "none",
             paidAmount: paidAmount || 0,
             changeAmount: changeAmount || 0,
-            status: isInstantPay ? "paid" : "pending", // ✅ จ่ายเลยถ้า isInstantPay = true
+            status: isInstantPay ? "paid" : "pending",
         });
 
-        // 📦 ถ้า isInstantPay = true → ตัดสต็อกทันที
+        // 📦 ถ้าชำระทันที → ตัดสต็อก
         if (isInstantPay) {
             for (const item of items) {
                 const product = await Product.findById(item.productId);
@@ -43,7 +62,7 @@ export const createOrder = async (req, res) => {
             );
         }
 
-        res.status(201).json({
+        return res.status(201).json({
             message: isInstantPay
                 ? "✅ Order created and paid successfully"
                 : "🧾 Order created and pending payment",
@@ -54,6 +73,7 @@ export const createOrder = async (req, res) => {
         res.status(500).json({ error: "Failed to create order" });
     }
 };
+
 
 
 // 2️⃣ เพิ่มเมนูในบิลที่ยังเปิดอยู่
@@ -143,13 +163,24 @@ export const getReceipt = async (req, res) => {
 };
 
 
-// 5️⃣ ดูใบเสร็จทั้งหมด
+// 5️⃣ ดูใบเสร็จทั้งหมดของร้าน
 export const getAllReceipts = async (req, res) => {
     try {
-        const receipts = await Order.find({}).populate("storeId");
-        res.json(receipts);
+        const { storeId } = req.params;
+
+        // ✅ ตรวจว่าถูกต้อง
+        if (!storeId || !mongoose.Types.ObjectId.isValid(storeId)) {
+            return res.status(400).json({ error: "Invalid storeId" });
+        }
+
+        const receipts = await Order.find({ storeId: new mongoose.Types.ObjectId(storeId) })
+            .populate("storeId", "storeName address phone paymentSettings")
+            .populate("userId", "firstName lastName email")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(receipts);
     } catch (err) {
-        console.error(err);
+        console.error("❌ Error fetching receipts:", err);
         res.status(500).json({ error: "Failed to fetch receipts" });
     }
 };

@@ -265,7 +265,7 @@ export default function PaymentPage() {
             {showReceipt && (
                 <ReceiptModal
                     receipt={receiptData}
-                    onClose={() => setShowReceipt(false)}
+                    onClose={() => {    setShowReceipt(false); setReceiptData(null); navigate(-1); }}
                 />
             )}
         </div>

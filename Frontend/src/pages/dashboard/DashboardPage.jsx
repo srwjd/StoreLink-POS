@@ -2,11 +2,14 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { ChartLineUp, ShoppingBag, UsersThree, Receipt } from "phosphor-react";
+import { Dialog } from "@mui/material";
 import {
     ResponsiveContainer,
     LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid
 } from "recharts";
+import { ChartLineUp, ShoppingBag, Receipt } from "phosphor-react";
+import { ZoomOutIcon } from "../../../public/icons/icons";
+
 import Header from "../../components/shared/Header";
 
 export default function DashboardPage() {
@@ -18,8 +21,10 @@ export default function DashboardPage() {
     const [salesData, setSalesData] = useState([]);
     const [topProducts, setTopProducts] = useState([]);
     const [recentOrders, setRecentOrders] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [range, setRange] = useState("today");
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const storeId = localStorage.getItem("currentStore");
 
@@ -34,7 +39,7 @@ export default function DashboardPage() {
         try {
             const summaryRes = await axios.get(`${API_BASE_URL}/reports/summary/${storeId}`, {
                 headers,
-                range,
+                params: { range },
             });
             const salesRes = await axios.get(`${API_BASE_URL}/reports/sales-chart/${storeId}`, {
                 headers,
@@ -45,18 +50,21 @@ export default function DashboardPage() {
             const recentOrdersRes = await axios.get(`${API_BASE_URL}/reports/recent/${storeId}`, {
                 headers,
             });
+            const ordersRes = await axios.get(`${API_BASE_URL}/orders/${storeId}/all-receipts`, {
+                headers,
+            })
 
             setSummary(summaryRes.data);
             setSalesData(salesRes.data);
             setTopProducts(topProductsRes.data);
             setRecentOrders(recentOrdersRes.data);
+            setOrders(ordersRes.data);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
             setLoading(false);
         }
     };
-
 
     useEffect(() => {
         fetchData();
@@ -90,28 +98,32 @@ export default function DashboardPage() {
                     <SummaryCard
                         icon={<ChartLineUp size={32} />}
                         title="ยอดขายรวม"
-                        value={`฿ ${summary.totalSales.toLocaleString()}`}
+                        value={`฿ ${(summary?.totalSales || 0).toLocaleString()}`}
                     />
-                    <SummaryCard
-                        icon={<Receipt size={32} />}
-                        title="จำนวนบิล"
-                        value={`${summary.totalOrders} บิล`}
-                    />
+                    <div className="relative">
+                        <SummaryCard
+                            icon={<Receipt size={32} />}
+                            title="จำนวนบิล"
+                            value={`${summary.totalOrders} บิล`}
+                        />
+                        <div className="absolute top-6 right-3 ">
+                            <div
+                                onClick={() => setIsModalOpen(true)}
+                                className="hover:bg-[#3674B5]/20 rounded-full p-2">
+                                <ZoomOutIcon className="text-slate-400 " />
+                            </div>
+                        </div>
+                    </div>
                     <SummaryCard
                         icon={<ShoppingBag size={32} />}
                         title="สินค้าขายดี"
                         value={summary.bestProduct}
                     />
-                    {/* <SummaryCard
-                        icon={<UsersThree size={32} />}
-                        title="ลูกค้าที่ซื้อวันนี้"
-                        value={`${summary.totalCustomers} คน`}
-                    /> */}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* 🔸 กราฟยอดขาย */}
-                    <div className="col-span-3 bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div className="col-span-2 bg-white rounded-xl shadow-md p-6 mb-6">
                         <h2 className="text-lg font-semibold text-slate-700 mb-3">ยอดขายรายวัน</h2>
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart data={salesData}>
@@ -172,6 +184,50 @@ export default function DashboardPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* ✅ Pop-up Modal แสดงรายการออเดอร์ */}
+                <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                    <div className="p-6 bg-white rounded-xl shadow-lg max-w-3xl w-full mx-auto">
+                        <h2 className="text-xl font-semibold text-[#3674B5] mb-4">
+                            รายการคำสั่งซื้อ ({selectView.find(v => v.value === range)?.title})
+                        </h2>
+
+                        {orders.length > 0 ? (
+                            <table className="w-full text-sm text-slate-700 border">
+                                <thead className="bg-slate-50 border-b text-slate-500">
+                                    <tr>
+                                        <th className="text-left py-2 px-3">เวลา</th>
+                                        <th className="text-left py-2 px-3">พนักงาน</th>
+                                        <th className="text-right py-2 px-3">ยอดขาย</th>
+                                        <th className="text-center py-2 px-3">วิธีชำระ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.map((o, i) => (
+                                        <tr key={i} className="border-b hover:bg-slate-50">
+                                            <td className="py-2 px-3">{o.time}</td>
+                                            <td className="py-2 px-3">{o.staff}</td>
+                                            <td className="text-right py-2 px-3 text-[#3674B5] font-medium">฿ {o.total}</td>
+                                            <td className="text-center py-2 px-3">{o.payment}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className="text-center text-slate-500">ไม่มีคำสั่งซื้อในช่วงนี้</p>
+                        )}
+
+                        <div className="mt-5 text-center">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="bg-[#3674B5] text-white px-4 py-2 rounded-lg hover:bg-[#2f5fa0]"
+                            >
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </Dialog>
+
             </main>
         </div>
     );

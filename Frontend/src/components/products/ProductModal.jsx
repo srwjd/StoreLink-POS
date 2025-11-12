@@ -259,11 +259,8 @@ export default function ProductModal({
 
                         {/* 📸 อัปโหลดรูปสินค้า */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                รูปสินค้า
-                            </label>
+                            <div className="flex flex-col items-center justify-center hover:border-[#3674B5] transition">
 
-                            <div className="border-2 border-dashed border-slate-300 rounded-xl p-5 flex flex-col items-center justify-center hover:border-[#3674B5] transition">
                                 {preview ? (
                                     <img
                                         src={preview}
@@ -277,7 +274,7 @@ export default function ProductModal({
                                 )}
 
                                 <label className="cursor-pointer bg-[#3674B5] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#2f5fa0] active:scale-95 transition">
-                                    {uploading ? "กำลังอัปโหลด..." : "📤 เลือกรูปภาพ"}
+                                    {uploading ? "กำลังอัปโหลด..." : "เลือกรูปภาพ"}
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -299,13 +296,30 @@ export default function ProductModal({
                                         ลบรูปออก
                                     </button>
                                 )}
-                            </div>
 
-                            <p className="text-xs text-slate-400 mt-1 text-center">
-                                รองรับ JPG, PNG ขนาดไม่เกิน 5MB
-                            </p>
+                                <p className="text-xs text-slate-400 mt-1 text-center">
+                                    รองรับ JPG, PNG ขนาดไม่เกิน 5MB
+                                </p>
+                            </div>
                         </div>
 
+                        {/* 🔹 ประเภทสินค้า */}
+                        <div className="flex items-center justify-between py-2 rounded-lg">
+                            <label className="text-md font-medium text-slate-600">
+                                ประเภทสินค้า : {form.productType === "serialized" ? "มี Serial Number" : "ทั่วไป"}
+                            </label>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={form.productType === "serialized"}
+                                    onChange={(e) =>
+                                        setForm({ ...form, productType: e.target.checked ? "serialized" : "standard" })
+                                    }
+                                />
+                                <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-[#3674B5] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
 
                         {/* ✅ รหัสสินค้า (Barcode) */}
                         <div>
@@ -337,17 +351,25 @@ export default function ProductModal({
                                     className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
                                 />
                             </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-slate-600 mb-1">
                                     หมวดหมู่
                                 </label>
                                 <input
                                     type="text"
-                                    name="category"
+                                    placeholder="ค้นหาหรือพิมพ์ชื่อหมวดหมู่..."
                                     value={form.category}
-                                    onChange={handleChange}
-                                    className="w-full border border-slate-300 rounded-lg px-3 py-2"
+                                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                                    list="category-list"
+                                    className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
                                 />
+                                <datalist id="category-list">
+                                    <option value="อาหาร" />
+                                    <option value="เครื่องดื่ม" />
+                                    <option value="ของใช้" />
+                                    <option value="บริการ" />
+                                </datalist>
                             </div>
                         </div>
 
@@ -389,21 +411,6 @@ export default function ProductModal({
                             </div>
                         </div>
 
-                        {/* 🔹 ประเภทสินค้า */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-600 mb-1">
-                                ประเภทสินค้า
-                            </label>
-                            <select
-                                name="productType"
-                                value={form.productType}
-                                onChange={handleChange}
-                                className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                            >
-                                <option value="standard">ทั่วไป</option>
-                                <option value="serialized">มี Serial Number (SN)</option>
-                            </select>
-                        </div>
 
                         {/* 🔹 ราคา */}
                         <div>
@@ -421,14 +428,18 @@ export default function ProductModal({
                         </div>
 
                         {/* 🔹 สวิตช์: สินค้าหลายตัวเลือก */}
-                        <div className="bg-slate-50 rounded-lg p-3">
-                            <label className="flex items-center gap-3 cursor-pointer select-none">
+                        <div className="flex items-center justify-between py-2 rounded-lg">
+                            <label className="text-md font-medium text-slate-600">
+                                สินค้าหลายตัวเลือก
+                            </label>
+                            <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
+                                    className="sr-only peer"
                                     checked={!!form.hasOptions}
                                     onChange={(e) => toggleHasOptions(e.target.checked)}
                                 />
-                                <span className="text-slate-800 font-medium">สินค้าหลายตัวเลือก (เปิด/ปิด)</span>
+                                <div className="w-11 h-6 bg-slate-300 rounded-full peer peer-checked:bg-[#3674B5] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
                             </label>
                         </div>
 
@@ -446,113 +457,169 @@ export default function ProductModal({
                                     </button>
                                 </div>
 
-                                {form.optionGroups.map((g, gi) => (
-                                    <div key={gi} className="border border-slate-200 rounded-lg p-3 mb-3">
-                                        <div className="grid grid-cols-2 gap-3 mb-3">
-                                            <div>
-                                                <label className="block text-xs text-slate-600 mb-1">ชื่อกลุ่ม</label>
-                                                <input
-                                                    type="text"
-                                                    value={g.name}
-                                                    onChange={(e) => handleOptionGroupChange(gi, "name", e.target.value)}
-                                                    className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                                    placeholder="เช่น ความหวาน / ท็อปปิ้ง"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-3 gap-2 items-end">
-                                                <div>
-                                                    <label className="block text-xs text-slate-600 mb-1">รูปแบบเลือก</label>
-                                                    <select
-                                                        value={g.selectionType}
-                                                        onChange={(e) => handleOptionGroupChange(gi, "selectionType", e.target.value)}
-                                                        className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                                    >
-                                                        <option value="single">เลือกได้ 1</option>
-                                                        <option value="multiple">เลือกได้หลาย</option>
-                                                    </select>
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <input
-                                                        id={`required-${gi}`}
-                                                        type="checkbox"
-                                                        checked={!!g.required}
-                                                        onChange={(e) => handleOptionGroupChange(gi, "required", e.target.checked)}
-                                                    />
-                                                    <label htmlFor={`required-${gi}`} className="text-sm">บังคับเลือก</label>
-                                                </div>
-                                                {g.selectionType === "multiple" && (
-                                                    <div>
-                                                        <label className="block text-xs text-slate-600 mb-1">เลือกได้สูงสุด</label>
-                                                        <input
-                                                            type="number"
-                                                            value={g.maxSelections}
-                                                            onChange={(e) => handleOptionGroupChange(gi, "maxSelections", e.target.value)}
-                                                            className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                                            placeholder="เช่น 3"
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Choices */}
-                                        <div className="flex justify-between items-center mb-2">
-                                            <p className="text-slate-700">รายการตัวเลือก</p>
-                                            <button
-                                                type="button"
-                                                onClick={() => addChoice(gi)}
-                                                className="text-[#3674B5] flex items-center gap-1 hover:underline"
+                                {form.productType === "standard" ? (
+                                    <div>
+                                        <h3 className="font-semibold text-slate-700 mb-3">สินค้าหลายตัวเลือก</h3>
+                                        {form.optionGroups.map((g, gi) => (
+                                            <div
+                                                key={gi}
+                                                className="border border-slate-200 rounded-2xl p-5 mb-6 shadow-md bg-gradient-to-b from-white to-slate-50"
                                             >
-                                                <PlusCircle size={16} /> เพิ่มตัวเลือก
-                                            </button>
-                                        </div>
-                                        {g.choices?.map((c, ci) => (
-                                            <div key={ci} className="grid grid-cols-3 gap-2 mb-2 items-center">
-                                                <input
-                                                    type="text"
-                                                    placeholder="เช่น ไม่หวาน / หวานน้อย / ไข่มุก"
-                                                    value={c.label}
-                                                    onChange={(e) => handleChoiceChange(gi, ci, "label", e.target.value)}
-                                                    className="border border-slate-300 rounded-lg px-3 py-2"
-                                                />
-                                                <input
-                                                    type="number"
-                                                    placeholder="+ราคาเพิ่ม (ถ้ามี)"
-                                                    value={c.priceDelta}
-                                                    onChange={(e) => handleChoiceChange(gi, ci, "priceDelta", e.target.value)}
-                                                    className="border border-slate-300 rounded-lg px-3 py-2"
-                                                />
-                                                <div className="flex items-center gap-3">
-                                                    <label className="flex items-center gap-2 text-sm">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={!!c.isDefault}
-                                                            onChange={(e) => handleChoiceChange(gi, ci, "isDefault", e.target.checked)}
-                                                        />
-                                                        ค่าเริ่มต้น
-                                                    </label>
+                                                {/* 🔹 Header */}
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <h3 className="font-semibold text-slate-700">
+                                                        กลุ่มที่ {gi + 1}: {g.name || "ยังไม่ได้ตั้งชื่อ"}
+                                                    </h3>
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeChoice(gi, ci)}
-                                                        className="text-red-500"
+                                                        onClick={() => removeOptionGroup(gi)}
+                                                        className="text-red-500 text-sm hover:text-red-600 flex items-center gap-1"
                                                     >
-                                                        <Trash size={18} />
+                                                        <Trash size={16} /> ลบกลุ่มนี้
                                                     </button>
                                                 </div>
+
+                                                {/* 🔸 กล่องข้อมูลหลัก */}
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            value={g.name}
+                                                            onChange={(e) =>
+                                                                handleOptionGroupChange(gi, "name", e.target.value)
+                                                            }
+                                                            className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
+                                                            placeholder="ชื่อ เช่น ความหวาน"
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <select
+                                                            value={g.selectionType}
+                                                            onChange={(e) =>
+                                                                handleOptionGroupChange(gi, "selectionType", e.target.value)
+                                                            }
+                                                            className="w-[75%] border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
+                                                        >
+                                                            <option value="">เลือกประเภท</option>
+                                                            <option value="single">เลือกได้ 1</option>
+                                                            <option value="multiple">เลือกได้หลาย</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="flex items-center gap-2 text-sm">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={!!g.required}
+                                                                onChange={(e) =>
+                                                                    handleOptionGroupChange(gi, "required", e.target.checked)
+                                                                }
+                                                                className="accent-[#3674B5]"
+                                                            />
+                                                            บังคับเลือก
+                                                        </label>
+
+                                                        {g.selectionType === "multiple" && (
+                                                            <input
+                                                                type="number"
+                                                                value={g.maxSelections}
+                                                                onChange={(e) =>
+                                                                    handleOptionGroupChange(gi, "maxSelections", e.target.value)
+                                                                }
+                                                                className="w-20 border border-slate-300 rounded-lg px-2 py-1 text-right"
+                                                                placeholder="สูงสุด"
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                <hr className="border-slate-200 my-3" />
+
+                                                {/* 🔹 Choices list */}
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <h4 className="font-medium text-slate-700">รายการตัวเลือก</h4>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => addChoice(gi)}
+                                                        className="text-[#3674B5] flex items-center gap-1 hover:text-[#2f5fa0]"
+                                                    >
+                                                        <PlusCircle size={18} /> เพิ่มตัวเลือก
+                                                    </button>
+                                                </div>
+
+                                                {g.choices?.length ? (
+                                                    <div className="space-y-2">
+                                                        {g.choices.map((c, ci) => (
+                                                            <div
+                                                                key={ci}
+                                                                className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center bg-white border border-slate-200 rounded-lg p-3 hover:shadow-sm transition-all"
+                                                            >
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="เช่น ไม่หวาน / หวานน้อย / ไข่มุก"
+                                                                    value={c.label}
+                                                                    onChange={(e) =>
+                                                                        handleChoiceChange(gi, ci, "label", e.target.value)
+                                                                    }
+                                                                    className="border border-slate-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-[#3674B5]"
+                                                                />
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="+ราคาเพิ่ม (ถ้ามี)"
+                                                                    value={c.priceDelta}
+                                                                    onChange={(e) =>
+                                                                        handleChoiceChange(gi, ci, "priceDelta", e.target.value)
+                                                                    }
+                                                                    className="border border-slate-300 rounded-lg px-3 py-2 text-right focus:ring-1 focus:ring-[#3674B5]"
+                                                                />
+                                                                <div className="flex items-center justify-between">
+                                                                    <label className="flex items-center gap-2 text-sm">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={!!c.isDefault}
+                                                                            onChange={(e) =>
+                                                                                handleChoiceChange(gi, ci, "isDefault", e.target.checked)
+                                                                            }
+                                                                            className="accent-[#3674B5]"
+                                                                        />
+                                                                        ค่าเริ่มต้น
+                                                                    </label>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => removeChoice(gi, ci)}
+                                                                        className="text-red-500 hover:text-red-600"
+                                                                    >
+                                                                        <Trash size={18} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-center text-slate-400 text-sm my-3">
+                                                        ยังไม่มีตัวเลือก
+                                                    </p>
+                                                )}
                                             </div>
                                         ))}
-
-                                        <div className="flex justify-end mt-2">
+                                        <div className="mt-3 text-right">
                                             <button
                                                 type="button"
-                                                onClick={() => removeOptionGroup(gi)}
-                                                className="text-red-600 hover:underline"
+                                                onClick={addOptionGroup}
+                                                className="text-[#3674B5] hover:text-[#2f5fa0] flex items-center gap-1 text-sm"
                                             >
-                                                ลบกลุ่มนี้
+                                                <PlusCircle size={16} /> เพิ่มกลุ่มตัวเลือก
                                             </button>
                                         </div>
                                     </div>
-                                ))}
+                                ) : (
+                                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-4 text-center text-[#e43030]">
+                                        <p className="text-sm">
+                                            สินค้าที่มี Serial Number จะไม่สามารถเพิ่มตัวเลือกเสริมได้
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
