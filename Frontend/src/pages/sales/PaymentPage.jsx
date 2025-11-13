@@ -19,7 +19,7 @@ export default function PaymentPage() {
 
 
     // 🔹 รับค่าที่มาจากหน้า Sales หรือ Table
-    const { cart = [], totalAmount = 0, storeId, tableNumber = null } = location.state || {};
+    const { cart = [], totalAmount = 0, storeId, tableNumber = null, isRestaurantOrder } = location.state || {};
 
     const [method, setMethod] = useState("cash");
     const [paid, setPaid] = useState("");
@@ -90,9 +90,9 @@ export default function PaymentPage() {
             const orderPayload = {
                 storeId,
                 userId,
-                tableNumber, // ถ้ามีถือว่าร้านอาหาร
-                isInstantPay: !tableNumber, // ถ้าไม่มีโต๊ะ = จ่ายเลย
-                isRestaurantOrder: !!tableNumber,
+                tableNumber,
+                isInstantPay: !tableNumber,
+                isRestaurantOrder,
                 items: cart.map((i) => ({
                     productId: i._id,
                     barcode: i.barcode,

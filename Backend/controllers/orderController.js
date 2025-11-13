@@ -10,11 +10,11 @@ export const createOrder = async (req, res) => {
         const {
             storeId, userId, tableNumber, queueNumber,
             subTotal, tax, total, items, isInstantPay,
-            paymentMethod, paidAmount, changeAmount,
+            paymentMethod, paidAmount, changeAmount,isRestaurantOrder
         } = req.body;
 
         // ✅ ตรวจสอบว่าสินค้าพอไหมก่อนสร้างออเดอร์
-        if (!req.body.isRestaurantOrder) {
+        if (isRestaurantOrder === false) {
             for (const item of items) {
                 const product = await Product.findById(item.productId);
                 if (!product) {
@@ -55,15 +55,6 @@ export const createOrder = async (req, res) => {
                     await product.save();
                 }
             }
-        }
-
-        // 🍽️ ถ้ามีโต๊ะ → mark โต๊ะว่า
-        if (tableNumber) {
-            await Table.findOneAndUpdate(
-                { storeId, tableNumber },
-                { status: "pending", currentOrder: order._id },
-                { new: true }
-            );
         }
 
 
