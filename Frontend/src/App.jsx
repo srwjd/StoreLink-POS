@@ -14,6 +14,7 @@ import StoreSettings from './pages/StoreSettings.jsx';
 import ViweAllReceipt from './pages/dashboard/viweAllReceipt.jsx';
 import AdminPage from "./pages/AdminPage.jsx";
 import Kitchen from './components/restaurant/Kitchen.jsx';
+//เปลี่ยนชื่อ
 
 
 function App() {
