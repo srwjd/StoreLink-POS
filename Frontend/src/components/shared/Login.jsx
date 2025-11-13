@@ -58,8 +58,8 @@ export default function LoginPopup({ onClose, onRegister }) {
             if (res.ok) {
                 localStorage.setItem("token", data.token);
                 onClose();
-                if (userRole === "admin") navigate("/admin");
-                navigate("/select-store"); // เปลี่ยนไปหน้าหลักหลังล็อกอิน
+                if (userRole === "Admin") { navigate("/admin"); }
+                else { navigate("/select-store");} // เปลี่ยนไปหน้าหลักหลังล็อกอิน
             } else {
                 setError(data.message || "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
             }

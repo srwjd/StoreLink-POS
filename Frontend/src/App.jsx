@@ -12,7 +12,8 @@ import PaymentPage from './pages/sales/PaymentPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import StoreSettings from './pages/StoreSettings.jsx';
 import ViweAllReceipt from './pages/dashboard/viweAllReceipt.jsx';
-import Kitchen from './components/restaurant/Kitchen.jsx'
+import AdminPage from "./pages/AdminPage.jsx";
+
 
 function App() {
 
@@ -117,15 +118,15 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* หน้าครัว */}
           <Route
-            path="/kitchen/:storeId"
+            path="/admin"
             element={
               <ProtectedRoute>
-                <Kitchen />
+                <AdminPage />
               </ProtectedRoute>
             }
           />
+
 
           <Route path="*" element={<Landing />} />
         </Routes>
