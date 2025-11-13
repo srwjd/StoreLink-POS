@@ -10,11 +10,11 @@ export const createOrder = async (req, res) => {
         const {
             storeId, userId, tableNumber, queueNumber,
             subTotal, tax, total, items, isInstantPay,
-            paymentMethod, paidAmount, changeAmount,
+            paymentMethod, paidAmount, changeAmount,isRestaurantOrder
         } = req.body;
 
         // ✅ ตรวจสอบว่าสินค้าพอไหมก่อนสร้างออเดอร์
-        if (!req.body.isRestaurantOrder) {
+        if (isRestaurantOrder === false) {
             for (const item of items) {
                 const product = await Product.findById(item.productId);
                 if (!product) {
@@ -55,15 +55,6 @@ export const createOrder = async (req, res) => {
                     await product.save();
                 }
             }
-        }
-
-        // 🍽️ ถ้ามีโต๊ะ → mark โต๊ะว่า
-        if (tableNumber) {
-            await Table.findOneAndUpdate(
-                { storeId, tableNumber },
-                { status: "pending", currentOrder: order._id },
-                { new: true }
-            );
         }
 
 
@@ -210,23 +201,27 @@ export const cancelReceipt = async (req, res) => {
 export const getKitchenOrders = async (req, res) => {
     try {
         const orders = await Order.find({ storeId: req.params.storeId }).sort({ createdAt: 1 });
-        res.json(orders);
+
+        res.json(orders, );
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch orders" });
     }
 };
 
-// PATCH kitchen-orders/:id/status
 export const updateKitchenStatus = async (req, res) => {
     try {
-        const { status } = req.body;
-        const updated = await Order.findByIdAndUpdate(
-            req.params.id,
-            { kitchenStatus: status },
-            { new: true }
-        );
-        res.json(updated);
+        const { kitchenStatus, orderId } = req.body;
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        order.kitchenStatus = kitchenStatus;
+        await order.save();
+
+        res.status(200).json({ message: "Kitchen status updated", order });
     } catch (err) {
-        res.status(500).json({ error: "Failed to update status" });
+        res.status(500).json({ error: "Failed to update kitchen status", details: err.message });
     }
 };

@@ -355,7 +355,7 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
             disabled={cart.length === 0}
             onClick={() => {
               if (cart.length === 0) return alert("ยังไม่มีรายการสินค้า");
-              navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId } })
+              navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId, isRestaurantOrder: true } })
             }}
             className={`w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold shadow-md transition-all ${cart.length === 0
               ? "bg-slate-300 text-slate-500 cursor-not-allowed"
