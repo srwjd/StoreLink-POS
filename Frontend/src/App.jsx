@@ -12,7 +12,7 @@ import PaymentPage from './pages/sales/PaymentPage.jsx';
 import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import StoreSettings from './pages/StoreSettings.jsx';
 import ViweAllReceipt from './pages/dashboard/viweAllReceipt.jsx';
-import AdminPage from "./pages/AdminPage.jsx";
+import AdminPage from './pages/AdminPage.jsx'
 import Kitchen from './components/restaurant/Kitchen.jsx';
 //เปลี่ยนชื่อ
 
