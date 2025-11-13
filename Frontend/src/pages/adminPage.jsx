@@ -72,9 +72,7 @@ export default function AdminPage() {
                   <td className="py-2 px-4 border-b">{store.storeName}</td>
                   <td className="py-2 px-4 border-b">{store.storeCode}</td>
                   <td className="py-2 px-4 border-b">{store.storeType}</td>
-                  <td className="py-2 px-4 border-b">
-                    {store.ownerId ? store.ownerId.name : "-"}
-                  </td>
+                  <td className="py-2 px-4 border-b">{store.ownerName}</td>
                   <td className="py-2 px-4 border-b text-center">
                     <button
                       onClick={() => handleDelete(store._id)}
