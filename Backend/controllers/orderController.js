@@ -210,23 +210,27 @@ export const cancelReceipt = async (req, res) => {
 export const getKitchenOrders = async (req, res) => {
     try {
         const orders = await Order.find({ storeId: req.params.storeId }).sort({ createdAt: 1 });
-        res.json(orders);
+
+        res.json(orders, );
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch orders" });
     }
 };
 
-// PATCH kitchen-orders/:id/status
 export const updateKitchenStatus = async (req, res) => {
     try {
-        const { status } = req.body;
-        const updated = await Order.findByIdAndUpdate(
-            req.params.id,
-            { kitchenStatus: status },
-            { new: true }
-        );
-        res.json(updated);
+        const { kitchenStatus, orderId } = req.body;
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        order.kitchenStatus = kitchenStatus;
+        await order.save();
+
+        res.status(200).json({ message: "Kitchen status updated", order });
     } catch (err) {
-        res.status(500).json({ error: "Failed to update status" });
+        res.status(500).json({ error: "Failed to update kitchen status", details: err.message });
     }
 };
