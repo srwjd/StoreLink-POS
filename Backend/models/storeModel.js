@@ -15,6 +15,7 @@ const storeSchema = new mongoose.Schema(
     storeCode: { type: String, unique: true },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     storeName: { type: String, required: true },
+    storeImage: { type: String, default: "" },
     storeType: {
       type: String,
       enum: ["general", "restaurant", "service"],

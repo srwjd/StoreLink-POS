@@ -25,7 +25,7 @@ export default function MainMenuService() {
         { icon: <CalendarPlus size={48} />, label: "จองคิว" },
         { icon: <ChartBar size={48} />, label: "รายงาน" },
         { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },
-        { icon: <Gear size={48} />, label: "ตั้งค่า" },
+        { icon: <Gear size={48} />, label: "ตั้งค่า", navigateTo: `/settings/${storeId}` },
     ];
 
     return (

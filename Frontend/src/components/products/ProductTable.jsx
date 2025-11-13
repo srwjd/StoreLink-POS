@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
+import { useStore } from "../../context/StoreContext";
 import axios from "axios";
 import Switch from '@mui/material/Switch';
 import { ImageIcon } from "../../../public/icons/icons";
@@ -9,6 +10,7 @@ import ProductModal from "./ProductModal";
 export default function ProductTable({ products, refresh, storeId }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+    const { store } = useStore();
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -63,7 +65,7 @@ export default function ProductTable({ products, refresh, storeId }) {
                         <th className="px-4 py-3 font-semibold">ชื่อสินค้า</th>
                         <th className="px-4 py-3 font-semibold">หมวดหมู่</th>
                         <th className="px-4 py-3 font-semibold text-center">ราคา</th>
-                        <th className="px-4 py-3 font-semibold text-center">คงเหลือ</th>
+                        {store.storeType === "general" && <th className="px-4 py-3 font-semibold text-center">คงเหลือ</th>}
                         <th className="px-4 py-3 font-semibold text-center">สถานะ</th>
                         <th className="px-4 py-3 font-semibold text-center">การจัดการ</th>
                     </tr>
@@ -105,13 +107,15 @@ export default function ProductTable({ products, refresh, storeId }) {
                                     {p.price != null ? p.price.toLocaleString("th-TH", { minimumFractionDigits: 2 }) : "0.00"} ฿
                                 </td>
 
-                                <td className="px-4 py-3 text-center">
-                                    {p.type === "serialized"
-                                        ? (p.serialList || []).filter(
-                                            (s) => s.status === "available"
-                                        ).length
-                                        : p.stockQty ?? "-"}
-                                </td>
+                                {store.storeType === "general" && (
+                                    <td className="px-4 py-3 text-center">
+                                        {p.type === "serialized"
+                                            ? (p.serialList || []).filter(
+                                                (s) => s.status === "available"
+                                            ).length
+                                            : p.stockQty ?? "-"}
+                                    </td>
+                                )}
 
                                 <td className="px-4 py-3 text-center">
                                     <Switch

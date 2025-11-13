@@ -6,6 +6,8 @@ import {
     getReceipt,
     cancelReceipt,
     getAllReceipts,
+    getKitchenOrders,
+    updateKitchenStatus,
 } from "../controllers/orderController.js";
 import { requireAuth } from "../middleware/authMiddleware.js";
 
@@ -25,5 +27,9 @@ router.get("/:orderId/receipt", requireAuth, getReceipt);
 router.put("/:orderId/cancel", requireAuth, cancelReceipt);
 // ดึงประวัติการขายของร้าน
 router.get("/:storeId/all-receipts", requireAuth, getAllReceipts);
+// ดึงออเดอร์ที่อยู่ในแถว
+router.get("/:storeId/kitchen-orders", requireAuth, getKitchenOrders);
+// อัปเดตสถานะออเดอร์ในแถว
+router.put("/:orderId/kitchen-status", requireAuth, updateKitchenStatus);
 
 export default router;

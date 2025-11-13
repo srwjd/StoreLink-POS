@@ -18,7 +18,6 @@ export const getEmployees = async (req, res) => {
       path: "positionId",
       model: "Position",
     });
-
     res.status(200).json({ employees });
   } catch (err) {
     res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
@@ -206,13 +205,13 @@ export const updateEmployee = async (req, res) => {
 export const deleteEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // บันทึกวันที่ลาออกก่อนลบ (ถ้ายังไม่มี)
     const employee = await User.findById(id);
     if (employee && !employee.resignDate) {
       await User.findByIdAndUpdate(id, { resignDate: new Date() });
     }
-    
+
     const deleted = await User.findByIdAndDelete(id);
 
     if (!deleted)

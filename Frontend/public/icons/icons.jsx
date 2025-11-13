@@ -11,10 +11,12 @@ export {
 
 
 import {
-    FaPlus
+    FaPlus,
+    FaKitchenSet,
 } from "react-icons/fa6";
 export {
-    FaPlus as AddIcon // เพิ่ม
+    FaPlus as AddIcon, // เพิ่ม
+    FaKitchenSet as KitchenIcon, // ไอคอนคาเฟ่
 };
 
 

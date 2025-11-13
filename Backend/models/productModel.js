@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema({
     type: { type: String, enum: ["standard", "serialized"], default: "standard" },
     price: { type: Number, required: true },
     unit: String,
+    duration: { type: Number, default: 0 },
     stockQty: { type: Number, default: 0 },
     optionGroups: [
         {

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { EnvelopeSimple, Lock, Eye, EyeSlash } from "phosphor-react";
 
@@ -46,9 +47,18 @@ export default function LoginPopup({ onClose, onRegister }) {
 
             const data = await res.json();
 
+            let userRole = null;
+            try {
+                const decoded = jwtDecode(data.token);
+                userRole = decoded.role;
+            } catch (err) {
+                console.warn("ไม่สามารถอ่าน userId จาก token ได้:", err);
+            }
+
             if (res.ok) {
                 localStorage.setItem("token", data.token);
                 onClose();
+                if (userRole === "admin") navigate("/admin");
                 navigate("/select-store"); // เปลี่ยนไปหน้าหลักหลังล็อกอิน
             } else {
                 setError(data.message || "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");

@@ -1,16 +1,26 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import Header from "../components/shared/Header";
+import { BsGearFill } from "react-icons/bs";
+import { Money, Phone, Storefront, Upload, X, Image as ImageIcon } from "phosphor-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function StoreSettings() {
   const { storeId } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false); // สำหรับ loading ปุ่มบันทึก
+  const [saving, setSaving] = useState(false);
+  const [logo, setLogo] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
   const [form, setForm] = useState({
     storeName: "",
     address: "",
@@ -18,11 +28,9 @@ export default function StoreSettings() {
     cash: true,
     qrPromptPay: false,
     promptPayNumber: "",
+    storeImage: "",
   });
-  const [logo, setLogo] = useState(null);
-  const token = localStorage.getItem("token");
 
-  // โหลดข้อมูลร้าน
   useEffect(() => {
     if (!storeId) return;
     const fetchStore = async () => {
@@ -30,15 +38,18 @@ export default function StoreSettings() {
         const res = await axios.get(`${API_BASE_URL}/stores/${storeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setStore(res.data);
+        const data = res.data;
+        setStore(data);
         setForm({
-          storeName: res.data.storeName,
-          address: res.data.address || "",
-          phone: res.data.phone || "",
-          cash: res.data.paymentSettings.cash,
-          qrPromptPay: res.data.paymentSettings.qrPromptPay,
-          promptPayNumber: res.data.paymentSettings.promptPayNumber,
+          storeName: data.storeName,
+          address: data.address || "",
+          phone: data.phone || "",
+          cash: data.paymentSettings.cash,
+          qrPromptPay: data.paymentSettings.qrPromptPay,
+          promptPayNumber: data.paymentSettings.promptPayNumber,
+          storeImage: data.storeImage,
         });
+        setLogoPreview(data.storeImage);
       } catch {
         toast.error("โหลดข้อมูลร้านล้มเหลว");
       } finally {
@@ -48,7 +59,12 @@ export default function StoreSettings() {
     fetchStore();
   }, [storeId]);
 
-  if (loading) return <p className="text-center p-6">กำลังโหลด...</p>;
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#EAF2FF] to-[#C6D8FF]">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-[#3674B5]"></div>
+      </div>
+    );
 
   const askPassword = async () => {
     const password = prompt("กรุณากรอกรหัสผ่านเพื่อยืนยันการบันทึก:");
@@ -59,54 +75,59 @@ export default function StoreSettings() {
     return password;
   };
 
-  // บันทึกการแก้ไขทั้งหมด
+  const handleLogoUpload = async (file) => {
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("กรุณาอัปโหลดไฟล์รูปภาพ JPG, PNG หรือ WEBP เท่านั้น");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("ขนาดไฟล์ต้องไม่เกิน 10MB");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setLogo(file);
+      setLogoPreview(res.data.url);
+      toast.success("อัปโหลดโลโก้สำเร็จ");
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("เกิดข้อผิดพลาดในการอัปโหลดโลโก้");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // 🧹 ลบโลโก้
+  const removeLogo = () => {
+    setLogo(null);
+    setLogoPreview(null);
+  };
+
   const handleSaveAll = async () => {
     const password = await askPassword();
     if (!password) return;
-
     setSaving(true);
     try {
-      // 1️⃣ อัปเดตชื่อร้าน
       await axios.put(
-        `${API_BASE_URL}/settings/${storeId}/name`,
-        { storeName: form.storeName, password },
+        `${API_BASE_URL}/stores/update/${storeId}`,
+        { ...form, password },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 2️⃣ อัปเดตการตั้งค่าชำระเงิน
-      await axios.put(
-        `${API_BASE_URL}/settings/${storeId}/payment`,
-        {
-          cash: form.cash,
-          qrPromptPay: form.qrPromptPay,
-          promptPayNumber: form.promptPayNumber,
-          password,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // 3️⃣ อัปเดตข้อมูลติดต่อ
-      await axios.put(
-        `${API_BASE_URL}/settings/${storeId}/contact`,
-        { address: form.address, phone: form.phone, password },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // 4️⃣ อัปโหลดโลโก้ถ้ามี
-      if (logo) {
-        const formData = new FormData();
-        formData.append("logo", logo);
-        formData.append("password", password);
-
-        await axios.put(`${API_BASE_URL}/settings/${storeId}/logo`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      }
-
-      toast.success("บันทึกการแก้ไขสำเร็จ");
+      toast.success("✅ บันทึกการแก้ไขสำเร็จ");
     } catch (err) {
       toast.error(err.response?.data?.message || "เกิดข้อผิดพลาด");
     } finally {
@@ -132,105 +153,183 @@ export default function StoreSettings() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white rounded-3xl shadow-xl border border-gray-200">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">🛠 ตั้งค่าร้านค้า</h2>
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#EAF2FF] to-[#C6D8FF]">
+      <Header />
+      <main className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-[#C7D8F5] p-10 relative overflow-y-auto max-h-[calc(100vh-130px)]">
+          {/* Heading */}
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-[#3674B5] flex items-center gap-5">
+              <BsGearFill size={32} />ตั้งค่าร้านค้า
+            </h2>
+            {store && (
+              <span className="text-sm text-slate-500 italic">
+                Store ID: {storeId}
+              </span>
+            )}
+          </div>
 
-      {/* ชื่อร้าน */}
-      <div className="mb-6">
-        <label className="font-medium text-gray-700">ชื่อร้าน</label>
-        <input
-          type="text"
-          className="border border-gray-300 p-3 w-full rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={form.storeName}
-          onChange={(e) => setForm({ ...form, storeName: e.target.value })}
-        />
-      </div>
-
-      {/* ข้อมูลติดต่อ */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2 text-gray-700">📇 ข้อมูลติดต่อ</h3>
-        <input
-          type="text"
-          placeholder="ที่อยู่ร้าน"
-          className="border border-gray-300 p-2 w-full rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={form.address}
-          onChange={(e) => setForm({ ...form, address: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="เบอร์โทรร้าน"
-          className="border border-gray-300 p-2 w-full rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        />
-      </div>
-
-      {/* การชำระเงิน */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2 text-gray-700">💰 การตั้งค่าชำระเงิน</h3>
-        <div className="space-y-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.cash}
-              onChange={(e) => setForm({ ...form, cash: e.target.checked })}
-            />
-            เงินสด
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={form.qrPromptPay}
-              onChange={(e) =>
-                setForm({ ...form, qrPromptPay: e.target.checked })
-              }
-            />
-            QR พร้อมเพย์
-          </label>
-          {form.qrPromptPay && (
+          {/* Section: Store Name */}
+          <section className="mb-5 border-b border-slate-200 pb-6">
+            <label className="flex gap-3 font-semibold text-slate-700 text-lg">
+              <Storefront size={24} />ชื่อร้าน
+            </label>
             <input
               type="text"
-              placeholder="หมายเลขพร้อมเพย์"
-              className="border border-gray-300 p-2 w-full rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={form.promptPayNumber}
+              className="mt-3 border border-slate-300 p-3 w-full rounded-xl focus:ring-2 focus:ring-[#3674B5] outline-none transition"
+              value={form.storeName}
               onChange={(e) =>
-                setForm({ ...form, promptPayNumber: e.target.value })
+                setForm({ ...form, storeName: e.target.value })
               }
             />
-          )}
+          </section>
+
+          {/* Section: Contact */}
+          <section className="mb-5 border-b border-slate-200 pb-6">
+            <h3 className="flex gap-3 font-semibold text-slate-700 text-lg mb-3">
+              <Phone size={24} />ข้อมูลติดต่อ
+            </h3>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="ที่อยู่ร้าน"
+                className="border border-slate-300 p-3 w-full rounded-xl focus:ring-2 focus:ring-[#3674B5] outline-none transition"
+                value={form.address}
+                onChange={(e) =>
+                  setForm({ ...form, address: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="เบอร์โทรร้าน"
+                className="border border-slate-300 p-3 w-full rounded-xl focus:ring-2 focus:ring-[#3674B5] outline-none transition"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              />
+            </div>
+          </section>
+
+          {/* Section: Payment */}
+          <section className="mb-5 border-b border-slate-200 pb-6">
+            <h3 className="font-semibold text-slate-700 text-lg mb-3">
+              <Money size={24} /> การตั้งค่าชำระเงิน
+            </h3>
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={form.cash}
+                  onChange={(e) =>
+                    setForm({ ...form, cash: e.target.checked })
+                  }
+                />
+                เงินสด
+              </label>
+              <label className="flex items-center gap-2 text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={form.qrPromptPay}
+                  onChange={(e) =>
+                    setForm({ ...form, qrPromptPay: e.target.checked })
+                  }
+                />
+                QR พร้อมเพย์
+              </label>
+
+              {form.qrPromptPay && (
+                <input
+                  type="text"
+                  placeholder="หมายเลขพร้อมเพย์"
+                  className="border border-slate-300 p-3 w-full rounded-xl focus:ring-2 focus:ring-[#3674B5] outline-none transition"
+                  value={form.promptPayNumber}
+                  onChange={(e) =>
+                    setForm({ ...form, promptPayNumber: e.target.value })
+                  }
+                />
+              )}
+            </div>
+          </section>
+
+          {/* Section: Logo */}
+          <section className="mb-8">
+            <h3 className="font-semibold text-slate-700 text-lg mb-3">โลโก้ร้าน</h3>
+            {logoPreview ? (
+              <div className="border-2 border-dashed border-[#C7D8F5] rounded-xl p-4 bg-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <ImageIcon className="text-[#3674B5]" size={24} />
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">ไฟล์โลโก้ที่อัปโหลดแล้ว</p>
+                      <p className="text-xs text-slate-500 truncate max-w-xs">
+                        {logo?.name || "โลโก้ร้านปัจจุบัน"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeLogo}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full p-2 transition"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="mt-3">
+                  <img
+                    src={logoPreview}
+                    alt="โลโก้ร้าน"
+                    className="max-h-40 w-full object-contain rounded border border-slate-200"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-[#C7D8F5] rounded-xl p-8 text-center bg-white hover:border-[#3674B5] transition">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleLogoUpload(e.target.files[0])}
+                  className="hidden"
+                  id="storeLogoUpload"
+                />
+                <label
+                  htmlFor="storeLogoUpload"
+                  className="cursor-pointer flex flex-col items-center gap-3"
+                >
+                  <div className="bg-blue-100 rounded-full p-4">
+                    <Upload className="text-[#3674B5]" size={32} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-700">
+                      {uploading ? "กำลังอัปโหลด..." : "คลิกเพื่ออัปโหลดโลโก้ร้าน"}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">รองรับ JPG, PNG, WEBP (สูงสุด 10MB)</p>
+                  </div>
+                </label>
+              </div>
+            )}
+          </section>
+
+          {/* Action Buttons */}
+          <div className="flex gap-4 pt-4 border-t border-slate-200">
+            <button
+              onClick={handleSaveAll}
+              disabled={saving}
+              className={`flex-1 py-3 rounded-xl font-semibold text-white transition-all shadow-md ${saving
+                ? "bg-slate-400 cursor-not-allowed"
+                : "bg-[#3674B5] hover:bg-[#2f5fa0]"
+                }`}
+            >
+              {saving ? "กำลังบันทึก..." : "บันทึกการแก้ไข"}
+            </button>
+
+            <button
+              onClick={handleDeleteStore}
+              className="flex-1 py-3 rounded-xl font-semibold bg-red-500 hover:bg-red-600 text-white transition-all shadow-md"
+            >
+              ลบร้าน
+            </button>
+          </div>
         </div>
-      </div>
-
-      {/* โลโก้ร้าน */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2 text-gray-700">🖼 โลโก้ร้าน</h3>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setLogo(e.target.files[0])}
-          className="border border-gray-300 p-2 rounded-lg"
-        />
-      </div>
-
-      {/* ปุ่มบันทึกทั้งหมด และลบร้าน */}
-      <div className="flex gap-3 items-center">
-        <button
-          onClick={handleSaveAll}
-          disabled={saving}
-          className={`bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition flex items-center justify-center ${
-            saving ? "opacity-60 cursor-not-allowed" : ""
-          }`}
-        >
-          {saving ? "กำลังบันทึก..." : "💾 บันทึกการแก้ไข"}
-        </button>
-
-        <button
-          onClick={handleDeleteStore}
-          className="bg-red-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-700 transition"
-        >
-          ❌ ลบร้าน
-        </button>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import Order from "../models/OrderModel.js";
 import Product from "../models/productModel.js";
 import Table from "../models/tableModel.js";
+import User from "../models/userModel.js";
 import mongoose from "mongoose";
 
 // ✅ createOrder รองรับทั้งร้านทั่วไปและร้านอาหาร
@@ -9,7 +10,7 @@ export const createOrder = async (req, res) => {
         const {
             storeId, userId, tableNumber, queueNumber,
             subTotal, tax, total, items, isInstantPay,
-            paymentMethod, paidAmount, changeAmount
+            paymentMethod, paidAmount, changeAmount,
         } = req.body;
 
         // ✅ ตรวจสอบว่าสินค้าพอไหมก่อนสร้างออเดอร์
@@ -17,6 +18,7 @@ export const createOrder = async (req, res) => {
             for (const item of items) {
                 const product = await Product.findById(item.productId);
                 if (!product) {
+
                     return res.status(400).json({ error: `ไม่พบสินค้า ${item.name}` });
                 }
 
@@ -200,5 +202,31 @@ export const cancelReceipt = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Failed to cancel receipt" });
+    }
+};
+
+
+// GET kitchen-orders/:storeId
+export const getKitchenOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({ storeId: req.params.storeId }).sort({ createdAt: 1 });
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch orders" });
+    }
+};
+
+// PATCH kitchen-orders/:id/status
+export const updateKitchenStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const updated = await Order.findByIdAndUpdate(
+            req.params.id,
+            { kitchenStatus: status },
+            { new: true }
+        );
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to update status" });
     }
 };

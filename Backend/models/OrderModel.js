@@ -17,6 +17,8 @@ const orderSchema = new mongoose.Schema({
     // 🧩 เพิ่มระบบโต๊ะ / คิว
     tableNumber: { type: String, default: null }, // เช่น "โต๊ะ 1", "โต๊ะ 5" หรือ null ถ้าไม่ใช่ร้านอาหาร
     queueNumber: { type: String, default: null }, // ใช้แทนโต๊ะในร้านกาแฟ
+    kitchenStatus: { type: String, enum: ["waiting", "cooking", "done"], default: "waiting" },
+
 
     // 🔹 รายการอาหาร/สินค้า
     items: [orderItemSchema],

@@ -11,6 +11,7 @@ import {
 const router = express.Router();
 
 router.get("/:storeId", requireAuth, requirePermission("manage_employees"), getEmployees);
+router.get("/staff/:storeId", requireAuth, getEmployees);
 router.post("/create/:storeId", requireAuth, requirePermission("manage_employees"), createEmployee);
 router.put("/update/:id", requireAuth, requirePermission("manage_employees"), updateEmployee);
 router.delete("/delete/:id", requireAuth, requirePermission("manage_employees"), deleteEmployee);

@@ -306,7 +306,7 @@ export default function ProductModal({
                         </div>
 
                         {/* 🔹 ประเภทสินค้า */}
-                        {store?.storeType === "restaurant" ? (
+                        {store?.storeType === "restaurant" || store?.storeType === "service" ? (
                             <div></div>
                         ) : (
                             <div className="flex items-center justify-between py-2 rounded-lg">
@@ -329,19 +329,24 @@ export default function ProductModal({
 
 
                         {/* ✅ รหัสสินค้า (Barcode) */}
-                        <div>
-                            <label className="block text-sm font-medium text-slate-600 mb-1">
-                                รหัสสินค้า (Barcode)
-                            </label>
-                            <input
-                                type="text"
-                                name="barcode"
-                                placeholder="เช่น 8857123456789"
-                                value={form.barcode}
-                                onChange={handleChange}
-                                className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
-                            />
-                        </div>
+                        {store?.storeType === "restaurant" || store?.storeType === "service" ? (
+                            <div></div>
+                        ) : (
+                            <div>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">
+                                    รหัสสินค้า (Barcode)
+                                </label>
+                                <input
+                                    type="text"
+                                    name="barcode"
+                                    placeholder="เช่น 8857123456789"
+                                    value={form.barcode}
+                                    onChange={handleChange}
+                                    className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
+                                />
+                            </div>
+                        )}
+
 
                         {/* 🔹 ชื่อและหมวด */}
                         <div className="grid grid-cols-2 gap-4">
@@ -381,7 +386,9 @@ export default function ProductModal({
                         </div>
 
                         {/* 🔹 หน่วยและจำนวน */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className={`
+                            ${store?.storeType === "service" ? "hidden" : ""}
+                            ${store?.storeType === "restaurant" ? "" : "grid grid-cols-2 gap-4"} `}>
                             <div>
                                 <label className="block text-sm font-medium text-slate-600 mb-1">
                                     หน่วย (Unit)
@@ -394,7 +401,11 @@ export default function ProductModal({
                                     className="w-full border border-slate-300 rounded-lg px-3 py-2"
                                 />
                             </div>
-                            <div>
+
+                            {store?.storeType === "restaurant" ? (
+                                <div></div>
+                            ) : (
+                                <div>
                                 <label className="block text-sm font-medium text-slate-600 mb-1">
                                     จำนวนคงเหลือ (Qty)
                                 </label>
@@ -416,13 +427,15 @@ export default function ProductModal({
                                     />
                                 )}
                             </div>
+                            )}
+                            
                         </div>
 
 
                         {/* 🔹 ราคา */}
                         <div>
                             <label className="block text-sm font-medium text-slate-600 mb-1">
-                                {form.productType === "serialized" ? "ราคา (บาท)" : "ราคาเริ่มต้น (บาท)" }
+                                {form.productType === "serialized" ? "ราคา (บาท)" : "ราคาเริ่มต้น (บาท)"}
                             </label>
                             <input
                                 type="number"
@@ -435,7 +448,7 @@ export default function ProductModal({
                         </div>
 
                         {/* 🔹 สวิตช์: สินค้าหลายตัวเลือก */}
-                        {form.productType === "serialized" ? (
+                        {store?.storeType === "general" ? (
                             <div></div>
                         ) : (
                             <div className="flex items-center justify-between py-2 rounded-lg">

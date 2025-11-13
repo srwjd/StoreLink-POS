@@ -109,3 +109,12 @@ export const getStoreById = async (req, res) => {
   }
 };
 
+export const updateStore = async (req, res) => {
+  try {
+    const store = await Store.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json(store);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+

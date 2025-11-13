@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
+
 import axios from "axios";
 import {
   MagnifyingGlass,
@@ -291,7 +292,6 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
         </h2>
 
         <div className="flex justify-between text-sm text-slate-500 mb-2">
-          <span>{mode === "dine-in" ? `โต๊ะ ${tableId}` : "สั่งกลับบ้าน"}</span>
           <span>{cart.length} รายการ</span>
         </div>
 
@@ -350,13 +350,14 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
             <span>{total} บาท</span>
           </p>
 
+
           <button
             disabled={cart.length === 0}
             onClick={() => {
               if (cart.length === 0) return alert("ยังไม่มีรายการสินค้า");
               navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId } })
             }}
-            className={`mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold shadow-md transition-all ${cart.length === 0
+            className={`w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold shadow-md transition-all ${cart.length === 0
               ? "bg-slate-300 text-slate-500 cursor-not-allowed"
               : "bg-[#3674B5] hover:bg-[#2f5fa0] text-white"
               }`}
