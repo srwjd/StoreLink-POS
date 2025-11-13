@@ -29,10 +29,12 @@ export default function ManagePosition() {
         positionName: "",
         permissions: {
             sale: false,
+            all_receipts: false,
+            kitchen: false,
+            product: false,
             report: false,
             manage_employees: false,
             settings: false,
-            product: false,
         },
     });
 
@@ -138,6 +140,8 @@ export default function ManagePosition() {
             positionName: pos.positionName,
             permissions: {
                 sale: pos.permissions.includes("sale"),
+                all_receipts: pos.permissions.includes("all_receipts"),
+                kitchen: pos.permissions.includes("kitchen"),
                 manage_employees: pos.permissions.includes("manage_employees"),
                 report: pos.permissions.includes("report"),
                 settings: pos.permissions.includes("settings"),
@@ -158,6 +162,8 @@ export default function ManagePosition() {
                 manage_employees: false,
                 settings: false,
                 product: false,
+                all_receipts: false,
+                kitchen: false,
             },
         });
         setShowModal(true);
@@ -209,6 +215,8 @@ export default function ManagePosition() {
                                     <th className="py-3 px-4">พนักงาน</th>
                                     <th className="py-3 px-4">ตั้งค่า</th>
                                     <th className="py-3 px-4">สินค้า</th>
+                                    <th className="py-3 px-4">ครัว</th>
+                                    <th className="py-3 px-4">ดูใบเสร็จ</th>
                                     <th className="py-3 px-4 rounded-tr-lg">การจัดการ</th>
                                 </tr>
                             </thead>
@@ -221,7 +229,7 @@ export default function ManagePosition() {
                                         <td className="py-3 px-4 font-medium text-slate-700">
                                             {pos.positionName}
                                         </td>
-                                        {["sale", "report", "manage_employees", "settings", "product"].map((perm) => (
+                                        {["sale", "report", "manage_employees", "settings", "product", "all_receipts", "kitchen"].map((perm) => (
                                             <td key={perm} className="py-3 px-4 align-middle">
                                                 <div className="flex items-center justify-center">
                                                     {pos.permissions?.includes(perm) ? (
@@ -320,7 +328,11 @@ export default function ManagePosition() {
                                                                 ? "ตั้งค่า"
                                                                 : perm === "product"
                                                                     ? "สินค้า"
-                                                                    : "ไม่ระบุ"}
+                                                                    : perm === "all_receipts"
+                                                                        ? "ใบเสร็จ"
+                                                                        : perm === "kitchen"
+                                                                            ? "ครัว"
+                                                                            : "ไม่ระบุ"}
                                             </span>
                                         </label>
                                     ))}

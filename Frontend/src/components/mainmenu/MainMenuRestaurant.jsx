@@ -1,17 +1,81 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
+
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 import { ShoppingCart, ForkKnife, ChartBar, Users, Gear } from "phosphor-react";
 import { KitchenIcon, Receipt } from "../../../public/icons/icons";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function MainMenuRestaurant() {
     const navigate = useNavigate();
     const { store, loading } = useStore();
+    const [permissions, setPermissions] = useState([]);
+
+    const token = localStorage.getItem("token");
+    const headers = { Authorization: `Bearer ${token}` };
 
 
+    const checkPermissions = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.warn("⚠️ ไม่มี token");
+                return;
+            }
+
+            let decoded;
+            try {
+                decoded = jwtDecode(token);
+                console.log("🧩 decoded token:", decoded.positionId);
+            } catch (err) {
+                console.warn("⚠️ Token ไม่ถูกต้อง:", err.message);
+                return;
+            }
+
+            const positionId = decoded.positionId;
+
+            // เจ้าของร้าน ได้สิทธิ์เต็ม
+            if (decoded.role === "Owner") {
+                setPermissions([
+                    "sale",
+                    "report",
+                    "manage_employees",
+                    "settings",
+                    "product",
+                    "all_receipts",
+                    "kitchen",
+                ]);
+                return;
+            }
+
+            if (!positionId) {
+                console.warn("❌ ไม่มี positionId ใน token");
+                return;
+            }
+
+            const res = await axios.get(`${API_BASE_URL}/positions/detail/${positionId}`, { headers });
+            const posPermissions = res.data.permissions || res.data.position?.permissions || [];
+            console.log("permission", posPermissions);
+
+
+
+            setPermissions(posPermissions);
+        } catch (err) {
+            console.error("❌ Error fetching permissions:", err);
+        }
+    };
+
+
+    useEffect(() => {
+        checkPermissions();
+    }, []);
 
     if (loading || !store) {
         return (
@@ -26,15 +90,19 @@ export default function MainMenuRestaurant() {
     const storeId = store._id;
     const storeType = store.storeType;
 
-    const menuItems = [
-        { icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeType}/${storeId}` },
-        { icon: <Receipt size={48} />, label: "ใบเสร็จ", navigateTo: `/all-receipts/${storeId}` },
-        { icon: <KitchenIcon size={48} />, label: "ครัว", navigateTo: `/kitchen/${storeId}` },
-        { icon: <ForkKnife size={48} />, label: "เมนูอาหาร", navigateTo: `/products/menu/${storeId}` },
-        { icon: <ChartBar size={48} />, label: "แดชบอร์ด", navigateTo: `/dashboard/${storeId}` },
-        { icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },
-        { icon: <Gear size={48} />, label: "ตั้งค่า", navigateTo: `/settings/${storeId}` },
+    const allMenuItems = [
+        { key: "sale", icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeType}/${storeId}` },
+        { key: "all_receipts", icon: <Receipt size={48} />, label: "ใบเสร็จ", navigateTo: `/all-receipts/${storeId}` },
+        { key: "kitchen", icon: <KitchenIcon size={48} />, label: "ครัว", navigateTo: `/kitchen/${storeId}` },
+        { key: "product", icon: <ForkKnife size={48} />, label: "เมนูอาหาร", navigateTo: `/products/menu/${storeId}` },
+        { key: "report", icon: <ChartBar size={48} />, label: "แดชบอร์ด", navigateTo: `/dashboard/${storeId}` },
+        { key: "manage_employees", icon: <Users size={48} />, label: "พนักงาน", navigateTo: `/manage-employees/${storeId}` },
+        { key: "settings", icon: <Gear size={48} />, label: "ตั้งค่า", navigateTo: `/settings/${storeId}` },
     ];
+
+    const visibleMenu = allMenuItems.filter(
+        (item) => permissions.includes(item.key)
+    );
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#E9F3FF] to-[#C8DCFF]">
@@ -42,7 +110,7 @@ export default function MainMenuRestaurant() {
             <main className="flex flex-1 justify-center items-center px-6">
                 <div className="flex flex-col items-center gap-8">
                     <div className="flex gap-8 justify-center">
-                        {menuItems.slice(0, 3).map((item, i) => (
+                        {visibleMenu.slice(0, 3).map((item, i) => (
                             <button
                                 key={i}
                                 onClick={() => item.navigateTo && navigate(item.navigateTo)}
@@ -56,7 +124,7 @@ export default function MainMenuRestaurant() {
                         ))}
                     </div>
                     <div className="flex gap-8 justify-center">
-                        {menuItems.slice(3).map((item, i) => (
+                        {visibleMenu.slice(3).map((item, i) => (
                             <button
                                 key={`bottom-${i}`}
                                 onClick={() => item.navigateTo && navigate(item.navigateTo)}

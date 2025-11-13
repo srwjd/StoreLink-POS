@@ -53,3 +53,28 @@ export const deletePosition = async (req, res) => {
         res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
     }
 };
+
+// 🔹 ดึงตำแหน่งตาม ID
+// ✅ แก้ให้ถูกต้อง
+export const getPositionById = async (req, res) => {
+    try {
+        const { id } = req.params; // <-- ใช้ id จาก params
+
+        const position = await Position.findById(id);
+
+        if (!position) {
+            return res.status(404).json({ message: "ไม่พบตำแหน่งนี้" });
+        }
+
+        res.status(200).json({
+            message: "ดึงตำแหน่งสำเร็จ",
+            _id: position._id,
+            positionName: position.positionName,
+            permissions: position.permissions || [],
+        });
+    } catch (err) {
+        console.error("❌ Error getPositionById:", err);
+        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+    }
+};
+

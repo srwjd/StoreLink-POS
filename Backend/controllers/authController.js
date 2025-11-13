@@ -63,7 +63,7 @@ export const login = async (req, res) => {
         const user = await User.findOne(
             email ? { email } : { username }
         );
-        
+
         if (!user)
             return res.status(401).json({ message: "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
 
@@ -79,12 +79,18 @@ export const login = async (req, res) => {
                 role: user.role,
                 storeIds: user.storeIds,
                 name: `${user.firstName} ${user.lastName}`,
+                positionId: user.positionId,
             },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
 
-        res.status(200).json({ message: "เข้าสู่ระบบสำเร็จ", token });
+        res.status(200).json({
+            message: "เข้าสู่ระบบสำเร็จ",
+            token,
+            positionId: user.positionId,
+             
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });

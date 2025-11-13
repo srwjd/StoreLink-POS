@@ -13,6 +13,7 @@ import DashboardPage from './pages/dashboard/DashboardPage.jsx';
 import StoreSettings from './pages/StoreSettings.jsx';
 import ViweAllReceipt from './pages/dashboard/viweAllReceipt.jsx';
 import AdminPage from "./pages/AdminPage.jsx";
+import Kitchen from './components/restaurant/Kitchen.jsx';
 
 
 function App() {
@@ -115,6 +116,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ViweAllReceipt />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/kitchen/:storeId"
+            element={
+              <ProtectedRoute>
+                <Kitchen />
               </ProtectedRoute>
             }
           />
