@@ -14,6 +14,7 @@ import {
   MinusCircle,
   PlusCircle,
 } from "phosphor-react";
+import { showInfo } from "../../utils/notify";
 import { ImageIcon } from "../../../public/icons/icons";
 
 export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
@@ -354,9 +355,9 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
           <button
             disabled={cart.length === 0}
             onClick={() => {
-              if (cart.length === 0) return alert("ยังไม่มีรายการสินค้า");
-              navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId, isRestaurantOrder: true } })
-            }}
+                if (cart.length === 0) return showInfo("ยังไม่มีรายการสินค้า");
+                navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId, isRestaurantOrder: true } })
+              }}
             className={`w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold shadow-md transition-all ${cart.length === 0
               ? "bg-slate-300 text-slate-500 cursor-not-allowed"
               : "bg-[#3674B5] hover:bg-[#2f5fa0] text-white"

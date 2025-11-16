@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useStore } from "../../context/StoreContext";
 import { ImageIcon } from "../../../public/icons/icons";
 import ProductModal from "./ProductModal";
+import { showConfirm, showError } from "../../utils/notify";
 
 export default function ProductCardGrid({ products, refresh }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -19,12 +20,14 @@ export default function ProductCardGrid({ products, refresh }) {
 
 
     const handleDelete = async (id) => {
-        if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
+        const ok = await showConfirm("คุณแน่ใจว่าต้องการลบสินค้านี้?");
+        if (!ok) return;
         try {
             await axios.delete(`${API_BASE_URL}/products/${id}`, { headers: getAuthHeader() });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);
+            showError("เกิดข้อผิดพลาดในการลบสินค้านี้");
         }
     };
 

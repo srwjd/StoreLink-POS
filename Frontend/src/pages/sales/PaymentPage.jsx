@@ -4,6 +4,7 @@ import { useStore } from "../../context/StoreContext";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/shared/Header";
+import { showError } from "../../utils/notify";
 import ReceiptModal from '../../components/receipt/ReceiptModal';
 import axios from "axios";
 
@@ -69,7 +70,7 @@ export default function PaymentPage() {
     // ✅ แก้ logic ให้รองรับทั้งร้านทั่วไป และร้านอาหาร
     const handleConfirm = async () => {
         if (method === "cash" && paid < total) {
-            alert("ยอดเงินไม่พอ กรุณาตรวจสอบอีกครั้ง");
+            showError("ยอดเงินไม่พอ กรุณาตรวจสอบอีกครั้ง");
             return;
         }
 
@@ -120,7 +121,7 @@ export default function PaymentPage() {
             setShowReceipt(true);
         } catch (err) {
             console.error("❌ Error saving order:", err);
-            alert("เกิดข้อผิดพลาดในการบันทึกประวัติการขาย");
+            showError("เกิดข้อผิดพลาดในการบันทึกประวัติการขาย");
         }
     };
 

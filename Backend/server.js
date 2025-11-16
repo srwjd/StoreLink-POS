@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import http from "http";
 import dotenv from "dotenv";
 
+import { setupSwagger } from "./swagger.js";
+
 import { errorHandler } from "./middleware/errorHandler.js";
 import uploadRoutes from "./routes/upload.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -33,6 +35,8 @@ const PORT = process.env.PORT || 3000;
   await connectDB();
 
   const app = express();
+
+  setupSwagger(app);
 
   // ✅ แก้ allowedDomains: ไม่ควรมี "/" ท้าย URL
   const allowedDomains = [

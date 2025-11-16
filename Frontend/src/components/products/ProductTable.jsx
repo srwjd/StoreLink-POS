@@ -5,6 +5,7 @@ import axios from "axios";
 import Switch from '@mui/material/Switch';
 import { ImageIcon } from "../../../public/icons/icons";
 import { PencilSimple, Trash } from "phosphor-react";
+import { showError, showConfirm } from "../../utils/notify";
 import ProductModal from "./ProductModal";
 
 export default function ProductTable({ products, refresh, storeId }) {
@@ -20,12 +21,14 @@ export default function ProductTable({ products, refresh, storeId }) {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
+        const ok = await showConfirm("คุณแน่ใจว่าต้องการลบสินค้านี้?");
+        if (!ok) return;
         try {
             await axios.delete(`${API_BASE_URL}/products/${id}`, { headers: getAuthHeader() });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);
+            showError("เกิดข้อผิดพลาดในการลบสินค้านี้");
         }
     };
 
@@ -51,7 +54,7 @@ export default function ProductTable({ products, refresh, storeId }) {
             refresh(); // รีเฟรชข้อมูลสินค้าในตาราง
         } catch (err) {
             console.error("Error updating status:", err);
-            alert("เกิดข้อผิดพลาดในการเปลี่ยนสถานะสินค้า");
+            showError("เกิดข้อผิดพลาดในการเปลี่ยนสถานะสินค้า");
         }
     };
 

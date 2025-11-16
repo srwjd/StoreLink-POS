@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../components/shared/Header";
+import { showConfirm } from "../utils/notify";
 import axios from "axios";
 import { Search } from "lucide-react";
 
@@ -148,7 +149,8 @@ export default function StockPage() {
 
     // ฟังก์ชันลบสินค้า
     const handleDelete = async (productId) => {
-        if (!window.confirm("คุณแน่ใจว่าต้องการลบสินค้านี้?")) return;
+        const ok = await showConfirm("คุณแน่ใจว่าต้องการลบสินค้านี้?");
+        if (!ok) return;
         try {
             await axios.delete(`${API_BASE_URL}/${productId}`, {
                 headers: getAuthHeader(),

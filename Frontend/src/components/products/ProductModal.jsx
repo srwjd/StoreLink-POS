@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, PlusCircle, Trash } from "phosphor-react";
 import axios from "axios";
 import { useStore } from "../../context/StoreContext";
+import { showError } from "../../utils/notify";
 
 export default function ProductModal({
     storeId,
@@ -144,12 +145,12 @@ export default function ProductModal({
 
         // ตรวจสอบชนิดและขนาดไฟล์ก่อนอัปโหลด
         if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
-            alert("กรุณาอัปโหลดไฟล์ JPG หรือ PNG เท่านั้น");
+            showError("กรุณาอัปโหลดไฟล์ JPG หรือ PNG เท่านั้น");
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            alert("ขนาดไฟล์ต้องไม่เกิน 5MB");
+            showError("ขนาดไฟล์ต้องไม่เกิน 5MB");
             return;
         }
 
@@ -170,7 +171,7 @@ export default function ProductModal({
             setFile(res.data.url);
         } catch (err) {
             console.error("❌ Upload error:", err);
-            alert("เกิดข้อผิดพลาดในการอัปโหลดรูป");
+            showError("เกิดข้อผิดพลาดในการอัปโหลดรูป");
             setPreview(null);
         } finally {
             setUploading(false);
@@ -222,17 +223,17 @@ export default function ProductModal({
 
             if (editingProduct) {
                 await axios.put(`${API_BASE_URL}/products/${editingProduct._id}`, payload, { headers });
-                alert("✅ บันทึกการแก้ไขเรียบร้อย");
+                
             } else {
                 await axios.post(`${API_BASE_URL}/products/create/${storeId}`, payload, { headers });
-                alert("✅ เพิ่มข้อมูลเรียบร้อย");
+                
             }
 
             onSuccess();
             onClose();
         } catch (err) {
             console.error("❌ Error saving product:", err);
-            alert("เกิดข้อผิดพลาดในการบันทึก");
+            showError("เกิดข้อผิดพลาดในการบันทึก");
         }
     };
 

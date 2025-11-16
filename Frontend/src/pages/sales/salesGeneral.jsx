@@ -14,6 +14,7 @@ import {
     X,
 } from "phosphor-react";
 import Header from "../../components/shared/Header";
+import { showError, showInfo } from "../../utils/notify";
 
 export default function SalesGeneral() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -74,11 +75,11 @@ export default function SalesGeneral() {
 
             const product = products.find((p) => p.barcode === code);
 
-            if (product) {
+                    if (product) {
                 if (product.type === "serialized") {
                     const available = (product.serialList || []).filter((s) => s.status === "available");
                     if (available.length === 0) {
-                        alert("สินค้านี้ไม่มี Serial Number พร้อมขาย");
+                        showError("สินค้านี้ไม่มี Serial Number พร้อมขาย");
                     } else {
                         setSerialModal({ open: true, product, quantity, available, selected: [] });
                     }
@@ -267,7 +268,7 @@ export default function SalesGeneral() {
 
                     <button
                         onClick={() => {
-                            if (cart.length === 0) return alert("ยังไม่มีรายการสินค้า");
+                            if (cart.length === 0) return showInfo("ยังไม่มีรายการสินค้า");
                             navigate(`/sales/payment/${storeId}`, { state: { cart, totalAmount: total, storeId } })
                         }}
                         className="flex items-center justify-center gap-2 py-2.5 rounded-lg mt-6 font-medium transition shadow bg-[#3674B5] hover:bg-[#2f5fa0] text-white"

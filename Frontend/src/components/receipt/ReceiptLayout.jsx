@@ -11,7 +11,7 @@ export default function ReceiptLayout({ receipt }) {
 
    
     useEffect(() => {
-        
+
     }, []);
 
     return (
@@ -32,7 +32,7 @@ export default function ReceiptLayout({ receipt }) {
                     <p>Date: {new Date(receipt.createdAt).toLocaleDateString("th-TH")}</p>
                 </div>
                 <div className="text-right">
-                    <p>Cashier: {receipt.userId?.firstName || "—"}</p>
+                    <p>Cashier: {receipt.userId.firstName || "—"}</p>
                     <p>{new Date(receipt.createdAt).toLocaleTimeString("th-TH")}</p>
                 </div>
             </div>

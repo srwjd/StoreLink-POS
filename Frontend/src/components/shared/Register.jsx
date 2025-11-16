@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { EnvelopeSimple, Lock, Eye, EyeSlash, CheckCircle, XCircle } from "phosphor-react";
+import { showError } from "../../utils/notify";
 
 export default function RegisterPopup({ onClose, onLogin }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -37,16 +38,16 @@ export default function RegisterPopup({ onClose, onLogin }) {
 
         // ตรวจเงื่อนไขรหัสผ่านก่อนส่ง
         if (!emailValid) {
-            alert("กรุณากรอกอีเมลให้ถูกต้อง");
+            showError("กรุณากรอกอีเมลให้ถูกต้อง");
             return;
         }
         if (!passwordRules.length || !passwordRules.upper || !passwordRules.number) {
-            alert("รหัสผ่านไม่เป็นไปตามเงื่อนไข");
+            showError("รหัสผ่านไม่เป็นไปตามเงื่อนไข");
             return;
         }
 
         if (form.password !== form.confirm) {
-            alert("รหัสผ่านไม่ตรงกัน");
+            showError("รหัสผ่านไม่ตรงกัน");
             return;
         }
 
@@ -64,7 +65,6 @@ export default function RegisterPopup({ onClose, onLogin }) {
             });
             const data = await res.json();
             if (res.ok) {
-                alert("สมัครสมาชิกสำเร็จ!");
                 console.log("token:", data.token);
 
                 localStorage.setItem("token", data.token);
@@ -73,10 +73,10 @@ export default function RegisterPopup({ onClose, onLogin }) {
 
                 navigate("/create-store");
             } else {
-                alert(data.message || "สมัครไม่สำเร็จ");
+                showError(data.message || "สมัครไม่สำเร็จ");
             }
         } catch (err) {
-            alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+            showError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
         }
         setLoading(false);
     };

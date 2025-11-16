@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { XCircle, Eye, EyeSlash, User, Envelope, Phone, MapPin, Calendar, CreditCard, FileText, Briefcase, Lock, Upload, X, Image as ImageIcon } from "phosphor-react";
+import { showError } from "../../utils/notify";
 
 export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -91,13 +92,13 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
         // ตรวจสอบประเภทไฟล์
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
         if (!validTypes.includes(file.type)) {
-            alert("กรุณาอัปโหลดไฟล์รูปภาพ (JPG, PNG) หรือ PDF เท่านั้น");
+            showError("กรุณาอัปโหลดไฟล์รูปภาพ (JPG, PNG) เท่านั้น");
             return;
         }
 
         // ตรวจสอบขนาดไฟล์ (10MB)
         if (file.size > 10 * 1024 * 1024) {
-            alert("ขนาดไฟล์ต้องไม่เกิน 10MB");
+            showError("ขนาดไฟล์ต้องไม่เกิน 10MB");
             return;
         }
 
@@ -120,7 +121,7 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
         } catch (err) {
             console.error("Upload error:", err);
             const errorMessage = err.response?.data?.message || err.message || "เกิดข้อผิดพลาดในการอัปโหลดไฟล์";
-            alert(`❌ ${errorMessage}`);
+            showError(`❌ ${errorMessage}`);
         } finally {
             setUploading(false);
         }
@@ -147,7 +148,7 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
 
         // ตรวจสอบว่าต้องมี email หรือ username อย่างน้อยหนึ่งอย่าง
         if (!form.email && !form.username) {
-            alert("กรุณากรอกอีเมลหรือชื่อผู้ใช้อย่างน้อยหนึ่งอย่าง");
+            showError("กรุณากรอกอีเมลหรือชื่อผู้ใช้อย่างน้อยหนึ่งอย่าง");
             return;
         }
 
@@ -173,21 +174,20 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
                     submitData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                alert("✅ อัปเดตพนักงานสำเร็จ");
             } else {
                 await axios.post(
                     `${API_BASE_URL}/employees/create/${storeId}`,
                     submitData,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                alert("🎉 เพิ่มพนักงานสำเร็จ");
+                
             }
 
             onSuccess?.(); // โหลดข้อมูลใหม่จาก parent
             onClose();
         } catch (err) {
             console.error("Error saving employee:", err);
-            alert(err.response?.data?.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+            showError(err.response?.data?.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
         } finally {
             setLoading(false);
         }
@@ -366,7 +366,7 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
                                         <p className="text-sm font-medium text-slate-700">
                                             {uploading ? "กำลังอัปโหลด..." : "คลิกเพื่ออัปโหลดสำเนาบัตรประชาชน"}
                                         </p>
-                                        <p className="text-xs text-slate-500 mt-1">รองรับไฟล์ JPG, PNG, PDF (สูงสุด 10MB)</p>
+                                        <p className="text-xs text-slate-500 mt-1">รองรับไฟล์ JPG, PNG (สูงสุด 10MB)</p>
                                     </div>
                                 </label>
                             </div>

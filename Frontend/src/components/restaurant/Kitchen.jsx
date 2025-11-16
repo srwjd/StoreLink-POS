@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../shared/Header";
-import { toast } from "react-hot-toast";
+import { showSuccess, showError } from "../../utils/notify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("token");
@@ -24,10 +24,10 @@ export default function Kitchen() {
     const updateStatus = async (orderId, newStatus) => {
         try {
             await axios.put(`${API_BASE_URL}/orders/${orderId}/kitchen-status`, { kitchenStatus: newStatus, orderId }, { headers });
-            toast.success(`อัปเดตสถานะเป็น "${newStatus}"`);
+            showSuccess(`อัปเดตสถานะเป็น "${newStatus}"`);
             fetchOrders();
         } catch {
-            toast.error("อัปเดตสถานะไม่สำเร็จ");
+            showError("อัปเดตสถานะไม่สำเร็จ");
         }
     };
 

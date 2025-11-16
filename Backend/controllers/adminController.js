@@ -28,7 +28,43 @@ export const getAllStores = async (req, res) => {
   }
 };
 
+// 
+export const getAllOwner = async (req, res) => {
+  try {
+    const users = await User.find({ role: "Owner" })
+      .populate("storeIds", "storeName")
+      .sort({ createdAt: -1 })
+      .lean();
 
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const editPasswordOwner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "ไม่พบผู้ใช้" });
+    }
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "แก้ไขรหัสผ่านเรียบร้อยแล้ว" });
+  } catch (error) {
+    console.error("❌ Error editing password:", error);
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการแก้ไขรหัสผ่าน" });
+  }
+};
 // 🔴 ลบร้านค้า
 export const deleteStore = async (req, res) => {
   try {

@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useState,  } from "react";
+import { useState, } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Money } from "phosphor-react";
 
 import Header from "../components/shared/Header";
 import Footer from "../components/shared/Footer";
+import { showError } from "../utils/notify";
 
 
 export default function CreateStore() {
@@ -92,14 +93,13 @@ export default function CreateStore() {
             });
             const data = await res.json();
             if (res.ok) {
-                alert("สร้างร้านค้าสำเร็จ!");
                 console.log("✅ Store created:", data.store);
                 navigate("/select-store");
             } else {
-                alert(data.message || "ไม่สามารถสร้างร้านได้");
+                showError(data.message || "ไม่สามารถสร้างร้านได้");
             }
         } catch (err) {
-            alert("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+            showError("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
         }
     };
 
@@ -222,9 +222,12 @@ function Step1({ form, onChange }) {
 }
 
 function Step2({ form, onChange }) {
-    const handleTaxChange = (e) => {
-        const value = e.target.value.trim();
-        onChange("taxRate", value === "" ? 0 : Number(value));
+    const [taxEnabled, setTaxEnabled] = useState(form.taxRate > 0);
+
+    const toggleTax = () => {
+        const newState = !taxEnabled;
+        setTaxEnabled(newState);
+        onChange("taxRate", newState ? 7 : 0);
     };
 
     return (
@@ -238,22 +241,48 @@ function Step2({ form, onChange }) {
                     className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#3674B5]"
                 />
                 <input
+                    type="text"
                     placeholder="เบอร์โทร"
                     value={form.phone}
-                    onChange={(e) => onChange("phone", e.target.value)}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        // ✅ รับเฉพาะตัวเลข และจำกัด 10 หลัก
+                        if (/^\d{0,10}$/.test(value)) {
+                            onChange("phone", value);
+                        }
+                    }}
+                    maxLength={10}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#3674B5]"
                 />
-                <input
-                    placeholder="อัตราภาษี (%)"
-                    value={form.taxRate || ""}
-                    onChange={handleTaxChange}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#3674B5]"
-                    min="0"
-                />
+
+
+                {/* 🔄 ปุ่มเปิด/ปิดภาษี 7% */}
+                <div className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 bg-white shadow-sm">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[#3674B5] font-medium">ภาษีมูลค่าเพิ่ม (VAT)</span>
+                        <span className="text-sm text-slate-600 mt-[1px]">
+                            {taxEnabled ? "เปิดใช้งานภาษี 7%" : "ปิดใช้งานภาษี"}
+                        </span>
+                    </div>
+                    <button
+                        onClick={toggleTax}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${taxEnabled ? "bg-[#3674B5]" : "bg-gray-300"
+                            }`}
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${taxEnabled ? "translate-x-6" : "translate-x-1"
+                                }`}
+                        />
+                    </button>
+                </div>
+
             </div>
         </div>
     );
 }
+
 
 function Step3({ form, onPaymentChange }) {
     const pay = form.paymentSettings;

@@ -9,6 +9,7 @@ import {
     Trash,
     UserCircle,
 } from "phosphor-react";
+import { showError, showConfirm } from "../utils/notify";
 import { useStore } from "../context/StoreContext";
 
 export default function ManagePosition() {
@@ -99,14 +100,12 @@ export default function ManagePosition() {
                     payload,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                alert("อัปเดตตำแหน่งสำเร็จ");
             } else {
                 await axios.post(
                     `${API_BASE_URL}/positions/create/${storeId}`,
                     payload,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                alert("เพิ่มตำแหน่งสำเร็จ");
             }
 
             setShowModal(false);
@@ -114,23 +113,23 @@ export default function ManagePosition() {
             fetchPositions();
         } catch (err) {
             console.error("Error saving position:", err);
-            alert("เกิดข้อผิดพลาดในการบันทึกตำแหน่ง");
+            showError("เกิดข้อผิดพลาดในการบันทึกตำแหน่ง");
         }
     };
 
 
     const handleDelete = async (id) => {
-        if (!window.confirm("ต้องการลบตำแหน่งนี้ใช่หรือไม่?")) return;
+        const ok = await showConfirm("ต้องการลบตำแหน่งนี้ใช่หรือไม่?");
+        if (!ok) return;
         const token = localStorage.getItem("token");
         try {
             await axios.delete(`${API_BASE_URL}/positions/delete/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            alert("ลบตำแหน่งสำเร็จ");
             fetchPositions();
         } catch (err) {
             console.error("Error deleting position:", err);
-            alert("เกิดข้อผิดพลาดในการลบ");
+            showError("เกิดข้อผิดพลาดในการลบ");
         }
     };
 

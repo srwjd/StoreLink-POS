@@ -6,7 +6,7 @@ import { useStore } from "../../context/StoreContext";
 import { ImageIcon, MagnifyingGlass } from "../../../public/icons/icons";
 import Header from "../../components/shared/Header";
 import { SelectStaffModal } from "../../components/service/SelectStaffModal";
-import { toast } from "react-hot-toast";
+import { showSuccess, showError } from "../../utils/notify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("token");
@@ -100,10 +100,10 @@ export default function SalesRestaurant() {
             };
 
             await axios.post(`${API_BASE_URL}/service-orders/create`, body, { headers });
-            toast.success(`สร้างคิวใหม่ (${selectedService.name})${staff ? " โดย " + staff.firstName : ""}`);
+            showSuccess(`สร้างคิวใหม่ (${selectedService.name})${staff ? " โดย " + staff.firstName : ""}`);
             await fetchOrders();
         } catch (err) {
-            toast.error("ไม่สามารถสร้างคิวได้");
+            showError("ไม่สามารถสร้างคิวได้");
         } finally {
             setLoading(false);
             setSelectedService(null);
@@ -115,10 +115,10 @@ export default function SalesRestaurant() {
     const handleStatusChange = async (orderId, newStatus) => {
         try {
             await axios.patch(`${API_BASE_URL}/service-orders/${orderId}/status`, { status: newStatus }, { headers });
-            toast.success(`อัปเดตสถานะเป็น ${newStatus}`);
+            showSuccess(`อัปเดตสถานะเป็น ${newStatus}`);
             await fetchOrders();
         } catch (err) {
-            toast.error("อัปเดตสถานะไม่สำเร็จ");
+            showError("อัปเดตสถานะไม่สำเร็จ");
         }
     };
 

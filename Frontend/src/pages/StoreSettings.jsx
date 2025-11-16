@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-hot-toast";
+import { showConfirm, showSuccess, showError } from "../utils/notify";
 import Header from "../components/shared/Header";
 import { BsGearFill } from "react-icons/bs";
-import { Money, Phone, Storefront, Upload, X, Image as ImageIcon } from "phosphor-react";
+import { Money, Phone, Storefront, Upload, X, Image as ImageIcon, Lock } from "phosphor-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -20,6 +20,9 @@ export default function StoreSettings() {
   const [logo, setLogo] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [passwordModal, setPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [onConfirmPassword, setOnConfirmPassword] = useState(null);
 
   const [form, setForm] = useState({
     storeName: "",
@@ -51,7 +54,7 @@ export default function StoreSettings() {
         });
         setLogoPreview(data.storeImage);
       } catch {
-        toast.error("โหลดข้อมูลร้านล้มเหลว");
+        showError("โหลดข้อมูลร้านล้มเหลว");
       } finally {
         setLoading(false);
       }
@@ -67,25 +70,25 @@ export default function StoreSettings() {
     );
 
   const askPassword = async () => {
-    const password = prompt("กรุณากรอกรหัสผ่านเพื่อยืนยันการบันทึก:");
-    if (!password) {
-      toast.error("กรุณากรอกรหัสผ่าน");
-      return null;
-    }
-    return password;
+    return new Promise((resolve) => {
+      setPasswordInput("");
+      setPasswordModal(true);
+      setOnConfirmPassword(() => (pwd) => resolve(pwd));
+    });
   };
+
 
   const handleLogoUpload = async (file) => {
     if (!file) return;
 
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      toast.error("กรุณาอัปโหลดไฟล์รูปภาพ JPG, PNG หรือ WEBP เท่านั้น");
+      showError("กรุณาอัปโหลดไฟล์รูปภาพ JPG, PNG หรือ WEBP เท่านั้น");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("ขนาดไฟล์ต้องไม่เกิน 10MB");
+      showError("ขนาดไฟล์ต้องไม่เกิน 10MB");
       return;
     }
 
@@ -101,10 +104,10 @@ export default function StoreSettings() {
 
       setLogo(file);
       setLogoPreview(res.data.url);
-      toast.success("อัปโหลดโลโก้สำเร็จ");
+      showSuccess("อัปโหลดโลโก้สำเร็จ");
     } catch (err) {
       console.error("Upload error:", err);
-      toast.error("เกิดข้อผิดพลาดในการอัปโหลดโลโก้");
+      showError("เกิดข้อผิดพลาดในการอัปโหลดโลโก้");
     } finally {
       setUploading(false);
     }
@@ -127,16 +130,17 @@ export default function StoreSettings() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success("✅ บันทึกการแก้ไขสำเร็จ");
+      showSuccess("บันทึกการแก้ไขสำเร็จ");
     } catch (err) {
-      toast.error(err.response?.data?.message || "เกิดข้อผิดพลาด");
+      showError(err.response?.data?.message || "เกิดข้อผิดพลาด");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteStore = async () => {
-    if (!window.confirm("คุณแน่ใจหรือไม่ว่าจะลบร้านนี้?")) return;
+    const ok = await showConfirm("คุณแน่ใจหรือไม่ว่าจะลบร้านนี้?");
+    if (!ok) return;
     const password = await askPassword();
     if (!password) return;
 
@@ -145,10 +149,10 @@ export default function StoreSettings() {
         data: { password },
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success("ลบร้านเรียบร้อยแล้ว");
+      showSuccess("ลบร้านเรียบร้อยแล้ว");
       navigate("/select-store");
     } catch (err) {
-      toast.error(err.response?.data?.message || "เกิดข้อผิดพลาด");
+      showError(err.response?.data?.message || "เกิดข้อผิดพลาด");
     }
   };
 
@@ -330,6 +334,50 @@ export default function StoreSettings() {
           </div>
         </div>
       </main>
+      {passwordModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md border border-slate-200">
+            <h3 className="text-xl font-semibold text-[#3674B5] mb-3 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <Lock /> ยืนยันรหัสผ่าน
+              </div>
+            </h3>
+            <p className="text-sm text-slate-600 text-center mb-5">
+              กรุณากรอกรหัสผ่านของคุณเพื่อยืนยันการบันทึก
+            </p>
+            <input
+              type="password"
+              placeholder="กรอกรหัสผ่าน"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-5 outline-none focus:ring-2 focus:ring-[#3674B5]"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setPasswordModal(false);
+                  onConfirmPassword(null);
+                }}
+                className="flex-1 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold transition"
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={() => {
+                  if (!passwordInput.trim()) return;
+                  setPasswordModal(false);
+                  onConfirmPassword(passwordInput);
+                }}
+                className="flex-1 py-2 rounded-lg bg-[#3674B5] hover:bg-[#2f5fa0] text-white font-semibold transition"
+              >
+                ยืนยัน
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

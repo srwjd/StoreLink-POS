@@ -27,10 +27,10 @@ const fileFilter = (req, file, cb) => {
   // อนุญาตเฉพาะรูปภาพและ PDF
   const allowedTypes = /jpeg|jpg|png|gif|webp|pdf/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  
+
   // ตรวจสอบ mimetype หรือ extname (บาง browser อาจส่ง mimetype ไม่ถูกต้อง)
   const mimetype = file.mimetype && allowedTypes.test(file.mimetype);
-  
+
   if (extname || mimetype) {
     return cb(null, true);
   } else {
@@ -70,5 +70,56 @@ router.post("/", requireAuth, (req, res, next) => {
     next();
   });
 }, uploadImage);
+
+/**
+ * @swagger
+ * tags:
+ *   name: Upload
+ *   description: การอัปโหลดไฟล์และรูปภาพ
+ */
+
+/**
+ * @swagger
+ * /upload:
+ *   post:
+ *     summary: อัปโหลดรูปภาพหรือไฟล์ (รองรับ JPG, PNG, GIF, WEBP, PDF)
+ *     tags: [Upload]
+ *     security:
+ *       - bearerAuth: []
+ *     consumes:
+ *       - multipart/form-data
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: ไฟล์ที่ต้องการอัปโหลด
+ *     responses:
+ *       200:
+ *         description: ✅ อัปโหลดไฟล์สำเร็จ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Upload successful"
+ *                 filePath:
+ *                   type: string
+ *                   example: "/uploads/file-123456789.jpg"
+ *       400:
+ *         description: ❌ รูปแบบไฟล์ไม่ถูกต้องหรือขนาดเกิน 10MB
+ *       401:
+ *         description: ❌ ไม่มีสิทธิ์ (ต้องเข้าสู่ระบบก่อน)
+ *       500:
+ *         description: ❌ เซิร์ฟเวอร์ผิดพลาด
+ */
+
 
 export default router;

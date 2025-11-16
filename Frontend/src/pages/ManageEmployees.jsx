@@ -17,6 +17,7 @@ import {
     TimeIcon,
 } from "../../public/icons/icons";
 import Header from "../components/shared/Header";
+import { showError, showConfirm } from "../utils/notify";
 import Footer from "../components/shared/Footer";
 import ManagePosition from "./ManagePosition";
 import AddEmployeeModal from "../components/employees/AddEmployeeModal";
@@ -96,7 +97,8 @@ export default function ManageEmployees() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("ต้องการลบพนักงานคนนี้ใช่หรือไม่?")) return;
+        const ok = await showConfirm("ต้องการลบพนักงานคนนี้ใช่หรือไม่?");
+        if (!ok) return;
         try {
             const token = localStorage.getItem("token");
             await axios.delete(`${API_BASE_URL}/employees/delete/${id}`, {
@@ -105,7 +107,7 @@ export default function ManageEmployees() {
             fetchEmployees();
         } catch (err) {
             console.error("Error deleting employee:", err);
-            alert("เกิดข้อผิดพลาดในการลบพนักงาน");
+            showError("เกิดข้อผิดพลาดในการลบพนักงาน");
         }
     };
 
