@@ -1,0 +1,365 @@
+[{
+  "_id": {
+    "$oid": "691a78125645c35679b821de"
+  },
+  "storeId": {
+    "$oid": "691a78125645c35679b821db"
+  },
+  "positionName": "Owner",
+  "permissions": [
+    "sale",
+    "product",
+    "manage_employees",
+    "report",
+    "settings",
+    "all_receipts",
+    "kitchen"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:14.798Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:14.798Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78125645c35679b821e0"
+  },
+  "storeId": {
+    "$oid": "691a78125645c35679b821db"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "product",
+    "report",
+    "all_receipts"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:14.863Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:14.863Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78125645c35679b821e2"
+  },
+  "storeId": {
+    "$oid": "691a78125645c35679b821db"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale",
+    "all_receipts"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:14.924Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:14.924Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821eb"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821e8"
+  },
+  "positionName": "Owner",
+  "permissions": [
+    "sale",
+    "product",
+    "manage_employees",
+    "report",
+    "settings",
+    "all_receipts",
+    "kitchen"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.453Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.453Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821ed"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821e8"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "product",
+    "report",
+    "all_receipts"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.516Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.516Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821ef"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821e8"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale",
+    "all_receipts"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.589Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.589Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821f8"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821f5"
+  },
+  "positionName": "Owner",
+  "permissions": [
+    "sale",
+    "product",
+    "manage_employees",
+    "report",
+    "settings",
+    "all_receipts",
+    "kitchen"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.917Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.917Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821fa"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821f5"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "product",
+    "report",
+    "all_receipts"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.982Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.982Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78145645c35679b821fc"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821f5"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale",
+    "all_receipts"
+  ],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:16.041Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:16.041Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a79c21312e7a1b014702b"
+  },
+  "storeId": {
+    "$oid": "691a79c21312e7a1b0147027"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "manage_employees",
+    "report",
+    "settings"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T01:26:26.948Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:26:26.948Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a79c21312e7a1b014702c"
+  },
+  "storeId": {
+    "$oid": "691a79c21312e7a1b0147027"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T01:26:26.949Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:26:26.949Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a7dd71312e7a1b0147126"
+  },
+  "storeId": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "manage_employees",
+    "report",
+    "settings"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T01:43:51.082Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:43:51.082Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a7dd71312e7a1b0147127"
+  },
+  "storeId": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T01:43:51.082Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:43:51.082Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a9d05a2d98595c3cd29c9"
+  },
+  "storeId": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "manage_employees",
+    "report",
+    "settings"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T03:56:53.774Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:56:53.774Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a9d05a2d98595c3cd29ca"
+  },
+  "storeId": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T03:56:53.775Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:56:53.775Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a9d2ea2d98595c3cd29dc"
+  },
+  "storeId": {
+    "$oid": "691a9d2ea2d98595c3cd29d8"
+  },
+  "positionName": "Manager",
+  "permissions": [
+    "sale",
+    "manage_employees",
+    "report",
+    "settings"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T03:57:34.750Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:57:34.750Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "691a9d2ea2d98595c3cd29dd"
+  },
+  "storeId": {
+    "$oid": "691a9d2ea2d98595c3cd29d8"
+  },
+  "positionName": "Cashier",
+  "permissions": [
+    "sale"
+  ],
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-11-17T03:57:34.750Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:57:34.750Z"
+  }
+}]

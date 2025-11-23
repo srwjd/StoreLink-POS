@@ -227,3 +227,15 @@ export const addSerialNumbers = async (req, res) => {
     res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
   }
 };
+
+// ✅ ดึงหมวดหมู่ทั้งหมดของร้าน
+export const getCategoriesByStore = async (req, res) => {
+  try {
+    const { storeId } = req.params;
+    const categories = await Product.distinct("category", { storeId });
+
+    res.status(200).json(categories.filter(Boolean)); // เอาเฉพาะค่าที่ไม่ว่าง
+  } catch (err) {
+    res.status(500).json({ message: "ไม่สามารถดึงหมวดหมู่ได้", error: err.message });
+  }
+};

@@ -19,10 +19,10 @@ export default function ReceiptLayout({ receipt }) {
             {/* Header */}
             <div className="text-center border-b border-dotted pb-2 mb-2">
                 <div className="font-semibold text-lg text-[#3674B5] flex items-center justify-center gap-2">
-                    {receipt.storeLogo || <Storefront />} {store.storeName}
+                    {store.storeLogo || <Storefront />} {store.storeName}
                 </div>
-                <p className="text-xs">{receipt.address || "-"}</p>
-                <p className="text-xs mb-1">{receipt.phone ? `โทร: ${receipt.phone}` : "Tel: -"}</p>
+                <p className="text-xs">{store.address || "-"}</p>
+                <p className="text-xs mb-1">{store.phone ? `โทร: ${store.phone}` : "Tel: -"}</p>
             </div>
 
             {/* Order Info */}

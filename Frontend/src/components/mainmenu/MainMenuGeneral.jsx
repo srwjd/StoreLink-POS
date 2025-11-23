@@ -99,9 +99,10 @@ export default function MainMenuGeneral() {
     ];
 
     // 🔹 กรองเฉพาะเมนูที่ user มีสิทธิ์
-    const visibleMenu = allMenuItems.filter(
-        (item) => permissions.includes(item.key)
-    );
+    const visibleMenu = allMenuItems.map((item) => ({
+        ...item,
+        disabled: !permissions.includes(item.key), // ถ้าไม่มีสิทธิ์ → disabled
+    }));
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#E9F3FF] to-[#C8DCFF]">
@@ -112,29 +113,39 @@ export default function MainMenuGeneral() {
                         {visibleMenu.slice(0, 3).map((item, i) => (
                             <button
                                 key={i}
-                                onClick={() => item.navigateTo && navigate(item.navigateTo)}
-                                className="flex flex-col items-center justify-center bg-gradient-to-b 
-                         from-[#4A90E2] to-[#3674B5] text-white w-36 h-36 rounded-xl shadow-md 
-                         hover:shadow-xl hover:-translate-y-2 transition-all duration-300 focus:outline-none"
+                                onClick={() => !item.disabled && item.navigateTo && navigate(item.navigateTo)}
+                                disabled={item.disabled}
+                                className={`flex flex-col items-center justify-center w-36 h-36 rounded-xl shadow-md 
+      transition-all duration-300 focus:outline-none
+      ${item.disabled
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        : "bg-gradient-to-b from-[#4A90E2] to-[#3674B5] text-white hover:shadow-xl hover:-translate-y-2"
+                                    }`}
                             >
                                 {item.icon}
                                 <p className="mt-3 text-md font-semibold">{item.label}</p>
                             </button>
                         ))}
+
                     </div>
                     <div className="flex gap-8 justify-center">
                         {visibleMenu.slice(3).map((item, i) => (
                             <button
-                                key={`bottom-${i}`}
-                                onClick={() => item.navigateTo && navigate(item.navigateTo)}
-                                className="flex flex-col items-center justify-center bg-gradient-to-b 
-                         from-[#4A90E2] to-[#3674B5] text-white w-36 h-36 rounded-xl shadow-md 
-                         hover:shadow-xl hover:-translate-y-2 transition-all duration-300 focus:outline-none"
+                                key={i}
+                                onClick={() => !item.disabled && item.navigateTo && navigate(item.navigateTo)}
+                                disabled={item.disabled}
+                                className={`flex flex-col items-center justify-center w-36 h-36 rounded-xl shadow-md 
+      transition-all duration-300 focus:outline-none
+      ${item.disabled
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                        : "bg-gradient-to-b from-[#4A90E2] to-[#3674B5] text-white hover:shadow-xl hover:-translate-y-2"
+                                    }`}
                             >
                                 {item.icon}
                                 <p className="mt-3 text-md font-semibold">{item.label}</p>
                             </button>
                         ))}
+
                     </div>
                 </div>
             </main>

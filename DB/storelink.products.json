@@ -1,0 +1,352 @@
+[{
+  "_id": {
+    "$oid": "691a78125645c35679b821e4"
+  },
+  "storeId": {
+    "$oid": "691a78125645c35679b821db"
+  },
+  "name": "เสื้อยืดสีขาว",
+  "category": "แฟชั่น",
+  "type": "standard",
+  "price": 199,
+  "unit": "ชิ้น",
+  "duration": 0,
+  "stockQty": 50,
+  "status": "available",
+  "productImage": "",
+  "optionGroups": [],
+  "serialList": [],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:14.991Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:14.991Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821e6"
+  },
+  "storeId": {
+    "$oid": "691a78125645c35679b821db"
+  },
+  "name": "สมุดโน้ต",
+  "category": "เครื่องเขียน",
+  "type": "standard",
+  "price": 25,
+  "unit": "เล่ม",
+  "duration": 0,
+  "stockQty": 100,
+  "status": "available",
+  "productImage": "",
+  "optionGroups": [],
+  "serialList": [],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.162Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.162Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821f1"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821e8"
+  },
+  "name": "ข้าวผัดกุ้ง",
+  "category": "อาหารจานหลัก",
+  "type": "standard",
+  "price": 65,
+  "unit": "จาน",
+  "duration": 0,
+  "stockQty": null,
+  "status": "available",
+  "productImage": "",
+  "optionGroups": [],
+  "serialList": [],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.664Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.664Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821f3"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821e8"
+  },
+  "name": "ชาเย็น",
+  "category": "เครื่องดื่ม",
+  "type": "standard",
+  "price": 35,
+  "unit": "แก้ว",
+  "duration": 0,
+  "stockQty": null,
+  "status": "available",
+  "productImage": "",
+  "optionGroups": [],
+  "serialList": [],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.723Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.723Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78145645c35679b821fe"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821f5"
+  },
+  "name": "ตัดผมชาย",
+  "category": "บริการตัดผม",
+  "type": "standard",
+  "price": 150,
+  "unit": "ครั้ง",
+  "duration": 0,
+  "stockQty": null,
+  "status": "available",
+  "productImage": "",
+  "optionGroups": [],
+  "serialList": [],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:16.108Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:16.108Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78145645c35679b82200"
+  },
+  "storeId": {
+    "$oid": "691a78135645c35679b821f5"
+  },
+  "name": "ล้างรถ",
+  "category": "บริการรถยนต์",
+  "type": "standard",
+  "price": 200,
+  "unit": "ครั้ง",
+  "duration": 0,
+  "stockQty": null,
+  "status": "available",
+  "productImage": "",
+  "optionGroups": [],
+  "serialList": [],
+  "createdAt": {
+    "$date": "2025-11-17T01:19:16.171Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:16.171Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a7ba01312e7a1b01470bf"
+  },
+  "storeId": {
+    "$oid": "691a79c21312e7a1b0147027"
+  },
+  "barcode": "11",
+  "name": "น้ำเปล่า 700 มล.",
+  "category": "เครื่องดื่ม",
+  "type": "standard",
+  "price": 7,
+  "unit": "ขวด",
+  "duration": 0,
+  "stockQty": 45,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763343191/storelink/uploads/e6jdxsjy0vmwr44rlfl3.png",
+  "createdAt": {
+    "$date": "2025-11-17T01:34:24.102Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:36:23.082Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a81141312e7a1b0147178"
+  },
+  "storeId": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "barcode": "",
+  "name": "ไอศกรีมแตงโม",
+  "category": "ของหวาน",
+  "type": "standard",
+  "price": 35,
+  "unit": "ถ้วย",
+  "duration": 0,
+  "stockQty": null,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763344634/storelink/uploads/q12xqtw0jh1doivmudsh.png",
+  "createdAt": {
+    "$date": "2025-11-17T01:57:40.714Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:57:43.847Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a813e1312e7a1b0147181"
+  },
+  "storeId": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "barcode": "",
+  "name": "ข้าวเหนียวมะม่วง",
+  "category": "ของหวาน",
+  "type": "standard",
+  "price": 70,
+  "unit": "จาน",
+  "duration": 0,
+  "stockQty": null,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763344677/storelink/uploads/zd1xjt1k2bofheb2be75.jpg",
+  "createdAt": {
+    "$date": "2025-11-17T01:58:22.010Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:58:22.010Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a815b1312e7a1b0147186"
+  },
+  "storeId": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "barcode": "",
+  "name": "คอหมูย่าง",
+  "category": "จานหลัก",
+  "type": "standard",
+  "price": 85,
+  "unit": "จาน",
+  "duration": 0,
+  "stockQty": null,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763344712/storelink/uploads/fsqoybcdkmjfecfltgho.png",
+  "createdAt": {
+    "$date": "2025-11-17T01:58:51.850Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:58:51.850Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9dd8a2d98595c3cd29fa"
+  },
+  "storeId": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "barcode": "11",
+  "name": "น้ำเปล่า 700 มล.",
+  "category": "เครื่องดื่ม",
+  "type": "standard",
+  "price": 7,
+  "unit": "ขวด",
+  "duration": 0,
+  "stockQty": 48,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763352001/storelink/uploads/w2lktrio1ymuduq4osph.png",
+  "createdAt": {
+    "$date": "2025-11-17T04:00:24.689Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T04:05:22.825Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9e0ba2d98595c3cd29ff"
+  },
+  "storeId": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "barcode": "12",
+  "name": "น้ำตาลทราย",
+  "category": "เครื่องปรุง",
+  "type": "standard",
+  "price": 28,
+  "unit": "ชิ้น",
+  "duration": 0,
+  "stockQty": 48,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763352033/storelink/uploads/cgqwkge2pzjps0yjbqw0.png",
+  "createdAt": {
+    "$date": "2025-11-17T04:01:15.802Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T04:05:22.757Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9f67a2d98595c3cd2aab"
+  },
+  "storeId": {
+    "$oid": "691a9d2ea2d98595c3cd29d8"
+  },
+  "barcode": "",
+  "name": "ข้าวเหนียวมะม่วง",
+  "category": "ของหวาน",
+  "type": "standard",
+  "price": 80,
+  "unit": "จาน",
+  "duration": 0,
+  "stockQty": null,
+  "optionGroups": [],
+  "serialList": [],
+  "status": "available",
+  "description": "",
+  "productImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763352400/storelink/uploads/vlvruyvlqneup5zpbkus.jpg",
+  "createdAt": {
+    "$date": "2025-11-17T04:07:03.173Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T04:07:03.173Z"
+  },
+  "__v": 0
+}]

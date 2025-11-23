@@ -28,7 +28,7 @@ export default function Landing() {
 
                 <section className="absolute bottom-[50vh] left-1/2 -translate-x-1/2 mx-auto w-full px-4 sm:px-6 lg:px-8 py-12 text-center">
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-800">
-                        ระบบขายหน้าร้าน (POS) ใช้งานง่าย ครบในที่เดียว
+                        ระบบบริหารจัดการร้านค้า ใช้งานง่าย ครบในที่เดียว
                     </h1>
                     <p className="mt-3 text-slate-600">
                         จัดการสินค้า ออเดอร์ รายงาน และพนักงานในระบบเดียว
@@ -38,7 +38,7 @@ export default function Landing() {
                         onClick={() => setShowRegister(true)}
                     >
                         ทดลองใช้งานฟรี
-                    </button>
+                    </button> 
                 </section>
             </div>
 

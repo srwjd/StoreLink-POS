@@ -12,8 +12,26 @@ const options = {
         servers: [
             { url: "http://localhost:3000", description: "Local Server" },
         ],
+
+        // ✅ เพิ่มตรงนี้ เพื่อให้ Swagger มีปุ่ม Authorize
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT", // สำคัญมาก ต้องระบุว่าใช้ JWT
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
     },
-    apis: ["./routes/*.js"], // 🔹 ชี้ไปยังไฟล์ routes ของพลอย
+
+    // 🔹 ชี้ไปยัง route ทั้งหมดที่มี @swagger comment
+    apis: ["./routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -23,26 +41,24 @@ export const setupSwagger = (app) => {
         "/api-docs",
         swaggerUi.serve,
         swaggerUi.setup(swaggerSpec, {
-            customCss: '.swagger-ui .topbar { display: none }',
+            customCss: ".swagger-ui .topbar { display: none }",
             customSiteTitle: "StoreLink POS API",
             customfavIcon: "/favicon.ico",
             customJs: [
-                // inject JS เพื่อแสดงจำนวน endpoint
                 `
-      document.addEventListener("DOMContentLoaded", () => {
-        const total = ${Object.values(swaggerSpec.paths).length};
-        const title = document.querySelector('.title');
-        if (title) {
-          const count = document.createElement('div');
-          count.textContent = "🧾 จำนวน API ทั้งหมด: " + total;
-          count.style.marginTop = "10px";
-          count.style.fontWeight = "bold";
-          title.appendChild(count);
-        }
-      });
-      `,
+        document.addEventListener("DOMContentLoaded", () => {
+          const total = ${Object.values(swaggerSpec.paths).length};
+          const title = document.querySelector('.title');
+          if (title) {
+            const count = document.createElement('div');
+            count.textContent = "🧾 จำนวน API ทั้งหมด: " + total;
+            count.style.marginTop = "10px";
+            count.style.fontWeight = "bold";
+            title.appendChild(count);
+          }
+        });
+        `,
             ],
         })
     );
-
 };

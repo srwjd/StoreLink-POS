@@ -33,6 +33,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         fetchData();
+        
     }, [range]);
 
     const fetchData = async () => {
@@ -112,7 +113,7 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* 🔸 กราฟยอดขาย */}
                     <div className="col-span-2 bg-white rounded-xl shadow-md p-6 mb-6">
-                        <h2 className="text-lg font-semibold text-slate-700 mb-3">ยอดขายรายวัน</h2>
+                        {/* <h2 className="text-lg font-semibold text-slate-700 mb-3">ยอดขายรายวัน</h2> */}
                         <ResponsiveContainer width="100%" height={200}>
                             <LineChart data={salesData}>
                                 <CartesianGrid strokeDasharray="3 3" />

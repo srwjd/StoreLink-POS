@@ -1,0 +1,224 @@
+[{
+  "_id": {
+    "$oid": "691a7c161312e7a1b01470e2"
+  },
+  "storeId": {
+    "$oid": "691a79c21312e7a1b0147027"
+  },
+  "userId": {
+    "$oid": "691a79971312e7a1b0147025"
+  },
+  "kitchenStatus": "waiting",
+  "items": [
+    {
+      "productId": {
+        "$oid": "691a7ba01312e7a1b01470bf"
+      },
+      "barcode": "11",
+      "name": "น้ำเปล่า 700 มล.",
+      "price": 7,
+      "qty": 5,
+      "total": 35,
+      "options": null,
+      "_id": {
+        "$oid": "691a7c161312e7a1b01470e3"
+      }
+    }
+  ],
+  "subTotal": 35,
+  "tax": 2.45,
+  "total": 37.45,
+  "paymentMethod": "promptpay",
+  "paidAmount": 37.45,
+  "changeAmount": 0,
+  "status": "paid",
+  "createdAt": {
+    "$date": "2025-11-17T01:36:22.971Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:36:22.971Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a81771312e7a1b014718d"
+  },
+  "storeId": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "userId": {
+    "$oid": "691a79971312e7a1b0147025"
+  },
+  "kitchenStatus": "done",
+  "items": [
+    {
+      "productId": {
+        "$oid": "691a81141312e7a1b0147178"
+      },
+      "barcode": "",
+      "name": "ไอศกรีมแตงโม",
+      "price": 35,
+      "qty": 1,
+      "total": 35,
+      "options": null,
+      "_id": {
+        "$oid": "691a81771312e7a1b014718e"
+      }
+    },
+    {
+      "productId": {
+        "$oid": "691a813e1312e7a1b0147181"
+      },
+      "barcode": "",
+      "name": "ข้าวเหนียวมะม่วง",
+      "price": 70,
+      "qty": 1,
+      "total": 70,
+      "options": null,
+      "_id": {
+        "$oid": "691a81771312e7a1b014718f"
+      }
+    },
+    {
+      "productId": {
+        "$oid": "691a815b1312e7a1b0147186"
+      },
+      "barcode": "",
+      "name": "คอหมูย่าง",
+      "price": 85,
+      "qty": 2,
+      "total": 170,
+      "options": null,
+      "_id": {
+        "$oid": "691a81771312e7a1b0147190"
+      }
+    }
+  ],
+  "subTotal": 275,
+  "tax": 0,
+  "total": 275,
+  "paymentMethod": "promptpay",
+  "paidAmount": 275,
+  "changeAmount": 0,
+  "status": "paid",
+  "createdAt": {
+    "$date": "2025-11-17T01:59:19.225Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:59:19.225Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9e5ea2d98595c3cd2a1c"
+  },
+  "storeId": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "userId": {
+    "$oid": "691a9c49a2d98595c3cd29c3"
+  },
+  "kitchenStatus": "waiting",
+  "items": [
+    {
+      "productId": {
+        "$oid": "691a9dd8a2d98595c3cd29fa"
+      },
+      "barcode": "11",
+      "name": "น้ำเปล่า 700 มล.",
+      "price": 7,
+      "qty": 1,
+      "total": 7,
+      "options": null,
+      "_id": {
+        "$oid": "691a9e5ea2d98595c3cd2a1d"
+      }
+    },
+    {
+      "productId": {
+        "$oid": "691a9e0ba2d98595c3cd29ff"
+      },
+      "barcode": "12",
+      "name": "น้ำตาลทราย",
+      "price": 28,
+      "qty": 1,
+      "total": 28,
+      "options": null,
+      "_id": {
+        "$oid": "691a9e5ea2d98595c3cd2a1e"
+      }
+    }
+  ],
+  "subTotal": 35,
+  "tax": 0,
+  "total": 35,
+  "paymentMethod": "promptpay",
+  "paidAmount": 35,
+  "changeAmount": 0,
+  "status": "paid",
+  "createdAt": {
+    "$date": "2025-11-17T04:02:38.556Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T04:02:38.556Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9f02a2d98595c3cd2a4b"
+  },
+  "storeId": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "userId": {
+    "$oid": "691a9d74a2d98595c3cd29ed"
+  },
+  "kitchenStatus": "waiting",
+  "items": [
+    {
+      "productId": {
+        "$oid": "691a9e0ba2d98595c3cd29ff"
+      },
+      "barcode": "12",
+      "name": "น้ำตาลทราย",
+      "price": 28,
+      "qty": 1,
+      "total": 28,
+      "options": null,
+      "_id": {
+        "$oid": "691a9f02a2d98595c3cd2a4c"
+      }
+    },
+    {
+      "productId": {
+        "$oid": "691a9dd8a2d98595c3cd29fa"
+      },
+      "barcode": "11",
+      "name": "น้ำเปล่า 700 มล.",
+      "price": 7,
+      "qty": 1,
+      "total": 7,
+      "options": null,
+      "_id": {
+        "$oid": "691a9f02a2d98595c3cd2a4d"
+      }
+    }
+  ],
+  "subTotal": 35,
+  "tax": 0,
+  "total": 35,
+  "paymentMethod": "promptpay",
+  "paidAmount": 35,
+  "changeAmount": 0,
+  "status": "paid",
+  "createdAt": {
+    "$date": "2025-11-17T04:05:22.671Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T04:05:22.671Z"
+  },
+  "__v": 0
+}]

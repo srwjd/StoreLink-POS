@@ -7,6 +7,9 @@ const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", login);
 router.get("/profile", requireAuth, getProfile);
+router.get("/check", requireAuth, (req, res) => {
+    res.json({ auth: true, user: req.user });
+});
 
 /**
  * @swagger

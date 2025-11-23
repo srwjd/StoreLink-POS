@@ -68,7 +68,7 @@ export default function ProductTable({ products, refresh, storeId }) {
                         <th className="px-4 py-3 font-semibold">ชื่อสินค้า</th>
                         <th className="px-4 py-3 font-semibold">หมวดหมู่</th>
                         <th className="px-4 py-3 font-semibold text-center">ราคา</th>
-                        {store.storeType === "general" && <th className="px-4 py-3 font-semibold text-center">คงเหลือ</th>}
+                        {store?.storeType === "general" && <th className="px-4 py-3 font-semibold text-center">คงเหลือ</th>}
                         <th className="px-4 py-3 font-semibold text-center">สถานะ</th>
                         <th className="px-4 py-3 font-semibold text-center">การจัดการ</th>
                     </tr>
@@ -110,7 +110,7 @@ export default function ProductTable({ products, refresh, storeId }) {
                                     {p.price != null ? p.price.toLocaleString("th-TH", { minimumFractionDigits: 2 }) : "0.00"} ฿
                                 </td>
 
-                                {store.storeType === "general" && (
+                                {store?.storeType === "general" && (
                                     <td className="px-4 py-3 text-center">
                                         {p.type === "serialized"
                                             ? (p.serialList || []).filter(

@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { EnvelopeSimple, Lock, Eye, EyeSlash } from "phosphor-react";
 
@@ -11,7 +10,7 @@ export default function LoginPopup({ onClose, onRegister }) {
     const navigate = useNavigate();
     const [showPass, setShowPass] = useState(false);
     const [form, setForm] = useState({
-        loginIdentifier: "", // ใช้สำหรับ email หรือ username
+        loginIdentifier: "",
         password: "",
     });
     const [loading, setLoading] = useState(false);
@@ -19,7 +18,7 @@ export default function LoginPopup({ onClose, onRegister }) {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        setError(""); // clear error
+        setError("");
     };
 
     const handleSubmit = async (e) => {
@@ -32,39 +31,37 @@ export default function LoginPopup({ onClose, onRegister }) {
 
         try {
             setLoading(true);
-            // ตรวจสอบว่าเป็น email หรือ username (ถ้ามี @ ถือว่าเป็น email)
+
             const isEmail = form.loginIdentifier.includes("@");
             const loginData = {
                 password: form.password,
                 [isEmail ? "email" : "username"]: form.loginIdentifier
             };
 
-            const res = await fetch(`${API_BASE_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(loginData),
-            });
+            const res = await axios.post(
+                `${API_BASE_URL}/auth/login`,
+                loginData,
+                {
+                    withCredentials: true, // ⭐ ส่ง cookie / รับ cookie
+                }
+            );
 
-            const data = await res.json();
+            // Backend ต้องส่ง role กลับมา เช่น { role: "Admin" }
+            const userRole = res.data.user.role;
+            console.log(userRole);
 
-            let userRole = null;
-            try {
-                const decoded = jwtDecode(data.token);
-                userRole = decoded.role;
-            } catch (err) {
-                console.warn("ไม่สามารถอ่าน userId จาก token ได้:", err);
-            }
-
-            if (res.ok) {
-                localStorage.setItem("token", data.token);
-                onClose();
-                if (userRole === "Admin") { navigate("/admin"); }
-                else { navigate("/select-store");} // เปลี่ยนไปหน้าหลักหลังล็อกอิน
+            if (userRole === "Admin") {
+                navigate("/admin");
             } else {
-                setError(data.message || "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+                navigate("/select-store");
             }
+
         } catch (err) {
-            setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+            if (err.response) {
+                setError(err.response.data.message || "อีเมล/ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+            } else {
+                setError("เซิร์ฟเวอร์ไม่ตอบสนอง");
+            }
         } finally {
             setLoading(false);
         }

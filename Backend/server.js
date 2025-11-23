@@ -17,10 +17,10 @@ import positionRoutes from "./routes/positionRoutes.js";
 import employeeRoutes from "./routes/employeeRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import tableRoutes from "./routes/tableRoutes.js";
+// import tableRoutes from "./routes/tableRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import settingRoutes from "./routes/settingRouters.js";
-import servicrOrderRoutes from "./routes/serviceOrderRoutes.js";
+// import servicrOrderRoutes from "./routes/serviceOrderRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
 
@@ -42,6 +42,7 @@ const PORT = process.env.PORT || 3000;
   const allowedDomains = [
     "http://localhost:5173",
     "https://store-link-weld.vercel.app",
+    "http://localhost:3000",
   ];
 
   const corsOptions = {
@@ -51,6 +52,7 @@ const PORT = process.env.PORT || 3000;
       if (allowedDomains.includes(origin)) return callback(null, true);
       callback(new Error("Not allowed by CORS"), false);
     },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -73,10 +75,10 @@ const PORT = process.env.PORT || 3000;
   app.use("/employees", employeeRoutes);
   app.use("/products", productRoutes);
   app.use("/orders", orderRoutes);
-  app.use("/tables", tableRoutes);
+  // app.use("/tables", tableRoutes);
   app.use("/reports", reportRoutes);
   app.use("/settings", settingRoutes);
-  app.use("/service-orders", servicrOrderRoutes);
+  // app.use("/service-orders", servicrOrderRoutes);
   app.use("/admin", adminRoutes);
 
   // ✅ Health check route (Render จะ ping อันนี้)

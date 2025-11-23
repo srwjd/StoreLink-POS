@@ -1,0 +1,234 @@
+[{
+  "_id": {
+    "$oid": "691a78125645c35679b821d9"
+  },
+  "firstName": "Admin",
+  "lastName": "StoreLink",
+  "gender": null,
+  "birthDate": null,
+  "idCard": null,
+  "idCardImage": null,
+  "phone": null,
+  "email": "admin@storelink.com",
+  "address": null,
+  "emergencyContact": null,
+  "password": "$2b$10$p6ZAb3W2PIXk0JnTJPj6CO9BY.0fnSBo7UbhHtSgRaobUvB8E21/m",
+  "role": "Admin",
+  "storeIds": [],
+  "status": "active",
+  "resignDate": null,
+  "salary": null,
+  "note": null,
+  "hireDate": {
+    "$date": "2025-11-17T01:19:14.558Z"
+  },
+  "createdAt": {
+    "$date": "2025-11-17T01:19:14.566Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:14.566Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a79971312e7a1b0147025"
+  },
+  "firstName": "สิราวรรณ",
+  "lastName": "จันแดง",
+  "gender": null,
+  "birthDate": null,
+  "idCard": null,
+  "idCardImage": null,
+  "phone": null,
+  "email": "jandangsirawan096@gmail.com",
+  "address": null,
+  "emergencyContact": null,
+  "password": "$2b$10$eQgHIN.9.6h8CYc2CWTfguFYxg7s6ksaV4NuLTne7W6soDpXNKH1C",
+  "role": "Owner",
+  "storeIds": [
+    {
+      "$oid": "691a79c21312e7a1b0147027"
+    },
+    {
+      "$oid": "691a7dd61312e7a1b0147122"
+    }
+  ],
+  "positionId": null,
+  "status": "active",
+  "resignDate": null,
+  "salary": null,
+  "note": null,
+  "hireDate": {
+    "$date": "2025-11-17T01:25:43.085Z"
+  },
+  "createdAt": {
+    "$date": "2025-11-17T01:25:43.099Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:43:51.020Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a7ae11312e7a1b0147050"
+  },
+  "firstName": "pp",
+  "lastName": "pp",
+  "gender": null,
+  "birthDate": null,
+  "idCard": null,
+  "idCardImage": null,
+  "phone": null,
+  "email": null,
+  "address": "9/85",
+  "emergencyContact": null,
+  "username": "pp",
+  "password": "$2b$10$rTygPL2AxzhJw5zmduvHy.YPti1PGWZChQtYN/UjGy0FcezeDUOMO",
+  "role": "Employee",
+  "storeIds": [
+    {
+      "$oid": "691a79c21312e7a1b0147027"
+    }
+  ],
+  "positionId": {
+    "$oid": "691a79c21312e7a1b014702c"
+  },
+  "status": "active",
+  "hireDate": {
+    "$date": "2025-11-17T01:31:13.389Z"
+  },
+  "resignDate": null,
+  "salary": 11998,
+  "note": null,
+  "createdAt": {
+    "$date": "2025-11-17T01:31:13.391Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T02:31:38.666Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a7afa1312e7a1b014705b"
+  },
+  "firstName": "ww",
+  "lastName": "ww",
+  "gender": null,
+  "birthDate": null,
+  "idCard": null,
+  "idCardImage": null,
+  "phone": null,
+  "email": null,
+  "address": null,
+  "emergencyContact": null,
+  "username": "ww",
+  "password": "$2b$10$PRGOPRh2lZQKBXy.v2JefehqcSU59/c9zWxLZ8ECQQVDcPzPk3.3m",
+  "role": "Employee",
+  "storeIds": [
+    {
+      "$oid": "691a79c21312e7a1b0147027"
+    }
+  ],
+  "positionId": {
+    "$oid": "691a79c21312e7a1b014702b"
+  },
+  "status": "active",
+  "hireDate": {
+    "$date": "2025-11-17T01:31:38.715Z"
+  },
+  "resignDate": null,
+  "salary": 20000,
+  "note": null,
+  "createdAt": {
+    "$date": "2025-11-17T01:31:38.716Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:31:38.716Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9c49a2d98595c3cd29c3"
+  },
+  "firstName": "rr",
+  "lastName": "rr",
+  "gender": null,
+  "birthDate": null,
+  "idCard": null,
+  "idCardImage": null,
+  "phone": null,
+  "email": "sirawan.jad@spumail.net",
+  "address": null,
+  "emergencyContact": null,
+  "password": "$2b$10$QkXuxgLPf6NwgFTglK1HGujOZl3ndjVB.X5.WpZuaz3j8JHkqZ57C",
+  "role": "Owner",
+  "storeIds": [
+    {
+      "$oid": "691a9d05a2d98595c3cd29c5"
+    },
+    {
+      "$oid": "691a9d2ea2d98595c3cd29d8"
+    }
+  ],
+  "positionId": null,
+  "status": "active",
+  "resignDate": null,
+  "salary": null,
+  "note": null,
+  "hireDate": {
+    "$date": "2025-11-17T03:53:45.143Z"
+  },
+  "createdAt": {
+    "$date": "2025-11-17T03:53:45.147Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:57:34.709Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9d74a2d98595c3cd29ed"
+  },
+  "firstName": "tt",
+  "lastName": "tt",
+  "gender": "Female",
+  "birthDate": {
+    "$date": "2005-05-20T00:00:00.000Z"
+  },
+  "idCard": "0123456789123",
+  "idCardImage": "https://res.cloudinary.com/dl7feii9o/image/upload/v1763351901/storelink/uploads/ngrrtljenf24ygqmwsxx.png",
+  "phone": "0835279107",
+  "email": null,
+  "address": "9/85",
+  "emergencyContact": null,
+  "username": "tt",
+  "password": "$2b$10$s4aS3726KjBpxAm.2Ye1nuDiYQp3ZzWWkZJ9O596yQvbv/mOVAgLy",
+  "role": "Employee",
+  "storeIds": [
+    {
+      "$oid": "691a9d05a2d98595c3cd29c5"
+    }
+  ],
+  "positionId": {
+    "$oid": "691a9d05a2d98595c3cd29ca"
+  },
+  "status": "active",
+  "hireDate": {
+    "$date": "2025-11-17T03:58:44.966Z"
+  },
+  "resignDate": null,
+  "salary": 12000,
+  "note": null,
+  "createdAt": {
+    "$date": "2025-11-17T03:58:44.967Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:58:44.967Z"
+  },
+  "__v": 0
+}]

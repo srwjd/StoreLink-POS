@@ -35,6 +35,13 @@ export const registerUser = async (req, res) => {
             { expiresIn: "1d" }
         );
 
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,          // ใช้ HTTPS เท่านั้น
+            sameSite: "strict",    // ป้องกัน CSRF
+            maxAge: 24 * 60 * 60 * 1000, // 1 วัน
+        });
+
         res.status(201).json({
             message: "สมัครสมาชิกสำเร็จ",
             user: {
@@ -85,17 +92,42 @@ export const login = async (req, res) => {
             { expiresIn: "1d" }
         );
 
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,          // ใช้ HTTPS เท่านั้น
+            sameSite: "strict",    // ป้องกัน CSRF
+            maxAge: 24 * 60 * 60 * 1000, // 1 วัน
+        });
+
         res.status(200).json({
             message: "เข้าสู่ระบบสำเร็จ",
             token,
+            user: {
+                id: user._id,
+                name: `${user.firstName} ${user.lastName}`,
+                email: user.email,
+                username: user.username,
+                role: user.role,
+                storeIds: user.storeIds,
+            },
             positionId: user.positionId,
-             
+
         });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
     }
 };
+
+export const logout = (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+    });
+    res.json({ message: "Logged out" });
+};
+
 
 export const getProfile = async (req, res) => {
     try {

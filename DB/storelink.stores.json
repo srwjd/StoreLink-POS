@@ -1,0 +1,189 @@
+[{
+  "_id": {
+    "$oid": "691a78125645c35679b821db"
+  },
+  "ownerId": {
+    "$oid": "691a78125645c35679b821d9"
+  },
+  "storeName": "ร้านตัวอย่าง (general)",
+  "storeImage": "",
+  "storeType": "general",
+  "address": "123 ถนนสุขุมวิท กรุงเทพฯ",
+  "phone": "0812345678",
+  "taxRate": 7,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": false,
+    "promptPayNumber": ""
+  },
+  "storeCode": "ST000029",
+  "createdAt": {
+    "$date": "2025-11-17T01:19:14.740Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:14.740Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821e8"
+  },
+  "ownerId": {
+    "$oid": "691a78125645c35679b821d9"
+  },
+  "storeName": "ร้านตัวอย่าง (restaurant)",
+  "storeImage": "",
+  "storeType": "restaurant",
+  "address": "123 ถนนสุขุมวิท กรุงเทพฯ",
+  "phone": "0812345678",
+  "taxRate": 7,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": false,
+    "promptPayNumber": ""
+  },
+  "storeCode": "ST000030",
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.301Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.301Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a78135645c35679b821f5"
+  },
+  "ownerId": {
+    "$oid": "691a78125645c35679b821d9"
+  },
+  "storeName": "ร้านตัวอย่าง (service)",
+  "storeImage": "",
+  "storeType": "service",
+  "address": "123 ถนนสุขุมวิท กรุงเทพฯ",
+  "phone": "0812345678",
+  "taxRate": 7,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": false,
+    "promptPayNumber": ""
+  },
+  "storeCode": "ST000031",
+  "createdAt": {
+    "$date": "2025-11-17T01:19:15.851Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:19:15.851Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a79c21312e7a1b0147027"
+  },
+  "ownerId": {
+    "$oid": "691a79971312e7a1b0147025"
+  },
+  "storeName": "ร้านค้า",
+  "storeImage": "",
+  "storeType": "general",
+  "address": "123 ดเดกเดเด้ด กอดน้ิน",
+  "phone": "0789456123",
+  "taxRate": 7,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": true,
+    "promptPayNumber": "0835279107"
+  },
+  "storeCode": "ST000032",
+  "createdAt": {
+    "$date": "2025-11-17T01:26:26.798Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:38:25.903Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a7dd61312e7a1b0147122"
+  },
+  "ownerId": {
+    "$oid": "691a79971312e7a1b0147025"
+  },
+  "storeName": "ร้านอาหาร",
+  "storeImage": "",
+  "storeType": "restaurant",
+  "address": "",
+  "phone": "",
+  "taxRate": 0,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": true,
+    "promptPayNumber": "0835279107"
+  },
+  "storeCode": "ST000033",
+  "createdAt": {
+    "$date": "2025-11-17T01:43:50.968Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T01:43:50.968Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9d05a2d98595c3cd29c5"
+  },
+  "ownerId": {
+    "$oid": "691a9c49a2d98595c3cd29c3"
+  },
+  "storeName": "ร้าน A",
+  "storeImage": "",
+  "storeType": "general",
+  "address": "12321 wwwrw",
+  "phone": "0123456789",
+  "taxRate": 0,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": true,
+    "promptPayNumber": "0835279107"
+  },
+  "storeCode": "ST000034",
+  "createdAt": {
+    "$date": "2025-11-17T03:56:53.684Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:56:53.684Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "691a9d2ea2d98595c3cd29d8"
+  },
+  "ownerId": {
+    "$oid": "691a9c49a2d98595c3cd29c3"
+  },
+  "storeName": "ร้านอาหาร A",
+  "storeImage": "",
+  "storeType": "restaurant",
+  "address": "rtytut",
+  "phone": "0123456789",
+  "taxRate": 0,
+  "paymentSettings": {
+    "cash": true,
+    "qrPromptPay": true,
+    "promptPayNumber": "0835279107"
+  },
+  "storeCode": "ST000035",
+  "createdAt": {
+    "$date": "2025-11-17T03:57:34.673Z"
+  },
+  "updatedAt": {
+    "$date": "2025-11-17T03:57:34.673Z"
+  },
+  "__v": 0
+}]

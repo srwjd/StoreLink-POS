@@ -1,6 +1,5 @@
 import Order from "../models/OrderModel.js";
 import Product from "../models/productModel.js";
-import Table from "../models/tableModel.js";
 import User from "../models/userModel.js";
 import mongoose from "mongoose";
 
@@ -100,14 +99,6 @@ export const payOrder = async (req, res) => {
         order.changeAmount = changeAmount;
         order.status = "paid"; // ✅ เพิ่มสถานะ
         order.paidAt = new Date();
-
-        // ✅ ถ้ามีโต๊ะ → เปลี่ยนสถานะเป็น paid
-        if (order.tableNumber) {
-            await Table.findOneAndUpdate(
-                { storeId: order.storeId, tableNumber: order.tableNumber },
-                { status: "paid", currentOrder: null }
-            );
-        }
 
         // 📦 ตัดสต็อก
         for (const item of order.items) {

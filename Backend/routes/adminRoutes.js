@@ -1,12 +1,14 @@
 import express from "express";
 import { getAllStores, deleteStore, getAllOwner, editPasswordOwner } from "../controllers/adminController.js";
+import { requireAuth } from "../middleware/authMiddleware.js";
+import { requirePermission } from "../middleware/permissionMiddleware.js";
 
 const router = express.Router();
 
-router.get("/stores", getAllStores);
-router.get("/owners", getAllOwner);
-router.put("/owners/:id", editPasswordOwner);
-router.delete("/stores/:id", deleteStore);
+router.get("/stores", requireAuth, getAllStores);
+router.get("/owners", requireAuth, getAllOwner);
+router.put("/owners/:id", requireAuth, editPasswordOwner);
+router.delete("/stores/:id", requireAuth, deleteStore);
 
 
 /**

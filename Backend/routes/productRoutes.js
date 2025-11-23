@@ -6,6 +6,7 @@ import {
     updateProduct,
     deleteProduct,
     addSerialNumbers,
+    getCategoriesByStore,
 } from "../controllers/productController.js";
 import { requireAuth } from "../middleware/authMiddleware.js";
 
@@ -17,6 +18,7 @@ router.get("/:id", requireAuth, getProductById); // ดูรายละเอ�
 router.put("/:id", requireAuth, updateProduct); // อัปเดตสินค้า
 router.delete("/:id", requireAuth, deleteProduct); // ลบสินค้า
 router.post("/:id/add-serials", requireAuth, addSerialNumbers); // เพิ่ม Serial ให้สินค้า
+router.get("/categories/:storeId", requireAuth, getCategoriesByStore);
 
 /**
  * @swagger

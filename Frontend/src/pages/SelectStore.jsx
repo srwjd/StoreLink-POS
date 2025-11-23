@@ -21,15 +21,8 @@ export default function SelectStore() {
 
     const fetchStores = async () => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("กรุณาเข้าสู่ระบบก่อนเข้าหน้านี้");
-                setLoading(false);
-                return;
-            }
-
             const response = await axios.get(`${API_BASE_URL}/stores/my-stores`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
 
             setStores(response.data.stores);

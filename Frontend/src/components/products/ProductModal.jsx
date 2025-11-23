@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
@@ -5,6 +6,7 @@ import { X, PlusCircle, Trash } from "phosphor-react";
 import axios from "axios";
 import { useStore } from "../../context/StoreContext";
 import { showError } from "../../utils/notify";
+import { use } from "react";
 
 export default function ProductModal({
     storeId,
@@ -33,8 +35,42 @@ export default function ProductModal({
         hasOptions: false,
         productImage: "",
     });
+    const [categories, setCategories] = useState([]);
+    const [query, setQuery] = useState("");
+    const [filtered, setFiltered] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(`${API_BASE_URL}/products/categories/${storeId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setCategories(res.data || []);
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+            }
+        };
+        fetchCategories();
+    }, [storeId]);
 
+    const handleInput = (value) => {
+        setQuery(value);
+        setForm({ ...form, category: value });
+        setFiltered(
+            categories.filter((c) =>
+                c.toLowerCase().includes(value.toLowerCase())
+            )
+        );
+        setShowDropdown(true);
+    };
+
+    const handleSelect = (value) => {
+        setForm({ ...form, category: value });
+        setQuery(value);
+        setShowDropdown(false);
+    };
 
     useEffect(() => {
         if (editingProduct) {
@@ -223,10 +259,10 @@ export default function ProductModal({
 
             if (editingProduct) {
                 await axios.put(`${API_BASE_URL}/products/${editingProduct._id}`, payload, { headers });
-                
+
             } else {
                 await axios.post(`${API_BASE_URL}/products/create/${storeId}`, payload, { headers });
-                
+
             }
 
             onSuccess();
@@ -365,7 +401,7 @@ export default function ProductModal({
                                 />
                             </div>
 
-                            <div>
+                            <div className="relative">
                                 <label className="block text-sm font-medium text-slate-600 mb-1">
                                     หมวดหมู่
                                 </label>
@@ -373,16 +409,24 @@ export default function ProductModal({
                                     type="text"
                                     placeholder="ค้นหาหรือพิมพ์ชื่อหมวดหมู่..."
                                     value={form.category}
-                                    onChange={(e) => setForm({ ...form, category: e.target.value })}
-                                    list="category-list"
+                                    onChange={(e) => handleInput(e.target.value)}
+                                    onFocus={() => setShowDropdown(true)}
+                                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                                     className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#3674B5]"
                                 />
-                                <datalist id="category-list">
-                                    <option value="อาหาร" />
-                                    <option value="เครื่องดื่ม" />
-                                    <option value="ของใช้" />
-                                    <option value="บริการ" />
-                                </datalist>
+                                {showDropdown && filtered.length > 0 && (
+                                    <ul className="absolute z-50 bg-white border border-gray-200 rounded-lg mt-1 w-full max-h-48 overflow-y-auto shadow-md">
+                                        {filtered.map((c, i) => (
+                                            <li
+                                                key={i}
+                                                onClick={() => handleSelect(c)}
+                                                className="px-3 py-2 hover:bg-blue-50 cursor-pointer text-slate-700"
+                                            >
+                                                {c}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                         </div>
 
@@ -407,29 +451,29 @@ export default function ProductModal({
                                 <div></div>
                             ) : (
                                 <div>
-                                <label className="block text-sm font-medium text-slate-600 mb-1">
-                                    จำนวนคงเหลือ (Qty)
-                                </label>
-                                {form.productType === "serialized" ? (
-                                    <input
-                                        type="number"
-                                        name="qty"
-                                        value={(Array.isArray(editingProduct?.serialList) ? editingProduct.serialList.filter((s) => s.status === "available").length : 0)}
-                                        disabled
-                                        className="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-100 text-slate-500"
-                                    />
-                                ) : (
-                                    <input
-                                        type="number"
-                                        name="qty"
-                                        value={form.qty}
-                                        onChange={handleChange}
-                                        className="w-full border border-slate-300 rounded-lg px-3 py-2"
-                                    />
-                                )}
-                            </div>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">
+                                        จำนวนคงเหลือ (Qty)
+                                    </label>
+                                    {form.productType === "serialized" ? (
+                                        <input
+                                            type="number"
+                                            name="qty"
+                                            value={(Array.isArray(editingProduct?.serialList) ? editingProduct.serialList.filter((s) => s.status === "available").length : 0)}
+                                            disabled
+                                            className="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-100 text-slate-500"
+                                        />
+                                    ) : (
+                                        <input
+                                            type="number"
+                                            name="qty"
+                                            value={form.qty}
+                                            onChange={handleChange}
+                                            className="w-full border border-slate-300 rounded-lg px-3 py-2"
+                                        />
+                                    )}
+                                </div>
                             )}
-                            
+
                         </div>
 
 

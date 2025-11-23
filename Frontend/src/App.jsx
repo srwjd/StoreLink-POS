@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Landing from './pages/Landing.jsx'
@@ -21,7 +21,6 @@ function App() {
 
   return (
     <div>
-      <Router>
         <Routes>
           {/* หน้าแนะนำเว็บ */}
           <Route
@@ -140,7 +139,6 @@ function App() {
 
           <Route path="*" element={<Landing />} />
         </Routes>
-      </Router>
     </div>
   )
 }
