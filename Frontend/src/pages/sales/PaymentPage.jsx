@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { jwtDecode } from "jwt-decode";
+
 import { useStore } from "../../context/StoreContext";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -36,10 +36,9 @@ export default function PaymentPage() {
     // 🔹 ดึงหมายเลขพร้อมเพย์ของร้าน
     useEffect(() => {
         const fetchStoreData = async () => {
-            const token = localStorage.getItem("token");
             try {
                 const res = await axios.get(`${API_BASE_URL}/stores/${storeId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
                 });
                 setPromptPayNumber(res.data.paymentSettings?.promptPayNumber || "");
             } catch (err) {
@@ -75,17 +74,11 @@ export default function PaymentPage() {
         }
 
         try {
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
+            const userRes = await axios.get(`${API_BASE_URL}/auth/profile`, {
+                withCredentials: true,
+            });
+            const userId = userRes.data.user.id;
 
-            // ✅ ดึง userId จาก JWT token
-            let userId = null;
-            try {
-                const decoded = jwtDecode(token);
-                userId = decoded.id || decoded._id;
-            } catch (err) {
-                console.warn("ไม่สามารถอ่าน userId จาก token ได้:", err);
-            }
 
             // ✅ สร้าง payload สำหรับส่งไป backend
             const orderPayload = {
@@ -112,7 +105,7 @@ export default function PaymentPage() {
             };
 
             // ✅ เรียก backend เพื่อสร้าง order
-            const res = await axios.post(`${API_BASE_URL}/orders/create`, orderPayload, { headers });
+            const res = await axios.post(`${API_BASE_URL}/orders/create`, orderPayload, { withCredentials: true });
 
             console.log("✅ Order created:", res.data);
 

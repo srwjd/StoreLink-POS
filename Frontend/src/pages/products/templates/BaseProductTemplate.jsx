@@ -29,15 +29,10 @@ export default function BaseProductTemplate() {
     const [viewMode, setViewMode] = useState("table");
     const storeId = localStorage.getItem("currentStore");
 
-    const getAuthHeader = () => {
-        const token = localStorage.getItem("token");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    };
-
     const fetchProducts = async () => {
         try {
             const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
-                headers: getAuthHeader(),
+                withCredentials: true,
             });
             setProducts(res.data.products || []);
             const uniqueCats = [...new Set(res.data.products.map((p) => p.category).filter(Boolean))];

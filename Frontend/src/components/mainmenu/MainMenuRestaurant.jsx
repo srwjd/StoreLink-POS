@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 
 import Header from "../shared/Header";
 import Footer from "../shared/Footer";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 import { ShoppingCart, ForkKnife, ChartBar, Users, Gear } from "phosphor-react";
@@ -18,31 +16,19 @@ export default function MainMenuRestaurant() {
     const { store, loading } = useStore();
     const [permissions, setPermissions] = useState([]);
 
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
-
-
-    const checkPermissions = async () => {
+    // ⭐ ดึง role + positionId ของ user ผ่าน cookie
+    const fetchUserPermissions = async () => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.warn("⚠️ ไม่มี token");
-                return;
-            }
+            // 1) เช็คข้อมูล user จาก cookie
+            const userRes = await axios.get(
+                `${API_BASE_URL}/auth/profile`,
+                { withCredentials: true }
+            );
 
-            let decoded;
-            try {
-                decoded = jwtDecode(token);
-                console.log("🧩 decoded token:", decoded.positionId);
-            } catch (err) {
-                console.warn("⚠️ Token ไม่ถูกต้อง:", err.message);
-                return;
-            }
+            const user = userRes.data.user;
 
-            const positionId = decoded.positionId;
-
-            // เจ้าของร้าน ได้สิทธิ์เต็ม
-            if (decoded.role === "Owner") {
+            // ⭐ Owner มีสิทธิ์เต็ม
+            if (user.role === "Owner") {
                 setPermissions([
                     "sale",
                     "report",
@@ -55,26 +41,28 @@ export default function MainMenuRestaurant() {
                 return;
             }
 
-            if (!positionId) {
-                console.warn("❌ ไม่มี positionId ใน token");
-                return;
+            // ⭐ Employee → ดึง permissions จากตำแหน่ง
+            if (user.positionId) {
+                const posRes = await axios.get(
+                    `${API_BASE_URL}/positions/detail/${user.positionId}`,
+                    { withCredentials: true }
+                );
+
+                const posPermissions =
+                    posRes.data.permissions ||
+                    posRes.data.position?.permissions ||
+                    [];
+
+                setPermissions(posPermissions);
             }
 
-            const res = await axios.get(`${API_BASE_URL}/positions/detail/${positionId}`, { headers });
-            const posPermissions = res.data.permissions || res.data.position?.permissions || [];
-            console.log("permission", posPermissions);
-
-
-
-            setPermissions(posPermissions);
         } catch (err) {
-            console.error("❌ Error fetching permissions:", err);
+            console.error("❌ Error fetching user permissions:", err);
         }
     };
 
-
     useEffect(() => {
-        checkPermissions();
+        fetchUserPermissions();
     }, []);
 
     if (loading || !store) {
@@ -84,8 +72,6 @@ export default function MainMenuRestaurant() {
             </div>
         );
     }
-
-
 
     const storeId = store._id;
     const storeType = store.storeType;

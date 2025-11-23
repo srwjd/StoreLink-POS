@@ -43,9 +43,8 @@ export default function ProductModal({
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const token = localStorage.getItem("token");
                 const res = await axios.get(`${API_BASE_URL}/products/categories/${storeId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
                 });
                 setCategories(res.data || []);
             } catch (err) {
@@ -192,12 +191,11 @@ export default function ProductModal({
 
         setUploading(true);
         try {
-            const token = localStorage.getItem("token");
             const formData = new FormData();
             formData.append("file", file);
 
             const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
 
             // เมื่ออัปโหลดเสร็จ → เซ็ต URL จริงแทน local preview
@@ -217,9 +215,6 @@ export default function ProductModal({
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
             const payload = {
                 storeId,
                 barcode: form.barcode || "", // ✅ ส่ง barcode ไป backend ด้วย
@@ -258,10 +253,10 @@ export default function ProductModal({
             };
 
             if (editingProduct) {
-                await axios.put(`${API_BASE_URL}/products/${editingProduct._id}`, payload, { headers });
+                await axios.put(`${API_BASE_URL}/products/${editingProduct._id}`, payload, { withCredentials: true });
 
             } else {
-                await axios.post(`${API_BASE_URL}/products/create/${storeId}`, payload, { headers });
+                await axios.post(`${API_BASE_URL}/products/create/${storeId}`, payload, { withCredentials: true });
 
             }
 

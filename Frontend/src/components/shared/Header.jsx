@@ -1,14 +1,25 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ExitIcon } from "../../../public/icons/icons";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Header({ logoSrc = "", storeName = "", onSignup, onLogin, mode = "back", logoClick }) {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("currentStore");
-        navigate("/");
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                `${API_BASE_URL}/auth/logout`,
+                {},
+                { withCredentials: true }
+            );
+            localStorage.removeItem("currentStore");
+            navigate("/");   // กลับหน้าแรก
+        } catch (err) {
+            console.error("Logout failed", err);
+        }
     };
 
     return (

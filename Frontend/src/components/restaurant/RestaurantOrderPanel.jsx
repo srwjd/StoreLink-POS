@@ -30,13 +30,12 @@ export default function RestaurantOrderPanel({ mode, tableId, onBack }) {
   const [cart, setCart] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [optionsForm, setOptionsForm] = useState({});
-  const token = localStorage.getItem("token");
   const storeId = localStorage.getItem("currentStore");
 
   const fetchMenu = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       setMenu(res.data.products);
       const uniqueCats = [...new Set(res.data.products.map((p) => p.category).filter(Boolean))];

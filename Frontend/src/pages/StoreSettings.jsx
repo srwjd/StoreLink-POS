@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -12,7 +12,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function StoreSettings() {
   const { storeId } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +38,7 @@ export default function StoreSettings() {
     const fetchStore = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/stores/${storeId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
         });
         const data = res.data;
         setStore(data);
@@ -94,12 +93,11 @@ export default function StoreSettings() {
 
     setUploading(true);
     try {
-      const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("file", file);
 
       const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
 
       setLogo(file);
@@ -127,7 +125,7 @@ export default function StoreSettings() {
       await axios.put(
         `${API_BASE_URL}/stores/update/${storeId}`,
         { ...form, password },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       showSuccess("บันทึกการแก้ไขสำเร็จ");
@@ -147,7 +145,7 @@ export default function StoreSettings() {
     try {
       await axios.delete(`${API_BASE_URL}/settings/${storeId}`, {
         data: { password },
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       showSuccess("ลบร้านเรียบร้อยแล้ว");
       navigate("/select-store");

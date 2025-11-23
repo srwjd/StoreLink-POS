@@ -5,8 +5,6 @@ import Header from "../shared/Header";
 import { showSuccess, showError } from "../../utils/notify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const token = localStorage.getItem("token");
-const headers = { Authorization: `Bearer ${token}` };
 const storeId = localStorage.getItem("currentStore");
 
 export default function Kitchen() {
@@ -14,7 +12,7 @@ export default function Kitchen() {
 
     const fetchOrders = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/orders/${storeId}/all-receipts`, { headers });
+            const res = await axios.get(`${API_BASE_URL}/orders/${storeId}/all-receipts`, { withCredentials: true });
             setOrders(res.data);
         } catch (err) {
             console.error("Error fetching kitchen orders:", err);
@@ -23,7 +21,7 @@ export default function Kitchen() {
 
     const updateStatus = async (orderId, newStatus) => {
         try {
-            await axios.put(`${API_BASE_URL}/orders/${orderId}/kitchen-status`, { kitchenStatus: newStatus, orderId }, { headers });
+            await axios.put(`${API_BASE_URL}/orders/${orderId}/kitchen-status`, { kitchenStatus: newStatus, orderId }, { withCredentials: true });
             showSuccess(`อัปเดตสถานะเป็น "${newStatus}"`);
             fetchOrders();
         } catch {

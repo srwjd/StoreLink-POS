@@ -131,14 +131,25 @@ export const logout = (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-        const user = req.user; // มาจาก middleware requireAuth
-        if (!user) return res.status(401).json({ message: "ไม่พบผู้ใช้" });
+        const userId = req.user.id; // จาก decoded token
 
-        res.status(200).json({
-            message: "ข้อมูลโปรไฟล์",
-            user,
+        const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({ auth: false, message: "User not found" });
+        }
+
+        res.json({
+            auth: true,
+            user: {
+                id: user._id,
+                email: user.email,
+                username: user.username,
+                role: user.role,
+                positionId: user.positionId || null,
+            },
         });
     } catch (err) {
-        res.status(500).json({ message: "เกิดข้อผิดพลาด", error: err.message });
+        res.status(500).json({ auth: false, message: "Server error" });
     }
 };

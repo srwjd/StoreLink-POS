@@ -7,8 +7,6 @@ import Header from "../../components/shared/Header";
 export default function ViewAllReceipt() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const storeId = localStorage.getItem("currentStore");
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
 
     const [receipts, setReceipts] = useState([]);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -22,7 +20,7 @@ export default function ViewAllReceipt() {
     useEffect(() => {
         const fetchReceipts = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/orders/${storeId}/all-receipts`, { headers });
+                const res = await axios.get(`${API_BASE_URL}/orders/${storeId}/all-receipts`, { withCredentials: true });
                 setReceipts(res.data);
             } catch (err) {
                 console.error("❌ Error fetching receipts:", err);

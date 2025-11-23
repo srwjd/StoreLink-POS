@@ -12,8 +12,6 @@ import Header from "../../components/shared/Header";
 
 export default function DashboardPage() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
 
     const [summary, setSummary] = useState({});
     const [salesData, setSalesData] = useState([]);
@@ -39,17 +37,17 @@ export default function DashboardPage() {
     const fetchData = async () => {
         try {
             const summaryRes = await axios.get(`${API_BASE_URL}/reports/summary/${storeId}`, {
-                headers,
+                withCredentials: true,
                 params: { range },
             });
             const salesRes = await axios.get(`${API_BASE_URL}/reports/sales-chart/${storeId}`, {
-                headers,
+                withCredentials: true,
             })
             const topProductsRes = await axios.get(`${API_BASE_URL}/reports/top-products/${storeId}`, {
-                headers,
+                withCredentials: true,
             });
             const recentOrdersRes = await axios.get(`${API_BASE_URL}/reports/recent/${storeId}`, {
-                headers,
+                withCredentials: true,
             });
 
             setSummary(summaryRes.data);

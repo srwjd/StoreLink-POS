@@ -65,12 +65,7 @@ export default function RegisterPopup({ onClose, onLogin }) {
             });
             const data = await res.json();
             if (res.ok) {
-                console.log("token:", data.token);
-
-                localStorage.setItem("token", data.token);
-
                 onClose();
-
                 navigate("/create-store");
             } else {
                 showError(data.message || "สมัครไม่สำเร็จ");

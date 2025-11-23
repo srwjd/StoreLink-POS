@@ -1,6 +1,7 @@
-/* eslint-disable no-unused-vars */
+
 /* eslint-disable react/prop-types */
 import { useState, } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Check, Money } from "phosphor-react";
 
@@ -81,27 +82,25 @@ export default function CreateStore() {
 
 
     const handleSubmit = async () => {
-        const token = localStorage.getItem("token");
         try {
-            const res = await fetch(`${API_BASE_URL}/stores/create-store`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(form),
-            });
-            const data = await res.json();
-            if (res.ok) {
-                console.log("✅ Store created:", data.store);
-                navigate("/select-store");
-            } else {
-                showError(data.message || "ไม่สามารถสร้างร้านได้");
-            }
+            const res = await axios.post(
+                `${API_BASE_URL}/stores/create-store`,
+                form,
+                { withCredentials: true }   // ⭐ ส่ง cookie อัตโนมัติ
+            );
+
+            console.log("✅ Store created:", res.data.store);
+            navigate("/select-store");
         } catch (err) {
-            showError("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+            if (err.response) {
+                showError(err.response.data.message || "ไม่สามารถสร้างร้านได้");
+            } else {
+                showError("เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+            }
         }
     };
+
+
 
     return (
         <div className="relative flex flex-col min-h-screen bg-[#DFEEFF]">
@@ -222,66 +221,78 @@ function Step1({ form, onChange }) {
 }
 
 function Step2({ form, onChange }) {
-    const [taxEnabled, setTaxEnabled] = useState(form.taxRate > 0);
+    const handleTaxChange = (e) => {
+        let value = e.target.value;
 
-    const toggleTax = () => {
-        const newState = !taxEnabled;
-        setTaxEnabled(newState);
-        onChange("taxRate", newState ? 7 : 0);
+        // ถ้าเป็นค่าว่าง ให้เป็น 0
+        if (value === "") {
+            onChange("taxRate", 0);
+            return;
+        }
+
+        // แปลงเป็นตัวเลขและกันค่าผิดพลาด
+        const numericValue = Number(value);
+        if (isNaN(numericValue)) return;
+
+        // จำกัด VAT 0–100
+        if (numericValue < 0 || numericValue > 100) return;
+
+        onChange("taxRate", numericValue);
     };
 
     return (
         <div>
             <p className="text-[#3674B5] font-semibold text-md mb-4">ข้อมูลร้านค้า</p>
             <div className="space-y-3">
+
+                {/* ที่อยู่ */}
                 <input
                     placeholder="ที่อยู่ร้าน"
                     value={form.address}
                     onChange={(e) => onChange("address", e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#3674B5]"
                 />
+
+                {/* เบอร์โทร */}
                 <input
                     type="text"
                     placeholder="เบอร์โทร"
                     value={form.phone}
                     onChange={(e) => {
                         const value = e.target.value;
-                        // ✅ รับเฉพาะตัวเลข และจำกัด 10 หลัก
                         if (/^\d{0,10}$/.test(value)) {
                             onChange("phone", value);
                         }
                     }}
                     maxLength={10}
                     inputMode="numeric"
-                    pattern="[0-9]*"
                     className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#3674B5]"
                 />
 
-
-                {/* 🔄 ปุ่มเปิด/ปิดภาษี 7% */}
+                {/* กรอก VAT */}
                 <div className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 bg-white shadow-sm">
-                    <div className="flex items-center gap-2">
-                        <span className="text-[#3674B5] font-medium">ภาษีมูลค่าเพิ่ม (VAT)</span>
-                        <span className="text-sm text-slate-600 mt-[1px]">
-                            {taxEnabled ? "เปิดใช้งานภาษี 7%" : "ปิดใช้งานภาษี"}
-                        </span>
+                    <div>
+                        <p className="text-slate-500">ภาษีมูลค่าเพิ่ม (VAT)</p>
                     </div>
-                    <button
-                        onClick={toggleTax}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${taxEnabled ? "bg-[#3674B5]" : "bg-gray-300"
-                            }`}
-                    >
-                        <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${taxEnabled ? "translate-x-6" : "translate-x-1"
-                                }`}
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={form.taxRate}
+                            onChange={handleTaxChange}
+                            className="w-20 border border-gray-300 rounded-lg px-3 py-1 text-right outline-none focus:ring-2 focus:ring-[#3674B5]"
                         />
-                    </button>
+                        <span className="font-medium text-slate-700">%</span>
+                    </div>
                 </div>
 
             </div>
         </div>
     );
 }
+
 
 
 function Step3({ form, onPaymentChange }) {

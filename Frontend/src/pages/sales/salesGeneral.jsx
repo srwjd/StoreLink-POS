@@ -38,14 +38,13 @@ export default function SalesGeneral() {
             }, 50);
         }
     }, [serialModal.open]);
-    const token = localStorage.getItem("token");
     const storeId = localStorage.getItem("currentStore");
 
 
     const fetchAllProduct = async () => {
         try {
             const res = await axios.get(`${API_BASE_URL}/products/all/${storeId}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
             setProducts(res.data.products);
         } catch (err) {

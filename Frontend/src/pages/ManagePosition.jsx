@@ -41,9 +41,8 @@ export default function ManagePosition() {
 
     const fetchPositions = async () => {
         try {
-            const token = localStorage.getItem("token");
             const res = await axios.get(`${API_BASE_URL}/positions/${storeId}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
             setPositions(res.data.positions || []);
             setFilteredPositions(res.data.positions || []);
@@ -81,7 +80,6 @@ export default function ManagePosition() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem("token");
 
         // 🔁 แปลง object permissions → array ของ string
         const permissionArray = Object.keys(form.permissions).filter(
@@ -98,13 +96,13 @@ export default function ManagePosition() {
                 await axios.put(
                     `${API_BASE_URL}/positions/update/${editData._id}`,
                     payload,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { withCredentials: true }
                 );
             } else {
                 await axios.post(
                     `${API_BASE_URL}/positions/create/${storeId}`,
                     payload,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { withCredentials: true }
                 );
             }
 
@@ -121,10 +119,9 @@ export default function ManagePosition() {
     const handleDelete = async (id) => {
         const ok = await showConfirm("ต้องการลบตำแหน่งนี้ใช่หรือไม่?");
         if (!ok) return;
-        const token = localStorage.getItem("token");
         try {
             await axios.delete(`${API_BASE_URL}/positions/delete/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
             fetchPositions();
         } catch (err) {

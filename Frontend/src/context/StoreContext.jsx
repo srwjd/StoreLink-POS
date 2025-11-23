@@ -12,19 +12,12 @@ export const StoreProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // ✅ โหลด token และ store จาก localStorage
     useEffect(() => {
-        const token = localStorage.getItem("token");
         const storeId = localStorage.getItem("currentStore");
-
-        if (!token) {
-            setLoading(false);
-            return;
-        }
 
         axios
             .get(`${API_BASE_URL}/auth/profile`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { withCredentials: true },
             })
             .then((res) => {
                 setUser(res.data.user);
@@ -33,9 +26,9 @@ export const StoreProvider = ({ children }) => {
                 if (storeId) {
                     axios
                         .get(`${API_BASE_URL}/stores/${storeId}`, {
-                            headers: { Authorization: `Bearer ${token}` },
+                            withCredentials: true,
                         })
-                       .then((sRes) => setStore(sRes.data))
+                        .then((sRes) => setStore(sRes.data))
                         .catch((err) => {
                             console.warn("⚠️ โหลดร้านไม่สำเร็จ (อาจถูกลบ)", err.response?.status);
                             localStorage.removeItem("currentStore");
@@ -44,7 +37,6 @@ export const StoreProvider = ({ children }) => {
                 }
             })
             .catch(() => {
-                localStorage.removeItem("token");
                 setUser(null);
             })
             .finally(() => setLoading(false));
@@ -60,7 +52,6 @@ export const StoreProvider = ({ children }) => {
     const logout = () => {
         setStore(null);
         setUser(null);
-        localStorage.removeItem("token");
         localStorage.removeItem("currentStore");
     };
 

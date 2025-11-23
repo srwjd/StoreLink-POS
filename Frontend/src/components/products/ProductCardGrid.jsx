@@ -11,10 +11,6 @@ export default function ProductCardGrid({ products, refresh }) {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const { store } = useStore();
-    const getAuthHeader = () => {
-        const token = localStorage.getItem("token");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    };
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -23,7 +19,7 @@ export default function ProductCardGrid({ products, refresh }) {
         const ok = await showConfirm("คุณแน่ใจว่าต้องการลบสินค้านี้?");
         if (!ok) return;
         try {
-            await axios.delete(`${API_BASE_URL}/products/${id}`, { headers: getAuthHeader() });
+            await axios.delete(`${API_BASE_URL}/products/${id}`, { withCredentials: true });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);

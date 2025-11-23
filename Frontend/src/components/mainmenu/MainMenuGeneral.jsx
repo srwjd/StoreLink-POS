@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useState, useEffect } from "react";
 import { ShoppingCart, Package, ChartBar, Users, Gear } from "phosphor-react";
 import Header from "../shared/Header";
@@ -6,7 +6,6 @@ import Footer from "../shared/Footer";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 import { Receipt } from "../../../public/icons/icons";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -16,33 +15,19 @@ export default function MainMenuGeneral() {
     const { store, loading } = useStore();
     const [permissions, setPermissions] = useState([]);
 
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
-    // ✅ ฟังก์ชันเช็กสิทธิ์
-
-
-
-    const checkPermissions = async () => {
+    // ⭐ ดึง role + positionId ของ user ผ่าน cookie
+    const fetchUserPermissions = async () => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.warn("⚠️ ไม่มี token");
-                return;
-            }
+            // 1) เช็คข้อมูล user จาก cookie
+            const userRes = await axios.get(
+                `${API_BASE_URL}/auth/profile`,
+                { withCredentials: true }
+            );
 
-            let decoded;
-            try {
-                decoded = jwtDecode(token);
-                console.log("🧩 decoded token:", decoded.positionId);
-            } catch (err) {
-                console.warn("⚠️ Token ไม่ถูกต้อง:", err.message);
-                return;
-            }
+            const user = userRes.data.user;
 
-            const positionId = decoded.positionId;
-
-            // เจ้าของร้าน ได้สิทธิ์เต็ม
-            if (decoded.role === "Owner") {
+            // ⭐ Owner มีสิทธิ์เต็ม
+            if (user.role === "Owner") {
                 setPermissions([
                     "sale",
                     "report",
@@ -55,26 +40,28 @@ export default function MainMenuGeneral() {
                 return;
             }
 
-            if (!positionId) {
-                console.warn("❌ ไม่มี positionId ใน token");
-                return;
+            // ⭐ Employee → ดึง permissions จากตำแหน่ง
+            if (user.positionId) {
+                const posRes = await axios.get(
+                    `${API_BASE_URL}/positions/detail/${user.positionId}`,
+                    { withCredentials: true }
+                );
+
+                const posPermissions =
+                    posRes.data.permissions ||
+                    posRes.data.position?.permissions ||
+                    [];
+
+                setPermissions(posPermissions);
             }
 
-            const res = await axios.get(`${API_BASE_URL}/positions/detail/${positionId}`, { headers });
-            const posPermissions = res.data.permissions || res.data.position?.permissions || [];
-            console.log("permission", posPermissions);
-
-
-
-            setPermissions(posPermissions);
         } catch (err) {
-            console.error("❌ Error fetching permissions:", err);
+            console.error("❌ Error fetching user permissions:", err);
         }
     };
 
-
     useEffect(() => {
-        checkPermissions();
+        fetchUserPermissions();
     }, []);
 
     if (loading || !store) {
@@ -88,7 +75,7 @@ export default function MainMenuGeneral() {
     const storeId = store._id;
     const storeType = store.storeType;
 
-    // 🔹 เมนูทั้งหมด
+    // ⭐ เมนูทั้งหมด
     const allMenuItems = [
         { key: "sale", icon: <ShoppingCart size={48} />, label: "ขาย", navigateTo: `/sales/${storeType}/${storeId}` },
         { key: "all_receipts", icon: <Receipt size={48} />, label: "ใบเสร็จ", navigateTo: `/all-receipts/${storeId}` },
@@ -98,26 +85,28 @@ export default function MainMenuGeneral() {
         { key: "settings", icon: <Gear size={48} />, label: "ตั้งค่า", navigateTo: `/settings/${storeId}` },
     ];
 
-    // 🔹 กรองเฉพาะเมนูที่ user มีสิทธิ์
+    // ⭐ กรองเมนูตามสิทธิ์
     const visibleMenu = allMenuItems.map((item) => ({
         ...item,
-        disabled: !permissions.includes(item.key), // ถ้าไม่มีสิทธิ์ → disabled
+        disabled: !permissions.includes(item.key),
     }));
 
     return (
         <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#E9F3FF] to-[#C8DCFF]">
             <Header storeName={store.storeName} />
+
             <main className="flex flex-1 justify-center items-center px-6">
                 <div className="flex flex-col items-center gap-8">
+
                     <div className="flex gap-8 justify-center">
                         {visibleMenu.slice(0, 3).map((item, i) => (
                             <button
                                 key={i}
-                                onClick={() => !item.disabled && item.navigateTo && navigate(item.navigateTo)}
+                                onClick={() => !item.disabled && navigate(item.navigateTo)}
                                 disabled={item.disabled}
                                 className={`flex flex-col items-center justify-center w-36 h-36 rounded-xl shadow-md 
-      transition-all duration-300 focus:outline-none
-      ${item.disabled
+                                    transition-all duration-300 focus:outline-none
+                                    ${item.disabled
                                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                         : "bg-gradient-to-b from-[#4A90E2] to-[#3674B5] text-white hover:shadow-xl hover:-translate-y-2"
                                     }`}
@@ -126,17 +115,17 @@ export default function MainMenuGeneral() {
                                 <p className="mt-3 text-md font-semibold">{item.label}</p>
                             </button>
                         ))}
-
                     </div>
+
                     <div className="flex gap-8 justify-center">
                         {visibleMenu.slice(3).map((item, i) => (
                             <button
                                 key={i}
-                                onClick={() => !item.disabled && item.navigateTo && navigate(item.navigateTo)}
+                                onClick={() => !item.disabled && navigate(item.navigateTo)}
                                 disabled={item.disabled}
                                 className={`flex flex-col items-center justify-center w-36 h-36 rounded-xl shadow-md 
-      transition-all duration-300 focus:outline-none
-      ${item.disabled
+                                    transition-all duration-300 focus:outline-none
+                                    ${item.disabled
                                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                         : "bg-gradient-to-b from-[#4A90E2] to-[#3674B5] text-white hover:shadow-xl hover:-translate-y-2"
                                     }`}
@@ -145,10 +134,11 @@ export default function MainMenuGeneral() {
                                 <p className="mt-3 text-md font-semibold">{item.label}</p>
                             </button>
                         ))}
-
                     </div>
+
                 </div>
             </main>
+
             <Footer />
         </div>
     );

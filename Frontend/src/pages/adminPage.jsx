@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { showConfirm, showSuccess, showError } from "../utils/notify";
@@ -17,12 +17,11 @@ export default function AdminPage() {
   const [newPassword, setNewPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const token = localStorage.getItem("token");
 
   const fetchStores = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/admin/stores`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       setStores(res.data);
     } catch {
@@ -33,7 +32,7 @@ export default function AdminPage() {
   const fetchOwners = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/admin/owners`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       setOwners(res.data);
     } catch {
@@ -55,7 +54,7 @@ export default function AdminPage() {
 
     try {
       await axios.delete(`${API_BASE_URL}/admin/stores/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       showSuccess("ลบร้านค้าเรียบร้อยแล้ว");
       setStores(stores.filter((store) => store._id !== id));
@@ -82,7 +81,7 @@ export default function AdminPage() {
       await axios.put(
         `${API_BASE_URL}/admin/owners/${editingOwner._id}`,
         { password: newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       showSuccess("เปลี่ยนรหัสผ่านสำเร็จ");
@@ -102,7 +101,7 @@ export default function AdminPage() {
 
     try {
       await axios.delete(`${API_BASE_URL}/admin/owners/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
       });
       showSuccess("ลบเจ้าของร้านเรียบร้อยแล้ว");
       setOwners(owners.filter((owner) => owner._id !== id));

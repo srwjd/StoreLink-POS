@@ -9,8 +9,6 @@ import { SelectStaffModal } from "../../components/service/SelectStaffModal";
 import { showSuccess, showError } from "../../utils/notify";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const token = localStorage.getItem("token");
-const headers = { Authorization: `Bearer ${token}` };
 
 export default function SalesRestaurant() {
     const { store } = useStore();
@@ -32,7 +30,7 @@ export default function SalesRestaurant() {
     const fetchMenu = async () => {
         try {
             const res = await axios.get(`${API_BASE_URL}/products/all/${store._id}`, {
-                headers,
+                withCredentials: true,
             });
             setMenu(res.data.products);
             const uniqueCats = [...new Set(res.data.products.map((p) => p.category).filter(Boolean))];
@@ -45,7 +43,7 @@ export default function SalesRestaurant() {
     // 🔹 ดึงพนักงาน
     const fetchStaff = async () => {
         try {
-            const res = await axios.get(`${API_BASE_URL}/employees/staff/${store._id}`, { headers });
+            const res = await axios.get(`${API_BASE_URL}/employees/staff/${store._id}`, { withCredentials: true });
             setStaffList(res.data.employees || []);
         } catch (err) {
             console.error("Error fetching staff:", err);
@@ -63,7 +61,7 @@ export default function SalesRestaurant() {
     const fetchOrders = async () => {
         try {
             const res = await axios.get(`${API_BASE_URL}/service-orders/${store._id}`, {
-                headers,
+                withCredentials: true,
             });
             setOrders(res.data);
         } catch (err) {
@@ -99,7 +97,7 @@ export default function SalesRestaurant() {
                 staffName: staff ? `${staff.firstName} ${staff.lastName || ""}` : "",
             };
 
-            await axios.post(`${API_BASE_URL}/service-orders/create`, body, { headers });
+            await axios.post(`${API_BASE_URL}/service-orders/create`, body, { withCredentials: true });
             showSuccess(`สร้างคิวใหม่ (${selectedService.name})${staff ? " โดย " + staff.firstName : ""}`);
             await fetchOrders();
         } catch (err) {
@@ -114,7 +112,7 @@ export default function SalesRestaurant() {
     // 🔹 อัปเดตสถานะคิว
     const handleStatusChange = async (orderId, newStatus) => {
         try {
-            await axios.patch(`${API_BASE_URL}/service-orders/${orderId}/status`, { status: newStatus }, { headers });
+            await axios.patch(`${API_BASE_URL}/service-orders/${orderId}/status`, { status: newStatus }, { withCredentials: true });
             showSuccess(`อัปเดตสถานะเป็น ${newStatus}`);
             await fetchOrders();
         } catch (err) {

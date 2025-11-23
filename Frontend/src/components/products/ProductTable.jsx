@@ -15,16 +15,12 @@ export default function ProductTable({ products, refresh, storeId }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const getAuthHeader = () => {
-        const token = localStorage.getItem("token");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    };
 
     const handleDelete = async (id) => {
         const ok = await showConfirm("คุณแน่ใจว่าต้องการลบสินค้านี้?");
         if (!ok) return;
         try {
-            await axios.delete(`${API_BASE_URL}/products/${id}`, { headers: getAuthHeader() });
+            await axios.delete(`${API_BASE_URL}/products/${id}`, { withCredentials: true });
             refresh();
         } catch (err) {
             console.error("Error deleting product:", err);
@@ -40,15 +36,13 @@ export default function ProductTable({ products, refresh, storeId }) {
 
     const handleToggleStatus = async (product) => {
         try {
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
 
             const newStatus = product.status === "available" ? "unavailable" : "available";
 
             await axios.put(
                 `${API_BASE_URL}/products/${product._id}`,
                 { status: newStatus },
-                { headers }
+                { withCredentials: true }
             );
 
             refresh(); // รีเฟรชข้อมูลสินค้าในตาราง

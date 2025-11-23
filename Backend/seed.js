@@ -8,7 +8,6 @@ import Store from "./models/storeModel.js";
 import Position from "./models/positionModel.js";
 import Product from "./models/productModel.js";
 import Order from "./models/OrderModel.js";
-import Report from "./models/reportModel.js";
 
 dotenv.config();
 
@@ -52,7 +51,6 @@ async function seed() {
       Position.deleteMany(),
       Product.deleteMany(),
       Order.deleteMany(),
-      Report.deleteMany()
     ]);
 
     // 👤 สร้าง Admin

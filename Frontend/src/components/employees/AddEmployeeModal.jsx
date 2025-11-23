@@ -39,9 +39,8 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
     // 🧩 โหลดตำแหน่งจาก API
     const fetchPositions = async () => {
         try {
-            const token = localStorage.getItem("token");
             const res = await axios.get(`${API_BASE_URL}/positions/${storeId}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true
             });
             setPositions(res.data.positions || []);
         } catch (err) {
@@ -104,15 +103,11 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
 
         setUploading(true);
         try {
-            const token = localStorage.getItem("token");
             const formData = new FormData();
             formData.append('file', file);
 
             const res = await axios.post(`${API_BASE_URL}/upload`, formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    // ไม่ต้องตั้ง Content-Type ให้ axios จัดการเองสำหรับ multipart/form-data
-                },
+                withCredentials: true
             });
 
             setIdCardImage(file);
@@ -155,7 +150,6 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
         setLoading(true);
 
         try {
-            const token = localStorage.getItem("token");
 
             // เตรียมข้อมูลที่จะส่ง (ลบฟิลด์ว่างออก)
             const submitData = {};
@@ -170,17 +164,17 @@ export default function AddEmployeeModal({ storeId, onClose, onSuccess, editData
                 if (!submitData.password) delete submitData.password;
 
                 await axios.put(
-                    `${API_BASE_URL}/employees/update/${editData._id}`,
+                    `${API_BASE_URL}/employees/update/${editData._id}`, {
                     submitData,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                    withCredentials: true
+                });
             } else {
                 await axios.post(
                     `${API_BASE_URL}/employees/create/${storeId}`,
                     submitData,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { withCredentials: true }
                 );
-                
+
             }
 
             onSuccess?.(); // โหลดข้อมูลใหม่จาก parent

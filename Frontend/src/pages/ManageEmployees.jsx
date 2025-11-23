@@ -46,16 +46,14 @@ export default function ManageEmployees() {
 
     const fetchEmployees = async () => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) return setError("กรุณาเข้าสู่ระบบก่อนเข้าหน้านี้");
             if (!storeId) return;
 
             const [empRes, posRes] = await Promise.all([
                 axios.get(`${API_BASE_URL}/employees/${storeId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
                 }),
                 axios.get(`${API_BASE_URL}/positions/${storeId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
                 }),
             ]);
 
@@ -100,9 +98,8 @@ export default function ManageEmployees() {
         const ok = await showConfirm("ต้องการลบพนักงานคนนี้ใช่หรือไม่?");
         if (!ok) return;
         try {
-            const token = localStorage.getItem("token");
             await axios.delete(`${API_BASE_URL}/employees/delete/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
             });
             fetchEmployees();
         } catch (err) {
