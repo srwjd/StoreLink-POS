@@ -1,12 +1,24 @@
 import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
-export default async function connectDB() {
-  const uri = process.env.MONGO_URL;
+let memServer;
+
+const connectDB = async () => {
   try {
-    await mongoose.connect(uri, { });
-    console.log("MongoDB connected");
+    if (process.env.NODE_ENV === "test") {
+      // ใช้ in-memory database
+      memServer = await MongoMemoryServer.create();
+      const uri = memServer.getUri();
+      await mongoose.connect(uri);
+      console.log("🧪 Connected to in-memory MongoDB");
+    } else {
+      // ใช้ database จริงตอน production/dev
+      await mongoose.connect(process.env.MONGO_URI);
+      console.log("Connected to MongoDB");
+    }
   } catch (err) {
-    console.error("MongoDB connect error:", err.message);
-    process.exit(1);
+    console.error("DB connection error:", err);
   }
-}
+};
+
+export default connectDB;
