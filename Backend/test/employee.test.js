@@ -6,7 +6,7 @@ import connectDB from "../config/db.js";
 import mongoose from "mongoose";
 import closeDB from "../config/db.js";
 
-const { expect } = chai;
+const expect = chai.expect;
 
 describe("Employees API Tests", function () {
   this.timeout(10000);
